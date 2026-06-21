@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { tenantConfigMock, alunoProfileMock } from "@repo/database-mocks";
-import { BookOpen, User, Calendar, LogOut, Menu, X } from "lucide-react";
+import { FrequenciaProvider } from "@/contexts/FrequenciaContext";
+import { BookOpen, User, Calendar, LogOut, Menu, X, Laptop } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
@@ -83,14 +84,30 @@ export default function DashboardLayout({
               Meu Boletim json
             </Button>
           </Link>
-          <Link href="#" passHref>
+          <Link href="/dashboard/frequencia" passHref>
             <Button
-              variant="ghost"
+              variant={pathname === "/dashboard/frequencia" ? "secondary" : "ghost"}
               onClick={() => setIsMobileMenuOpen(false)}
-              className="w-full justify-start font-medium text-muted-foreground hover:text-foreground"
+              className={`w-full justify-start font-medium ${pathname === "/dashboard/frequencia"
+                ? "bg-primary/10 text-primary hover:bg-primary/20"
+                : "text-muted-foreground hover:text-foreground"
+                }`}
             >
               <Calendar className="mr-3 h-5 w-5" />
-              Calendário
+              Frequência & Abonos
+            </Button>
+          </Link>
+          <Link href="/dashboard/presenca-online" passHref>
+            <Button
+              variant={pathname === "/dashboard/presenca-online" ? "secondary" : "ghost"}
+              onClick={() => setIsMobileMenuOpen(false)}
+              className={`w-full justify-start font-medium ${pathname === "/dashboard/presenca-online"
+                ? "bg-primary/10 text-primary hover:bg-primary/20"
+                : "text-muted-foreground hover:text-foreground"
+                }`}
+            >
+              <Laptop className="mr-3 h-5 w-5" />
+              Confirmar Presença
             </Button>
           </Link>
           <Link href="#" passHref>
@@ -162,13 +179,28 @@ export default function DashboardLayout({
               Meu Boletim json
             </Button>
           </Link>
-          <Link href="#" passHref>
+          <Link href="/dashboard/frequencia" passHref>
             <Button
-              variant="ghost"
-              className="w-full justify-start font-medium text-muted-foreground hover:text-foreground"
+              variant={pathname === "/dashboard/frequencia" ? "secondary" : "ghost"}
+              className={`w-full justify-start font-medium ${pathname === "/dashboard/frequencia"
+                ? "bg-primary/10 text-primary hover:bg-primary/20"
+                : "text-muted-foreground hover:text-foreground"
+                }`}
             >
               <Calendar className="mr-3 h-5 w-5" />
-              Calendário
+              Frequência & Abonos
+            </Button>
+          </Link>
+          <Link href="/dashboard/presenca-online" passHref>
+            <Button
+              variant={pathname === "/dashboard/presenca-online" ? "secondary" : "ghost"}
+              className={`w-full justify-start font-medium ${pathname === "/dashboard/presenca-online"
+                ? "bg-primary/10 text-primary hover:bg-primary/20"
+                : "text-muted-foreground hover:text-foreground"
+                }`}
+            >
+              <Laptop className="mr-3 h-5 w-5" />
+              Confirmar Presença
             </Button>
           </Link>
           <Link href="#" passHref>
@@ -229,7 +261,7 @@ export default function DashboardLayout({
         </header>
 
         <div className="flex-1 px-4 py-6 md:px-8 overflow-y-auto">
-          {children}
+          <FrequenciaProvider>{children}</FrequenciaProvider>
         </div>
       </main>
     </div>

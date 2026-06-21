@@ -462,3 +462,365 @@ export const historicoAbonosMock: Abono[] = [
     data_fim: "2026-06-02",
   },
 ];
+
+// ── Módulo de Frequência e Abonos SaaS ──────────────────
+
+export type ModalidadeAluno = "Presencial" | "Online";
+export type StatusChamada = "Presente" | "Falta" | "Abonado";
+export type EscopoAbono = "Todas as Disciplinas" | "Disciplina Específica";
+
+export type AlunoChamada = {
+  id: string;
+  nome: string;
+  matricula: string;
+  modalidade: ModalidadeAluno;
+  status_atual: StatusChamada;
+};
+
+export type TipoAbonoSaaS = "Eventualidade" | "Mérito";
+
+export type HistoricoAbono = {
+  id: string;
+  alunoId: string;
+  alunoNome: string;
+  tipo: TipoAbonoSaaS;
+  motivo: string;
+  dataInicio: string;
+  dataFim: string;
+  escopo: EscopoAbono;
+  disciplina?: string;
+};
+
+export const turmasDisponiveis = [
+  "Turma Medicina – Manhã",
+  "Turma Medicina – Tarde",
+  "Turma ITA – Integral",
+] as const;
+
+export type TurmaDisponivel = (typeof turmasDisponiveis)[number];
+
+export const disciplinasDisponiveis = [
+  "Matemática",
+  "Biologia",
+  "Química",
+  "Física",
+  "História",
+  "Geografia",
+  "Inglês",
+  "Espanhol",
+  "Redação",
+] as const;
+
+export type DisciplinaDisponivel = (typeof disciplinasDisponiveis)[number];
+
+/** Dia da semana (0 = Domingo … 6 = Sábado), compatível com Date.getDay(). */
+export type DiaSemana = 0 | 1 | 2 | 3 | 4 | 5 | 6;
+
+export const diasSemanaLabels: Record<DiaSemana, string> = {
+  0: "Domingo",
+  1: "Segunda-feira",
+  2: "Terça-feira",
+  3: "Quarta-feira",
+  4: "Quinta-feira",
+  5: "Sexta-feira",
+  6: "Sábado",
+};
+
+export const diasSemanaOrdem: DiaSemana[] = [1, 2, 3, 4, 5, 6, 0];
+
+/** Janela semanal recorrente — repete toda semana no mesmo dia e horário. */
+export type JanelaValidacao = {
+  id: string;
+  disciplina: DisciplinaDisponivel;
+  diaSemana: DiaSemana;
+  horaAbertura: string;
+  horaFechamento: string;
+  turma: TurmaDisponivel;
+};
+
+export type StatusJanelaValidacao = "aguardando" | "aberta" | "fechada";
+
+export function getLabelDiaSemana(dia: DiaSemana): string {
+  return diasSemanaLabels[dia];
+}
+
+function minutosDesdeMeiaNoite(hora: string): number {
+  const [h, m] = hora.split(":").map(Number);
+  return h! * 60 + m!;
+}
+
+/** Verifica se hoje é o dia da semana configurado para a janela. */
+export function isDiaJanelaAtiva(
+  janela: JanelaValidacao,
+  agora: Date = new Date()
+): boolean {
+  return agora.getDay() === janela.diaSemana;
+}
+
+/** Status da janela no momento — considera dia da semana + horário (recorrente). */
+export function getStatusJanelaValidacao(
+  janela: JanelaValidacao,
+  agora: Date = new Date()
+): StatusJanelaValidacao {
+  if (!isDiaJanelaAtiva(janela, agora)) return "fechada";
+
+  const minutosAtual = agora.getHours() * 60 + agora.getMinutes();
+  const abertura = minutosDesdeMeiaNoite(janela.horaAbertura);
+  const fechamento = minutosDesdeMeiaNoite(janela.horaFechamento);
+
+  if (minutosAtual < abertura) return "aguardando";
+  if (minutosAtual > fechamento) return "fechada";
+  return "aberta";
+}
+
+export function isValidacaoAberta(
+  janela: JanelaValidacao,
+  agora: Date = new Date()
+): boolean {
+  return getStatusJanelaValidacao(janela, agora) === "aberta";
+}
+
+/** Verifica se um abono está vigente em uma data de referência (ISO yyyy-mm-dd). */
+export function isAbonoAtivo(abono: HistoricoAbono, dataRef: string): boolean {
+  return dataRef >= abono.dataInicio && dataRef <= abono.dataFim;
+}
+
+export const listaAlunosChamada: AlunoChamada[] = [
+  {
+    id: "al-1",
+    nome: "Ágatha Maria Silva de Oliveira",
+    matricula: "2026001042",
+    modalidade: "Online",
+    status_atual: "Falta",
+  },
+  {
+    id: "al-2",
+    nome: "Carlos Eduardo Santos",
+    matricula: "2026001043",
+    modalidade: "Presencial",
+    status_atual: "Presente",
+  },
+  {
+    id: "al-3",
+    nome: "Beatriz Sousa Pinheiro",
+    matricula: "2026001044",
+    modalidade: "Presencial",
+    status_atual: "Presente",
+  },
+  {
+    id: "al-4",
+    nome: "Gabriel Henrique Oliveira",
+    matricula: "2026001045",
+    modalidade: "Online",
+    status_atual: "Falta",
+  },
+  {
+    id: "al-5",
+    nome: "Mariana Costa Ramos",
+    matricula: "2026001046",
+    modalidade: "Presencial",
+    status_atual: "Abonado",
+  },
+  {
+    id: "al-6",
+    nome: "João Pedro Martins",
+    matricula: "2026001047",
+    modalidade: "Presencial",
+    status_atual: "Presente",
+  },
+  {
+    id: "al-7",
+    nome: "Lucas Fernandes Lima",
+    matricula: "2026001048",
+    modalidade: "Online",
+    status_atual: "Falta",
+  },
+  {
+    id: "al-8",
+    nome: "Julia Melo Ferreira",
+    matricula: "2026001049",
+    modalidade: "Presencial",
+    status_atual: "Presente",
+  },
+];
+
+export const historicoAbonos: HistoricoAbono[] = [
+  {
+    id: "ab-saas-1",
+    alunoId: "al-5",
+    alunoNome: "Mariana Costa Ramos",
+    tipo: "Eventualidade",
+    motivo: "Atestado Médico – Dengue",
+    dataInicio: "2026-06-10",
+    dataFim: "2026-06-12",
+    escopo: "Todas as Disciplinas",
+  },
+  {
+    id: "ab-saas-2",
+    alunoId: "al-1",
+    alunoNome: "Ágatha Maria Silva de Oliveira",
+    tipo: "Mérito",
+    motivo: "Mérito Simulado ENEM 1",
+    dataInicio: "2026-06-21",
+    dataFim: "2026-06-30",
+    escopo: "Disciplina Específica",
+    disciplina: "Biologia",
+  },
+  {
+    id: "ab-saas-3",
+    alunoId: "al-3",
+    alunoNome: "Beatriz Sousa Pinheiro",
+    tipo: "Eventualidade",
+    motivo: "Atestado Médico – Consulta odontológica",
+    dataInicio: "2026-05-20",
+    dataFim: "2026-05-20",
+    escopo: "Todas as Disciplinas",
+  },
+  {
+    id: "ab-saas-4",
+    alunoId: "al-2",
+    alunoNome: "Carlos Eduardo Santos",
+    tipo: "Mérito",
+    motivo: "Mérito Simulado UERJ – Conceito A em Química",
+    dataInicio: "2026-06-01",
+    dataFim: "2026-06-15",
+    escopo: "Disciplina Específica",
+    disciplina: "Química",
+  },
+  {
+    id: "ab-saas-5",
+    alunoId: "al-4",
+    alunoNome: "Gabriel Henrique Oliveira",
+    tipo: "Eventualidade",
+    motivo: "Atestado Médico – Gripe H3N2",
+    dataInicio: "2026-06-18",
+    dataFim: "2026-06-20",
+    escopo: "Todas as Disciplinas",
+  },
+  {
+    id: "ab-saas-6",
+    alunoId: "al-6",
+    alunoNome: "João Pedro Martins",
+    tipo: "Mérito",
+    motivo: "Mérito Olimpíada de Matemática – Medalha Regional",
+    dataInicio: "2026-06-21",
+    dataFim: "2026-07-05",
+    escopo: "Disciplina Específica",
+    disciplina: "Matemática",
+  },
+  {
+    id: "ab-saas-7",
+    alunoId: "al-7",
+    alunoNome: "Lucas Fernandes Lima",
+    tipo: "Eventualidade",
+    motivo: "Comparecimento em audiência judicial (documentação anexada)",
+    dataInicio: "2026-06-21",
+    dataFim: "2026-06-21",
+    escopo: "Todas as Disciplinas",
+  },
+  {
+    id: "ab-saas-8",
+    alunoId: "al-8",
+    alunoNome: "Julia Melo Ferreira",
+    tipo: "Mérito",
+    motivo: "Mérito Simulado ENEM 2 – Nota TRI acima de 750 em Humanas",
+    dataInicio: "2026-06-14",
+    dataFim: "2026-06-28",
+    escopo: "Disciplina Específica",
+    disciplina: "História",
+  },
+  {
+    id: "ab-saas-9",
+    alunoId: "al-1",
+    alunoNome: "Ágatha Maria Silva de Oliveira",
+    tipo: "Eventualidade",
+    motivo: "Atestado Médico – Enxaqueca crônica",
+    dataInicio: "2026-04-08",
+    dataFim: "2026-04-10",
+    escopo: "Todas as Disciplinas",
+  },
+  {
+    id: "ab-saas-10",
+    alunoId: "al-5",
+    alunoNome: "Mariana Costa Ramos",
+    tipo: "Mérito",
+    motivo: "Mérito Prova Discursiva – Nota 18,5 em Física",
+    dataInicio: "2026-05-01",
+    dataFim: "2026-05-31",
+    escopo: "Disciplina Específica",
+    disciplina: "Física",
+  },
+  {
+    id: "ab-saas-11",
+    alunoId: "al-3",
+    alunoNome: "Beatriz Sousa Pinheiro",
+    tipo: "Mérito",
+    motivo: "Mérito Redação – Nota 920 no simulado",
+    dataInicio: "2026-06-21",
+    dataFim: "2026-06-25",
+    escopo: "Disciplina Específica",
+    disciplina: "Redação",
+  },
+  {
+    id: "ab-saas-12",
+    alunoId: "al-2",
+    alunoNome: "Carlos Eduardo Santos",
+    tipo: "Eventualidade",
+    motivo: "Atestado Médico – Cirurgia ambulatorial",
+    dataInicio: "2026-03-02",
+    dataFim: "2026-03-07",
+    escopo: "Todas as Disciplinas",
+  },
+  {
+    id: "ab-saas-13",
+    alunoId: "al-4",
+    alunoNome: "Gabriel Henrique Oliveira",
+    tipo: "Mérito",
+    motivo: "Mérito Simulado ENEM 1 – 100% de acerto em Inglês",
+    dataInicio: "2026-06-21",
+    dataFim: "2026-06-30",
+    escopo: "Disciplina Específica",
+    disciplina: "Inglês",
+  },
+  {
+    id: "ab-saas-14",
+    alunoId: "al-6",
+    alunoNome: "João Pedro Martins",
+    tipo: "Eventualidade",
+    motivo: "Atestado Médico – COVID-19",
+    dataInicio: "2026-02-14",
+    dataFim: "2026-02-21",
+    escopo: "Todas as Disciplinas",
+  },
+  {
+    id: "ab-saas-15",
+    alunoId: "al-7",
+    alunoNome: "Lucas Fernandes Lima",
+    tipo: "Mérito",
+    motivo: "Mérito Simulado ENEM – Destaque em Ciências da Natureza",
+    dataInicio: "2026-06-15",
+    dataFim: "2026-06-22",
+    escopo: "Disciplina Específica",
+    disciplina: "Geografia",
+  },
+];
+
+export const janelasValidacaoMock: JanelaValidacao[] = [
+  {
+    id: "jv-1",
+    disciplina: "Biologia",
+    diaSemana: 0,
+    horaAbertura: "08:00",
+    horaFechamento: "12:00",
+    turma: "Turma Medicina – Manhã",
+  },
+  {
+    id: "jv-2",
+    disciplina: "Matemática",
+    diaSemana: 2,
+    horaAbertura: "14:00",
+    horaFechamento: "18:00",
+    turma: "Turma Medicina – Manhã",
+  },
+];
+
