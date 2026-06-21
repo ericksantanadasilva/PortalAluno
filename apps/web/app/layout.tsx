@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import TenantProvider from "@/components/TenantProvider";
 import { tenantConfigMock } from "@repo/database-mocks";
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+const geist = Geist({ subsets: ['latin'], variable: '--font-sans' });
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",

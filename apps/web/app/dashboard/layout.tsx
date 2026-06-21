@@ -1,8 +1,9 @@
-"use client"
+"use client";
 
+import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { tenantConfigMock, alunoProfileMock } from "@repo/database-mocks";
-import { BookOpen, User, Calendar, LogOut } from "lucide-react";
+import { BookOpen, User, Calendar, LogOut, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
@@ -12,50 +13,92 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-muted/20">
-      {/* Sidebar Escaneável e Tematizada */}
-      <aside className="hidden md:flex w-64 h-full flex-col bg-background border-r border-border shadow-sm">
-        <div className="h-20 flex items-center px-6 border-b border-border">
-          <div className="w-10 h-10 rounded-full overflow-hidden mr-3 ring-2 ring-primary">
-            <img src={tenantConfigMock.logo_url} alt="Logo" className="w-full h-full object-cover" />
+    <div className="flex h-screen overflow-hidden bg-muted relative">
+      {/* Mobile Sidebar Overlay */}
+      {isMobileMenuOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 md:hidden animate-in fade-in duration-300"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+
+      {/* Mobile Drawer (Sidebar deslizante) */}
+      <aside
+        className={`fixed top-0 left-0 bottom-0 w-64 bg-muted border-r border-border shadow-xl z-50 flex flex-col transition-transform duration-300 ease-in-out md:hidden ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
+      >
+        <div className="h-20 flex items-center justify-between px-6 border-b border-border">
+          <div className="flex items-center">
+            <div className="w-10 h-10 rounded-full overflow-hidden mr-3 ring-2 ring-primary">
+              <img
+                src={tenantConfigMock.logo_url}
+                alt="Logo"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div>
+              <h2 className="font-semibold text-lg leading-tight text-primary">
+                {tenantConfigMock.nome}
+              </h2>
+              <p className="text-xs text-muted-foreground">Área do Aluno</p>
+            </div>
           </div>
-          <div>
-            <h2 className="font-semibold text-lg leading-tight text-primary">{tenantConfigMock.nome}</h2>
-            <p className="text-xs text-muted-foreground">Área do Aluno</p>
-          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="text-muted-foreground hover:text-foreground"
+          >
+            <X className="h-5 w-5" />
+          </Button>
         </div>
 
         <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1">
           <Link href="/dashboard/boletim" passHref>
-            <Button variant={pathname === "/dashboard/boletim" ? "secondary" : "ghost"}
+            <Button
+              variant={pathname === "/dashboard/boletim" ? "secondary" : "ghost"}
+              onClick={() => setIsMobileMenuOpen(false)}
               className={`w-full justify-start font-medium ${pathname === "/dashboard/boletim"
                 ? "bg-primary/10 text-primary hover:bg-primary/20"
                 : "text-muted-foreground hover:text-foreground"
-                }`}>
+                }`}
+            >
               <BookOpen className="mr-3 h-5 w-5" />
               Meu Boletim
             </Button>
           </Link>
           <Link href="/dashboard" passHref>
-            <Button variant={pathname === "/dashboard" ? "secondary" : "ghost"}
+            <Button
+              variant={pathname === "/dashboard" ? "secondary" : "ghost"}
+              onClick={() => setIsMobileMenuOpen(false)}
               className={`w-full justify-start font-medium ${pathname === "/dashboard"
                 ? "bg-primary/10 text-primary hover:bg-primary/20"
                 : "text-muted-foreground hover:text-foreground"
-                }`}>
+                }`}
+            >
               <BookOpen className="mr-3 h-5 w-5" />
               Meu Boletim json
             </Button>
           </Link>
           <Link href="#" passHref>
-            <Button variant="ghost" className="w-full justify-start font-medium text-muted-foreground hover:text-foreground">
+            <Button
+              variant="ghost"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="w-full justify-start font-medium text-muted-foreground hover:text-foreground"
+            >
               <Calendar className="mr-3 h-5 w-5" />
               Calendário
             </Button>
           </Link>
           <Link href="#" passHref>
-            <Button variant="ghost" className="w-full justify-start font-medium text-muted-foreground hover:text-foreground">
+            <Button
+              variant="ghost"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="w-full justify-start font-medium text-muted-foreground hover:text-foreground"
+            >
               <User className="mr-3 h-5 w-5" />
               Perfil
             </Button>
@@ -64,7 +107,87 @@ export default function DashboardLayout({
 
         <div className="p-4 border-t border-border">
           <Link href="/login" passHref>
-            <Button variant="outline" className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10 border-none">
+            <Button
+              variant="outline"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10 border-none"
+            >
+              <LogOut className="mr-3 h-5 w-5" />
+              Sair
+            </Button>
+          </Link>
+        </div>
+      </aside>
+
+      {/* Sidebar Escaneável e Tematizada (Desktop) */}
+      <aside className="hidden md:flex w-64 h-full flex-col bg-muted border-r border-border shadow-sm shrink-0">
+        <div className="h-20 flex items-center px-6 border-b border-border">
+          <div className="w-10 h-10 rounded-full overflow-hidden mr-3 ring-2 ring-primary">
+            <img
+              src={tenantConfigMock.logo_url}
+              alt="Logo"
+              className="w-full h-full object-cover"
+            />
+          </div>
+          <div>
+            <h2 className="font-semibold text-lg leading-tight text-primary">
+              {tenantConfigMock.nome}
+            </h2>
+            <p className="text-xs text-muted-foreground">Área do Aluno</p>
+          </div>
+        </div>
+
+        <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1">
+          <Link href="/dashboard/boletim" passHref>
+            <Button
+              variant={pathname === "/dashboard/boletim" ? "secondary" : "ghost"}
+              className={`w-full justify-start font-medium ${pathname === "/dashboard/boletim"
+                ? "bg-primary/10 text-primary hover:bg-primary/20"
+                : "text-muted-foreground hover:text-foreground"
+                }`}
+            >
+              <BookOpen className="mr-3 h-5 w-5" />
+              Meu Boletim
+            </Button>
+          </Link>
+          <Link href="/dashboard" passHref>
+            <Button
+              variant={pathname === "/dashboard" ? "secondary" : "ghost"}
+              className={`w-full justify-start font-medium ${pathname === "/dashboard"
+                ? "bg-primary/10 text-primary hover:bg-primary/20"
+                : "text-muted-foreground hover:text-foreground"
+                }`}
+            >
+              <BookOpen className="mr-3 h-5 w-5" />
+              Meu Boletim json
+            </Button>
+          </Link>
+          <Link href="#" passHref>
+            <Button
+              variant="ghost"
+              className="w-full justify-start font-medium text-muted-foreground hover:text-foreground"
+            >
+              <Calendar className="mr-3 h-5 w-5" />
+              Calendário
+            </Button>
+          </Link>
+          <Link href="#" passHref>
+            <Button
+              variant="ghost"
+              className="w-full justify-start font-medium text-muted-foreground hover:text-foreground"
+            >
+              <User className="mr-3 h-5 w-5" />
+              Perfil
+            </Button>
+          </Link>
+        </nav>
+
+        <div className="p-4 border-t border-border">
+          <Link href="/login" passHref>
+            <Button
+              variant="outline"
+              className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10 border-none"
+            >
               <LogOut className="mr-3 h-5 w-5" />
               Sair
             </Button>
@@ -73,26 +196,39 @@ export default function DashboardLayout({
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col">
+      <main className="flex-1 flex flex-col min-w-0">
         {/* Header Responsivo */}
-        <header className="h-20 bg-background border-b border-border flex items-center justify-between px-8 shadow-sm">
-          <div className="flex items-center">
-            {/* Ícone de menu mobile poderia vir aqui */}
+        <header className="h-20 bg-muted border-b border-border flex items-center justify-between px-4 md:px-8 shadow-sm">
+          <div className="flex items-center gap-3">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="md:hidden text-muted-foreground hover:text-foreground"
+              onClick={() => setIsMobileMenuOpen(true)}
+            >
+              <Menu className="h-6 w-6" />
+            </Button>
             <h1 className="text-2xl font-bold tracking-tight text-foreground">Dashboard</h1>
           </div>
 
           <div className="flex items-center space-x-4">
             <div className="text-right hidden sm:block">
-              <p className="text-sm font-medium leading-none text-foreground">{alunoProfileMock.nome}</p>
+              <p className="text-sm font-medium leading-none text-foreground">
+                {alunoProfileMock.nome}
+              </p>
               <p className="text-xs text-muted-foreground">{alunoProfileMock.turma}</p>
             </div>
             <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold border border-primary/20">
-              {alunoProfileMock.nome.split(' ').map(n => n[0]).slice(0, 2).join('')}
+              {alunoProfileMock.nome
+                .split(" ")
+                .map((n) => n[0])
+                .slice(0, 2)
+                .join("")}
             </div>
           </div>
         </header>
 
-        <div className="flex-1 p-8 overflow-y-auto">
+        <div className="flex-1 px-4 py-6 md:px-8 overflow-y-auto">
           {children}
         </div>
       </main>

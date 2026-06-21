@@ -122,7 +122,7 @@ const disciplinasUERJ = [
 ];
 
 const temasPool = [
-  "Interpretação de Texto", "Coesão e Coerência", "Figuras de Linguagem", "Variação Linguística",
+  "", "Interpretação de Texto", "Coesão e Coerência", "Figuras de Linguagem", "Variação Linguística",
   "Análise do Discurso", "Funções da Linguagem", "Sintaxe", "Semântica",
   "Verbos", "Orações Subordinadas", "Classes de Palavras", "Pontuação",
   "Vocabulary Context", "Reading Comprehension", "Grammar Rules",
@@ -167,9 +167,27 @@ const errosEnem = new Set([2, 8, 14, 19, 23, 31, 37, 44, 50, 55, 61, 67, 73, 78,
 const disciplinasENEM = [
   { nome: "Linguagens", start: 1, end: 45 },
   { nome: "Ciências Humanas", start: 46, end: 90 },
+  { nome: "Ciências da Natureza", start: 91, end: 135 },
+  { nome: "Matemática", start: 136, end: 180 },
 ];
 
 function gerarRaioXENEM(): RaioXQuestao[] {
+  const questoes: RaioXQuestao[] = [];
+  for (let i = 1; i <= 180; i++) {
+    const disc = disciplinasENEM.find((d) => i >= d.start && i <= d.end)?.nome || "Geral";
+    let taxa = 40 + (i * 13) % 55;
+    questoes.push({
+      numero: i,
+      disciplina: disc,
+      tema: temasPool[i % temasPool.length],
+      taxa_acerto_turma: taxa,
+      resultado_aluno: !errosEnem.has(i),
+    });
+  }
+  return questoes;
+}
+
+function gerarRaioXParcial(): RaioXQuestao[] {
   const questoes: RaioXQuestao[] = [];
   for (let i = 1; i <= 90; i++) {
     const disc = disciplinasENEM.find((d) => i >= d.start && i <= d.end)?.nome || "Geral";
@@ -346,7 +364,7 @@ export const mockBoletins: Record<TipoSimulado, BoletimData> = {
       { disciplina: "Ciências Humanas", tema: "Era Vargas", questao: 75 },
     ],
     // Sem raio-x para ENEM parcial
-    raioXQuestoes: undefined,
+    raioXQuestoes: gerarRaioXParcial(),
   },
 
   // ── 4) DISCURSIVO — Nota decimal 16.5 ─────────────────────
