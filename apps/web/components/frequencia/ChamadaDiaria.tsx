@@ -123,6 +123,15 @@ export function ChamadaDiaria({
 }: ChamadaDiariaProps) {
   return (
     <div className="w-full rounded-none border-y border-border bg-card overflow-hidden shadow-sm">
+
+      <div className="px-4 md:px-8 py-4 md:py-5 border-b border-border">
+        <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">
+          Frequência & Abonos
+        </h1>
+        <p className="text-sm text-muted-foreground mt-1">
+          {formatDate(dataSelecionada)}
+        </p>
+      </div>
       {/* Barra de filtros integrada ao painel */}
       <div className="flex flex-col sm:flex-row sm:items-end gap-4 p-4 md:px-8 md:py-5 border-b border-border bg-muted/20">
         <div className="flex-1 min-w-0 space-y-1.5">

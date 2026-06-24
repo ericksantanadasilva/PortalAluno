@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { tenantConfigMock, type TurmaDisponivel } from "@repo/database-mocks";
 import { useFrequencia } from "@/contexts/FrequenciaContext";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -18,6 +18,11 @@ export default function FrequenciaPage() {
     "Turma Medicina – Manhã"
   );
   const [dataSelecionada, setDataSelecionada] = useState("2026-06-21");
+  const [dataHoje, setDataHoje] = useState("2026-06-24");
+
+  useEffect(() => {
+    setDataHoje(new Date().toLocaleDateString("en-CA"));
+  }, []);
 
   const primaryHSL = tenantConfigMock.cor_primaria;
 
@@ -30,15 +35,6 @@ export default function FrequenciaPage() {
       className="w-full min-h-full flex flex-col"
       style={{ "--primary": primaryHSL } as React.CSSProperties}
     >
-      <div className="px-4 md:px-8 py-4 md:py-5 border-b border-border">
-        <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">
-          Frequência & Abonos
-        </h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          {formatDate(dataSelecionada)} · {turmaSelecionada}
-        </p>
-      </div>
-
       <Tabs defaultValue="chamada" className="flex flex-col flex-1 gap-0">
         <div className="border-b border-border bg-card w-full">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between px-4 md:px-8 py-2">
@@ -109,7 +105,8 @@ export default function FrequenciaPage() {
             <HistoricoAbonosView
               abonos={abonos}
               alunos={alunos}
-              dataReferencia={dataSelecionada}
+              dataReferencia={dataHoje}
+              onAddAbono={addAbono}
             />
           </TabsContent>
 

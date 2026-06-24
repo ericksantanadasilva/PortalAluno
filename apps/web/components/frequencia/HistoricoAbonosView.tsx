@@ -43,7 +43,13 @@ interface HistoricoAbonosViewProps {
   onAddAbono?: (abono: Omit<HistoricoAbono, "id">) => void;
 }
 
-type FiltroStatusAbono = "todos" | "vigentes" | "encerrados";
+type FiltroStatusAbono = "todos" | "vigentes" | "encerrados" | "agendados";
+
+function getAbonoStatus(abono: HistoricoAbono, dataRef: string): "vigente" | "encerrado" | "agendado" {
+  if (dataRef >= abono.dataInicio && dataRef <= abono.dataFim) return "vigente";
+  if (dataRef < abono.dataInicio) return "agendado";
+  return "encerrado";
+}
 
 
 function TipoBadge({ tipo }: { tipo: TipoAbonoSaaS }) {
@@ -102,19 +108,23 @@ export function HistoricoAbonosView({
     return abonosOrdenados.filter((abono) => {
       if (filtroAlunoId && abono.alunoId !== filtroAlunoId) return false;
 
-      const vigente = isAbonoAtivo(abono, dataReferencia);
-      if (filtroStatus === "vigentes") return vigente;
-      if (filtroStatus === "encerrados") return !vigente;
+      const status = getAbonoStatus(abono, dataReferencia);
+      if (filtroStatus === "vigentes" && status !== "vigente") return false;
+      if (filtroStatus === "encerrados" && status !== "encerrado") return false;
+      if (filtroStatus === "agendados" && status !== "agendado") return false;
       return true;
     });
   }, [abonosOrdenados, dataReferencia, filtroAlunoId, filtroStatus]);
 
   const totais = useMemo(() => {
-    const vigentes = abonos.filter((a) => isAbonoAtivo(a, dataReferencia)).length;
+    const vigentes = abonos.filter((a) => getAbonoStatus(a, dataReferencia) === "vigente").length;
+    const encerrados = abonos.filter((a) => getAbonoStatus(a, dataReferencia) === "encerrado").length;
+    const agendados = abonos.filter((a) => getAbonoStatus(a, dataReferencia) === "agendado").length;
     return {
       total: abonos.length,
       vigentes,
-      encerrados: abonos.length - vigentes,
+      encerrados,
+      agendados,
       eventualidade: abonos.filter((a) => a.tipo === "Eventualidade").length,
       merito: abonos.filter((a) => a.tipo === "Mérito").length,
     };
@@ -127,7 +137,7 @@ export function HistoricoAbonosView({
         <div className="space-y-1">
           <h2 className="text-2xl font-bold text-foreground">Histórico de Abonos</h2>
           <p className="text-sm text-muted-foreground flex items-center gap-2">
-            21 de junho de 2026 <span className="text-border">•</span> Turma Medicina — Manhã
+            {formatDate(dataReferencia)}
           </p>
           <div className="flex flex-wrap gap-2 pt-3">
             <Badge variant="secondary" className="px-3 py-1 text-xs font-semibold rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200 border-none dark:bg-slate-800 dark:text-slate-300">
@@ -135,6 +145,9 @@ export function HistoricoAbonosView({
             </Badge>
             <Badge variant="secondary" className="px-3 py-1 text-xs font-semibold rounded-full bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-none">
               <span className="font-bold mr-1">{totais.vigentes}</span> VIGENTES
+            </Badge>
+            <Badge variant="secondary" className="px-3 py-1 text-xs font-semibold rounded-full bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 dark:bg-blue-500/10 dark:text-blue-400 dark:border-none">
+              <span className="font-bold mr-1">{totais.agendados}</span> AGENDADOS
             </Badge>
             <Badge variant="secondary" className="px-3 py-1 text-xs font-semibold rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200 border-none dark:bg-slate-800 dark:text-slate-300">
               <span className="font-bold mr-1 text-slate-900 dark:text-slate-100">{totais.encerrados}</span> ENCERRADOS
@@ -208,6 +221,7 @@ export function HistoricoAbonosView({
               [
                 { id: "todos", label: "Todos" },
                 { id: "vigentes", label: "Vigentes" },
+                { id: "agendados", label: "Agendados" },
                 { id: "encerrados", label: "Encerrados" },
               ] as const
             ).map((item) => (
@@ -248,21 +262,21 @@ export function HistoricoAbonosView({
               {abonosFiltrados.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={6} className="text-center py-10 text-muted-foreground">
-                    Nenhum abono encontrado para este filtro.
+                    Nenhum abono encontrado para os filtros atuais.
                   </TableCell>
                 </TableRow>
               ) : (
                 abonosFiltrados.map((abono) => {
-                  const vigente = isAbonoAtivo(abono, dataReferencia);
+                  const status = getAbonoStatus(abono, dataReferencia);
                   return (
-                    <TableRow key={abono.id} className="hover:bg-muted/10">
-                      <TableCell>
+                    <TableRow key={abono.id} className="hover:bg-muted/50 transition-colors">
+                      <TableCell className="font-medium text-foreground py-4 align-top">
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 rounded-full overflow-hidden border border-border bg-muted shrink-0">
                             <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(abono.alunoNome)}&background=random`} alt={abono.alunoNome} />
                           </div>
-                          <div className="space-y-0.5 min-w-0">
-                            <p className="font-bold text-sm text-foreground truncate">
+                          <div>
+                            <p className="font-bold text-sm text-foreground">
                               {abono.alunoNome}
                             </p>
                             <p className="text-xs text-muted-foreground">
@@ -271,47 +285,53 @@ export function HistoricoAbonosView({
                           </div>
                         </div>
                       </TableCell>
-                      <TableCell>
-                        <TipoBadge tipo={abono.tipo} />
+                      <TableCell className="py-4 align-top">
+                        <div className="mt-1">
+                          <TipoBadge tipo={abono.tipo} />
+                        </div>
                       </TableCell>
-                      <TableCell className="text-sm font-semibold text-foreground max-w-[250px] whitespace-normal">
-                        {abono.motivo}
+                      <TableCell className="py-4 align-top max-w-[200px] truncate" title={abono.motivo}>
+                        <div className="mt-1">
+                          <span className="text-sm font-semibold">{abono.motivo}</span>
+                        </div>
                       </TableCell>
-                      <TableCell className="text-xs text-muted-foreground">
-                        <div className="flex flex-col">
-                          {abono.dataInicio === abono.dataFim ? (
-                            <span>{formatDate(abono.dataInicio)}</span>
+                      <TableCell className="py-4 align-top text-sm text-muted-foreground">
+                        <div className="mt-1 flex items-start gap-1.5">
+                          <Calendar className="w-3.5 h-3.5 mt-0.5 opacity-50 shrink-0" />
+                          <span className="leading-snug">
+                            {formatDate(abono.dataInicio)} —<br />
+                            {formatDate(abono.dataFim)}
+                          </span>
+                        </div>
+                      </TableCell>
+                      <TableCell className="py-4 align-top">
+                        <div className="mt-1">
+                          {abono.escopo === "Disciplina Específica" && abono.disciplina ? (
+                            <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-500/10 dark:text-blue-400 dark:border-none text-[10px] whitespace-normal text-center">
+                              {abono.disciplina}
+                            </Badge>
                           ) : (
-                            <>
-                              <span>{formatDate(abono.dataInicio)} —</span>
-                              <span>{formatDate(abono.dataFim)}</span>
-                            </>
+                            <Badge variant="secondary" className="bg-slate-100 text-slate-700 hover:bg-slate-200 border-none dark:bg-slate-800 dark:text-slate-300 text-[10px]">
+                              Todas
+                            </Badge>
                           )}
                         </div>
                       </TableCell>
-                      <TableCell>
-                        {abono.escopo === "Todas as Disciplinas" ? (
-                          <Badge variant="secondary" className="text-xs bg-muted/60 text-muted-foreground hover:bg-muted/60 border-none font-medium">Geral</Badge>
-                        ) : (
+                      <TableCell className="py-4 align-top">
+                        <div className="mt-1">
                           <Badge
-                            variant="secondary"
-                            className="text-xs bg-blue-50 text-blue-700 hover:bg-blue-50 border-none font-medium dark:bg-blue-500/10 dark:text-blue-400"
+                            variant="outline"
+                            className={
+                              status === "vigente"
+                                ? "text-[10px] bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-none uppercase tracking-wider"
+                                : status === "agendado"
+                                  ? "text-[10px] bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-500/10 dark:text-blue-400 dark:border-none uppercase tracking-wider"
+                                  : "text-[10px] bg-slate-50 text-slate-500 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-none uppercase tracking-wider"
+                            }
                           >
-                            {abono.disciplina}
+                            {status === "vigente" ? "Vigente" : status === "agendado" ? "Agendado" : "Encerrado"}
                           </Badge>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <Badge
-                          variant="outline"
-                          className={
-                            vigente
-                              ? "text-[10px] bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-none uppercase tracking-wider"
-                              : "text-[10px] bg-slate-50 text-slate-500 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-none uppercase tracking-wider"
-                          }
-                        >
-                          {vigente ? "Vigente" : "Encerrado"}
-                        </Badge>
+                        </div>
                       </TableCell>
                     </TableRow>
                   );
@@ -333,7 +353,7 @@ export function HistoricoAbonosView({
           </Card>
         ) : (
           abonosFiltrados.map((abono) => {
-            const vigente = isAbonoAtivo(abono, dataReferencia);
+            const status = getAbonoStatus(abono, dataReferencia);
             return (
               <div
                 key={abono.id}
@@ -356,12 +376,14 @@ export function HistoricoAbonosView({
                   <Badge
                     variant="outline"
                     className={
-                      vigente
+                      status === "vigente"
                         ? "text-[10px] bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-none uppercase tracking-wider"
-                        : "text-[10px] bg-slate-50 text-slate-500 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-none uppercase tracking-wider"
+                        : status === "agendado"
+                          ? "text-[10px] bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-500/10 dark:text-blue-400 dark:border-none uppercase tracking-wider"
+                          : "text-[10px] bg-slate-50 text-slate-500 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-none uppercase tracking-wider"
                     }
                   >
-                    {vigente ? "Vigente" : "Encerrado"}
+                    {status === "vigente" ? "Vigente" : status === "agendado" ? "Agendado" : "Encerrado"}
                   </Badge>
                 </div>
 
@@ -374,7 +396,7 @@ export function HistoricoAbonosView({
                 <div className="flex items-center justify-between border-t border-border pt-4">
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Calendar className="w-4 h-4 text-muted-foreground shrink-0" />
-                    {vigente ? `Até ${formatDate(abono.dataFim)}` : `Encerrado em ${formatDate(abono.dataFim)}`}
+                    {status === "vigente" ? `Até ${formatDate(abono.dataFim)}` : status === "agendado" ? `Inicia em ${formatDate(abono.dataInicio)}` : `Encerrado em ${formatDate(abono.dataFim)}`}
                   </div>
                   {abono.escopo !== "Todas as Disciplinas" && (
                     <Badge

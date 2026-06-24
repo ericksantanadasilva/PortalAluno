@@ -71,19 +71,6 @@ export default function DashboardLayout({
               Meu Boletim
             </Button>
           </Link>
-          <Link href="/dashboard" passHref>
-            <Button
-              variant={pathname === "/dashboard" ? "secondary" : "ghost"}
-              onClick={() => setIsMobileMenuOpen(false)}
-              className={`w-full justify-start font-medium ${pathname === "/dashboard"
-                ? "bg-primary/10 text-primary hover:bg-primary/20"
-                : "text-muted-foreground hover:text-foreground"
-                }`}
-            >
-              <BookOpen className="mr-3 h-5 w-5" />
-              Meu Boletim json
-            </Button>
-          </Link>
           <Link href="/dashboard/frequencia" passHref>
             <Button
               variant={pathname === "/dashboard/frequencia" ? "secondary" : "ghost"}
@@ -165,18 +152,6 @@ export default function DashboardLayout({
             >
               <BookOpen className="mr-3 h-5 w-5" />
               Meu Boletim
-            </Button>
-          </Link>
-          <Link href="/dashboard" passHref>
-            <Button
-              variant={pathname === "/dashboard" ? "secondary" : "ghost"}
-              className={`w-full justify-start font-medium ${pathname === "/dashboard"
-                ? "bg-primary/10 text-primary hover:bg-primary/20"
-                : "text-muted-foreground hover:text-foreground"
-                }`}
-            >
-              <BookOpen className="mr-3 h-5 w-5" />
-              Meu Boletim json
             </Button>
           </Link>
           <Link href="/dashboard/frequencia" passHref>
