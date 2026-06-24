@@ -97,7 +97,7 @@ export default function BoletimDetalhado() {
       </div>
 
       {/* ── Seletor de Versões ── */}
-      <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center gap-3">
         <label
           htmlFor="tipo-simulado-select"
           className="text-sm font-medium text-muted-foreground whitespace-nowrap"

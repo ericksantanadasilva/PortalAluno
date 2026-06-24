@@ -177,30 +177,36 @@ export default function BoletimDiscursivoView({ data }: BoletimDiscursivoViewPro
               {Object.entries(revisaoPorDisciplina).map(([disciplina, temas]) => (
                 <div
                   key={disciplina}
-                  className="space-y-3 bg-secondary/20 p-4 rounded-xl border border-border/50"
+                  className="space-y-3 bg-white dark:bg-card p-5 rounded-xl border border-border border-l-4 shadow-sm"
+                  style={{ borderLeftColor: `hsl(${primaryHSL})` }}
                 >
-                  <h4 className="font-semibold flex items-center justify-between border-b border-border/50 pb-2 text-sm">
+                  <h4 className="font-bold flex items-center justify-between border-b border-border/50 pb-2.5 text-sm text-foreground">
                     {disciplina}
                     <Badge
-                      variant="outline"
-                      className="bg-rose-50 text-rose-600 border-rose-200 dark:bg-rose-950 dark:border-rose-900 dark:text-rose-400 text-xs font-bold"
+                      variant="destructive"
+                      className="bg-rose-600 text-white hover:bg-rose-700 dark:bg-rose-900/80 dark:text-rose-100 text-[10px] font-bold px-2 py-0.5 rounded-md"
                     >
                       {temas.length} {temas.length === 1 ? "erro" : "erros"}
                     </Badge>
                   </h4>
-                  <ul className="space-y-2.5 mt-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3">
                     {temas.map((t) => (
-                      <li
+                      <div
                         key={t.questao}
-                        className="text-sm text-muted-foreground flex items-start gap-2.5"
+                        className="flex flex-col gap-1.5 p-3 rounded-lg bg-muted/30 border border-border/50 hover:bg-muted/50 transition-colors"
                       >
-                        <X className="w-4 h-4 text-rose-500/80 mt-0.5 shrink-0" />
-                        <span className="leading-snug">
-                          Q{t.questao}: {t.tema}
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] font-bold text-foreground bg-white dark:bg-background px-1.5 py-0.5 rounded border border-border shadow-sm">
+                            Q{t.questao}
+                          </span>
+                          <X className="w-3.5 h-3.5 text-rose-500/80" />
+                        </div>
+                        <span className="text-xs font-semibold text-muted-foreground leading-snug">
+                          {t.tema}
                         </span>
-                      </li>
+                      </div>
                     ))}
-                  </ul>
+                  </div>
                 </div>
               ))}
             </div>

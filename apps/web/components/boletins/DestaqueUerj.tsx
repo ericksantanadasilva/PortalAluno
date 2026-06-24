@@ -42,7 +42,7 @@ export function DestaqueUerj({ data }: DestaqueUerjProps) {
       </Card>
 
       {/* Acertos e turma */}
-      <Card className="md:col-span-2 shadow-sm">
+      <Card className="md:col-span-2 shadow-sm flex flex-col justify-center">
         <CardContent className="grid grid-cols-2 sm:grid-cols-3 gap-6 py-8">
           <StatBlock
             icon={<Trophy className="w-5 h-5" />}
@@ -50,12 +50,14 @@ export function DestaqueUerj({ data }: DestaqueUerjProps) {
             value={`${data.destaqueGeral.acertos}/${data.destaqueGeral.total}`}
             sub={`${data.destaqueGeral.percentual}% de aproveitamento`}
             accent
+            className="text-5xl"
           />
           <StatBlock
             icon={<TrendingUp className="w-5 h-5" />}
             label="Média da Turma"
             value={`${data.resultadoTime.mediaTurma}`}
             sub="acertos em média"
+            className="text-5xl"
           />
           <StatBlock
             icon={<Sparkles className="w-5 h-5" />}
@@ -63,6 +65,7 @@ export function DestaqueUerj({ data }: DestaqueUerjProps) {
             value={`${data.resultadoTime.maiorNota}`}
             sub="maior acertos da turma"
             highlight
+            className="text-5xl"
           />
         </CardContent>
       </Card>

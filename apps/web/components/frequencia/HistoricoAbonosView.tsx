@@ -1,0 +1,401 @@
+"use client";
+
+import React, { useMemo, useState } from "react";
+import {
+  disciplinasDisponiveis,
+  isAbonoAtivo,
+  type AlunoChamada,
+  type HistoricoAbono,
+  type TipoAbonoSaaS,
+} from "@repo/database-mocks";
+import {
+  Card,
+  CardContent,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Plus,
+  Calendar,
+  BookOpen,
+  User,
+  ShieldAlert,
+  Award,
+  Stethoscope,
+  ChevronDown,
+  Filter,
+} from "lucide-react";
+import { formatDate } from "@/lib/utils";
+import { NovoAbonoDialog } from "./NovoAbonoDialog";
+
+interface HistoricoAbonosViewProps {
+  abonos: HistoricoAbono[];
+  alunos: AlunoChamada[];
+  dataReferencia: string;
+  onAddAbono?: (abono: Omit<HistoricoAbono, "id">) => void;
+}
+
+type FiltroStatusAbono = "todos" | "vigentes" | "encerrados";
+
+
+function TipoBadge({ tipo }: { tipo: TipoAbonoSaaS }) {
+  const isMerito = tipo === "Mérito";
+  return (
+    <Badge
+      variant="outline"
+      className={
+        isMerito
+          ? "bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-500/10 dark:text-indigo-400 dark:border-none font-semibold text-[10px] whitespace-nowrap"
+          : "bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-500/10 dark:text-purple-400 dark:border-none font-semibold text-[10px] whitespace-nowrap"
+      }
+    >
+      <span className="flex items-center gap-1">
+        {isMerito ? <Award className="w-3 h-3" /> : <Stethoscope className="w-3 h-3" />}
+        {tipo}
+      </span>
+    </Badge>
+  );
+}
+
+export function HistoricoAbonosView({
+  abonos,
+  alunos,
+  dataReferencia,
+  onAddAbono,
+}: HistoricoAbonosViewProps) {
+  const [filtroStatus, setFiltroStatus] = useState<FiltroStatusAbono>("todos");
+  const [filtroAlunoId, setFiltroAlunoId] = useState<string>("");
+  const [filtroTipo, setFiltroTipo] = useState<"todos" | TipoAbonoSaaS>("todos");
+  const [isNovoAbonoOpen, setIsNovoAbonoOpen] = useState(false);
+
+  const matriculaPorAlunoId = useMemo(
+    () => Object.fromEntries(alunos.map((a) => [a.id, a.matricula])),
+    [alunos]
+  );
+
+  const abonosOrdenados = useMemo(
+    () =>
+      [...abonos].sort((a, b) => b.dataInicio.localeCompare(a.dataInicio)),
+    [abonos]
+  );
+
+  const alunosOrdenados = useMemo(
+    () => [...alunos].sort((a, b) => a.nome.localeCompare(b.nome)),
+    [alunos]
+  );
+
+  const contagemPorAluno = useMemo(() => {
+    const map = new Map<string, number>();
+    abonos.forEach((a) => map.set(a.alunoId, (map.get(a.alunoId) ?? 0) + 1));
+    return map;
+  }, [abonos]);
+
+  const abonosFiltrados = useMemo(() => {
+    return abonosOrdenados.filter((abono) => {
+      if (filtroAlunoId && abono.alunoId !== filtroAlunoId) return false;
+
+      const vigente = isAbonoAtivo(abono, dataReferencia);
+      if (filtroStatus === "vigentes") return vigente;
+      if (filtroStatus === "encerrados") return !vigente;
+      return true;
+    });
+  }, [abonosOrdenados, dataReferencia, filtroAlunoId, filtroStatus]);
+
+  const totais = useMemo(() => {
+    const vigentes = abonos.filter((a) => isAbonoAtivo(a, dataReferencia)).length;
+    return {
+      total: abonos.length,
+      vigentes,
+      encerrados: abonos.length - vigentes,
+      eventualidade: abonos.filter((a) => a.tipo === "Eventualidade").length,
+      merito: abonos.filter((a) => a.tipo === "Mérito").length,
+    };
+  }, [abonos, dataReferencia]);
+
+  return (
+    <div className="w-full space-y-6">
+      {/* Cabeçalho */}
+      <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
+        <div className="space-y-1">
+          <h2 className="text-2xl font-bold text-foreground">Histórico de Abonos</h2>
+          <p className="text-sm text-muted-foreground flex items-center gap-2">
+            21 de junho de 2026 <span className="text-border">•</span> Turma Medicina — Manhã
+          </p>
+          <div className="flex flex-wrap gap-2 pt-3">
+            <Badge variant="secondary" className="px-3 py-1 text-xs font-semibold rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200 border-none dark:bg-slate-800 dark:text-slate-300">
+              <span className="font-bold mr-1 text-slate-900 dark:text-slate-100">{totais.total}</span> REGISTROS
+            </Badge>
+            <Badge variant="secondary" className="px-3 py-1 text-xs font-semibold rounded-full bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-none">
+              <span className="font-bold mr-1">{totais.vigentes}</span> VIGENTES
+            </Badge>
+            <Badge variant="secondary" className="px-3 py-1 text-xs font-semibold rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200 border-none dark:bg-slate-800 dark:text-slate-300">
+              <span className="font-bold mr-1 text-slate-900 dark:text-slate-100">{totais.encerrados}</span> ENCERRADOS
+            </Badge>
+            <Badge variant="secondary" className="px-3 py-1 text-xs font-semibold rounded-full bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200 dark:bg-purple-500/10 dark:text-purple-400 dark:border-none">
+              <span className="font-bold mr-1">{totais.eventualidade}</span> EVENTUALIDADE
+            </Badge>
+            <Badge variant="secondary" className="px-3 py-1 text-xs font-semibold rounded-full bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200 dark:bg-indigo-500/10 dark:text-indigo-400 dark:border-none">
+              <span className="font-bold mr-1">{totais.merito}</span> MÉRITO
+            </Badge>
+          </div>
+        </div>
+        <Button
+          className="hidden md:flex font-semibold px-4 py-2 items-center gap-1.5 shadow-sm shrink-0 bg-[#0B5C43] hover:bg-[#084834] text-white"
+          onClick={() => setIsNovoAbonoOpen(true)}
+        >
+          <Plus className="w-4 h-4" />
+          Cadastrar Novo Abono
+        </Button>
+      </div>
+
+      {isNovoAbonoOpen && (
+        <NovoAbonoDialog
+          open={isNovoAbonoOpen}
+          onOpenChange={setIsNovoAbonoOpen}
+          alunos={alunos}
+          onSalvar={(novoAbono) => {
+            if (onAddAbono) {
+              onAddAbono(novoAbono);
+            }
+          }}
+        />
+      )}
+
+      {/* Filtros em painel clean */}
+      <div className="bg-white dark:bg-card border border-border shadow-sm rounded-xl p-4 flex flex-col md:flex-row gap-6 md:items-end">
+        <div className="space-y-2 flex-1 max-w-sm">
+          <label
+            htmlFor="filtro-aluno"
+            className="text-xs font-bold tracking-wider text-muted-foreground uppercase"
+          >
+            FILTRAR POR ALUNO
+          </label>
+          <div className="relative">
+            <select
+              id="filtro-aluno"
+              value={filtroAlunoId}
+              onChange={(e) => setFiltroAlunoId(e.target.value)}
+              className="appearance-none w-full bg-muted/30 border border-border rounded-lg px-4 py-2.5 pr-10 text-sm font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+            >
+              <option value="">Todos os alunos ({abonos.length})</option>
+              {alunosOrdenados.map((aluno) => {
+                const qtd = contagemPorAluno.get(aluno.id) ?? 0;
+                return (
+                  <option key={aluno.id} value={aluno.id} disabled={qtd === 0}>
+                    {aluno.nome}
+                  </option>
+                );
+              })}
+            </select>
+            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <span className="text-xs font-bold tracking-wider text-muted-foreground uppercase block">
+            STATUS
+          </span>
+          <div className="flex bg-muted/40 p-1 rounded-lg">
+            {(
+              [
+                { id: "todos", label: "Todos" },
+                { id: "vigentes", label: "Vigentes" },
+                { id: "encerrados", label: "Encerrados" },
+              ] as const
+            ).map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => setFiltroStatus(item.id)}
+                className={`text-sm font-medium px-5 py-2 rounded-md transition-all ${filtroStatus === item.id
+                  ? "bg-white dark:bg-card text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+                  }`}
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Tabela desktop com novo visual */}
+      <div className="hidden md:block bg-white dark:bg-card border border-border shadow-sm rounded-xl overflow-hidden">
+        <div className="flex items-center justify-between p-4 border-b border-border bg-muted/10">
+          <h3 className="font-bold text-lg text-primary">{abonosFiltrados.length} abonos exibidos</h3>
+        </div>
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow className="hover:bg-transparent">
+                <TableHead className="text-xs font-bold uppercase tracking-wider text-muted-foreground w-[280px]">Aluno</TableHead>
+                <TableHead className="text-xs font-bold uppercase tracking-wider text-muted-foreground w-[120px]">Tipo</TableHead>
+                <TableHead className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Motivo</TableHead>
+                <TableHead className="text-xs font-bold uppercase tracking-wider text-muted-foreground w-[160px]">Período</TableHead>
+                <TableHead className="text-xs font-bold uppercase tracking-wider text-muted-foreground w-[140px]">Abrangência</TableHead>
+                <TableHead className="text-xs font-bold uppercase tracking-wider text-muted-foreground w-[100px]">Status</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {abonosFiltrados.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center py-10 text-muted-foreground">
+                    Nenhum abono encontrado para este filtro.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                abonosFiltrados.map((abono) => {
+                  const vigente = isAbonoAtivo(abono, dataReferencia);
+                  return (
+                    <TableRow key={abono.id} className="hover:bg-muted/10">
+                      <TableCell>
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full overflow-hidden border border-border bg-muted shrink-0">
+                            <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(abono.alunoNome)}&background=random`} alt={abono.alunoNome} />
+                          </div>
+                          <div className="space-y-0.5 min-w-0">
+                            <p className="font-bold text-sm text-foreground truncate">
+                              {abono.alunoNome}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {matriculaPorAlunoId[abono.alunoId] || abono.alunoId}
+                            </p>
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <TipoBadge tipo={abono.tipo} />
+                      </TableCell>
+                      <TableCell className="text-sm font-semibold text-foreground max-w-[250px] whitespace-normal">
+                        {abono.motivo}
+                      </TableCell>
+                      <TableCell className="text-xs text-muted-foreground">
+                        <div className="flex flex-col">
+                          {abono.dataInicio === abono.dataFim ? (
+                            <span>{formatDate(abono.dataInicio)}</span>
+                          ) : (
+                            <>
+                              <span>{formatDate(abono.dataInicio)} —</span>
+                              <span>{formatDate(abono.dataFim)}</span>
+                            </>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        {abono.escopo === "Todas as Disciplinas" ? (
+                          <Badge variant="secondary" className="text-xs bg-muted/60 text-muted-foreground hover:bg-muted/60 border-none font-medium">Geral</Badge>
+                        ) : (
+                          <Badge
+                            variant="secondary"
+                            className="text-xs bg-blue-50 text-blue-700 hover:bg-blue-50 border-none font-medium dark:bg-blue-500/10 dark:text-blue-400"
+                          >
+                            {abono.disciplina}
+                          </Badge>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant="outline"
+                          className={
+                            vigente
+                              ? "text-[10px] bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-none uppercase tracking-wider"
+                              : "text-[10px] bg-slate-50 text-slate-500 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-none uppercase tracking-wider"
+                          }
+                        >
+                          {vigente ? "Vigente" : "Encerrado"}
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
+
+      {/* Cards mobile com novo visual empilhado limpo */}
+      <div className="md:hidden space-y-4 pb-20">
+        {abonosFiltrados.length === 0 ? (
+          <Card className="border-dashed border-border p-8 text-center bg-transparent">
+            <CardContent>
+              <ShieldAlert className="w-8 h-8 mx-auto text-muted-foreground mb-2" />
+              <p className="text-sm text-muted-foreground">Nenhum abono encontrado.</p>
+            </CardContent>
+          </Card>
+        ) : (
+          abonosFiltrados.map((abono) => {
+            const vigente = isAbonoAtivo(abono, dataReferencia);
+            return (
+              <div
+                key={abono.id}
+                className="bg-white dark:bg-card border border-border shadow-sm rounded-xl p-5 space-y-4"
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-full overflow-hidden border border-border bg-muted shrink-0">
+                      <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(abono.alunoNome)}&background=random`} alt={abono.alunoNome} />
+                    </div>
+                    <div>
+                      <p className="font-bold text-base text-foreground">
+                        {abono.alunoNome}
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        {matriculaPorAlunoId[abono.alunoId] || abono.alunoId}
+                      </p>
+                    </div>
+                  </div>
+                  <Badge
+                    variant="outline"
+                    className={
+                      vigente
+                        ? "text-[10px] bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-none uppercase tracking-wider"
+                        : "text-[10px] bg-slate-50 text-slate-500 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-none uppercase tracking-wider"
+                    }
+                  >
+                    {vigente ? "Vigente" : "Encerrado"}
+                  </Badge>
+                </div>
+
+                <div className="space-y-1">
+                  <TipoBadge tipo={abono.tipo} />
+                  <p className="text-[10px] font-bold text-muted-foreground tracking-widest mt-3 mb-1">MOTIVO</p>
+                  <p className="font-medium text-sm text-foreground italic">{abono.motivo}</p>
+                </div>
+
+                <div className="flex items-center justify-between border-t border-border pt-4">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Calendar className="w-4 h-4 text-muted-foreground shrink-0" />
+                    {vigente ? `Até ${formatDate(abono.dataFim)}` : `Encerrado em ${formatDate(abono.dataFim)}`}
+                  </div>
+                  {abono.escopo !== "Todas as Disciplinas" && (
+                    <Badge
+                      variant="secondary"
+                      className="text-xs bg-emerald-50 text-emerald-700 hover:bg-emerald-50 border-none font-medium dark:bg-emerald-500/10 dark:text-emerald-400"
+                    >
+                      {abono.disciplina}
+                    </Badge>
+                  )}
+                </div>
+              </div>
+            );
+          })
+        )}
+      </div>
+
+      {/* FAB (Mobile) */}
+      <button className="md:hidden fixed bottom-6 right-6 w-14 h-14 bg-[#0B5C43] hover:bg-[#084834] text-white rounded-full shadow-lg flex items-center justify-center transition-transform active:scale-95 z-50">
+        <Plus className="w-7 h-7" />
+      </button>
+
+    </div>
+  );
+}

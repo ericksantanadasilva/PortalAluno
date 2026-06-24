@@ -42,10 +42,10 @@ import { DestaqueEnem } from "./DestaqueEnem";
 // Helper de cor de dificuldade específico deste simulado
 function getDifficultyColor(taxa: number) {
   if (taxa >= 75)
-    return "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border-emerald-500/25";
+    return "bg-[#E6F4EA] text-[#137333] dark:bg-emerald-900/30 dark:text-emerald-400 border-none";
   if (taxa >= 45)
-    return "bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-500/25";
-  return "bg-rose-500/15 text-rose-700 dark:text-rose-400 border-rose-500/25";
+    return "bg-[#FEF7E0] text-[#B06000] dark:bg-amber-900/30 dark:text-amber-400 border-none";
+  return "bg-[#FCE8E6] text-[#C5221F] dark:bg-rose-900/30 dark:text-rose-400 border-none";
 }
 
 interface BoletimEnemViewProps {
@@ -181,15 +181,15 @@ export default function BoletimEnemView({ data }: BoletimEnemViewProps) {
                 </CardDescription>
                 <div className="flex flex-wrap gap-4 mt-2 text-xs">
                   <div className="flex items-center gap-1.5 font-medium">
-                    <div className="w-3 h-3 rounded-full bg-emerald-500/40 border border-emerald-500/50" />
+                    <div className="w-3 h-3 rounded-full bg-[#E6F4EA]" />
                     Fácil (≥75%)
                   </div>
                   <div className="flex items-center gap-1.5 font-medium">
-                    <div className="w-3 h-3 rounded-full bg-amber-500/40 border border-amber-500/50" />
+                    <div className="w-3 h-3 rounded-full bg-[#FEF7E0]" />
                     Média (45-74%)
                   </div>
                   <div className="flex items-center gap-1.5 font-medium">
-                    <div className="w-3 h-3 rounded-full bg-rose-500/40 border border-rose-500/50" />
+                    <div className="w-3 h-3 rounded-full bg-[#FCE8E6]" />
                     Difícil (&lt;45%)
                   </div>
                 </div>
@@ -207,25 +207,25 @@ export default function BoletimEnemView({ data }: BoletimEnemViewProps) {
                       <TooltipTrigger>
                         <div
                           onClick={() => setQuestaoSelecionada(q)}
-                          className={`relative flex items-center justify-center w-full h-auto aspect-square rounded-md border text-xs font-bold cursor-pointer transition-all hover:scale-110 hover:shadow-md ${getDifficultyColor(
+                          className={`relative flex items-center justify-center w-full h-auto aspect-square rounded-lg font-semibold cursor-pointer transition-all hover:scale-105 hover:shadow-md ${getDifficultyColor(
                             q.taxa_acerto_turma
                           )} ${
                             questaoSelecionada?.numero === q.numero
-                              ? "ring-2 ring-primary ring-offset-1"
+                              ? "ring-2 ring-primary ring-offset-2"
                               : ""
                           }`}
                         >
                           {q.numero}
-                          <div className="absolute -top-1.5 -right-1.5 bg-background rounded-full p-[2px] shadow-sm ring-1 ring-border">
+                          <div className="absolute -top-2 -right-2 bg-white dark:bg-card rounded-full p-[3px] shadow-sm flex items-center justify-center z-10">
                             {q.resultado_aluno ? (
                               <Check
-                                className="w-3 h-3 text-emerald-600 dark:text-emerald-500"
-                                strokeWidth={3}
+                                className="w-2.5 h-2.5 text-emerald-600 dark:text-emerald-500"
+                                strokeWidth={4}
                               />
                             ) : (
                               <X
-                                className="w-3 h-3 text-rose-600 dark:text-rose-500"
-                                strokeWidth={3}
+                                className="w-2.5 h-2.5 text-rose-600 dark:text-rose-500"
+                                strokeWidth={4}
                               />
                             )}
                           </div>
@@ -255,10 +255,10 @@ export default function BoletimEnemView({ data }: BoletimEnemViewProps) {
 
                 {/* Alternativa amigável para mobile (ou clique em desktop) */}
                 {questaoSelecionada && (
-                  <div className="p-4 rounded-xl border bg-muted/40 animate-in fade-in slide-in-from-top-3 duration-300 relative">
+                  <div className="p-5 rounded-xl border bg-slate-50 dark:bg-slate-900/40 animate-in fade-in slide-in-from-top-3 duration-300 relative shadow-sm">
                     <button
                       onClick={() => setQuestaoSelecionada(null)}
-                      className="absolute top-3 right-3 text-muted-foreground hover:text-foreground transition-colors p-1"
+                      className="absolute top-4 right-4 text-muted-foreground hover:text-foreground transition-colors p-1"
                       aria-label="Fechar detalhes"
                     >
                       <X className="w-4 h-4" />
@@ -269,25 +269,25 @@ export default function BoletimEnemView({ data }: BoletimEnemViewProps) {
                         {questaoSelecionada.disciplina}
                       </span>
                     </h4>
-                    <p className="text-sm text-foreground mb-3 font-medium">
+                    <p className="text-base text-foreground mb-4 font-bold">
                       {questaoSelecionada.tema}
                     </p>
-                    <div className="flex flex-wrap items-center justify-between gap-4 pt-3 border-t border-border/50 text-xs">
+                    <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-border/50 text-xs">
                       <div className="flex items-center gap-2">
-                        <span className="text-muted-foreground">Resultado:</span>
+                        <span className="text-muted-foreground font-bold uppercase tracking-wider text-[10px]">Resultado:</span>
                         {questaoSelecionada.resultado_aluno ? (
-                          <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-semibold bg-emerald-500/10 px-2.5 py-0.5 rounded-full">
-                            <Check className="w-3.5 h-3.5" strokeWidth={3} /> Acertou
+                          <span className="flex items-center gap-1.5 text-emerald-700 dark:text-emerald-400 font-bold bg-[#E6F4EA] dark:bg-emerald-900/30 px-3 py-1 rounded-full">
+                            <Check className="w-3.5 h-3.5" strokeWidth={4} /> Acertou
                           </span>
                         ) : (
-                          <span className="flex items-center gap-1 text-rose-600 dark:text-rose-400 font-semibold bg-rose-500/10 px-2.5 py-0.5 rounded-full">
-                            <X className="w-3.5 h-3.5" strokeWidth={3} /> Errou
+                          <span className="flex items-center gap-1.5 text-rose-700 dark:text-rose-400 font-bold bg-[#FCE8E6] dark:bg-rose-900/30 px-3 py-1 rounded-full">
+                            <X className="w-3.5 h-3.5" strokeWidth={4} /> Errou
                           </span>
                         )}
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-muted-foreground">Acertos da Turma:</span>
-                        <span className="font-bold bg-secondary px-2.5 py-0.5 rounded-full text-foreground">
+                        <span className="text-muted-foreground font-bold uppercase tracking-wider text-[10px]">Acertos da Turma:</span>
+                        <span className="font-bold bg-rose-600 text-white dark:bg-rose-700 px-3 py-1 rounded-full">
                           {questaoSelecionada.taxa_acerto_turma}%
                         </span>
                       </div>
@@ -321,30 +321,36 @@ export default function BoletimEnemView({ data }: BoletimEnemViewProps) {
                 {Object.entries(revisaoPorDisciplina).map(([disciplina, temas]) => (
                   <div
                     key={disciplina}
-                    className="space-y-3 bg-secondary/20 p-4 rounded-xl border border-border/50"
+                    className="space-y-3 bg-white dark:bg-card p-5 rounded-xl border border-border border-l-4 shadow-sm"
+                    style={{ borderLeftColor: `hsl(${primaryHSL})` }}
                   >
-                    <h4 className="font-semibold flex items-center justify-between border-b border-border/50 pb-2 text-sm">
+                    <h4 className="font-bold flex items-center justify-between border-b border-border/50 pb-2.5 text-sm text-foreground">
                       {disciplina}
                       <Badge
-                        variant="outline"
-                        className="bg-rose-50 text-rose-600 border-rose-200 dark:bg-rose-950 dark:border-rose-900 dark:text-rose-400 text-xs font-bold"
+                        variant="destructive"
+                        className="bg-rose-600 text-white hover:bg-rose-700 dark:bg-rose-900/80 dark:text-rose-100 text-[10px] font-bold px-2 py-0.5 rounded-md"
                       >
                         {temas.length} {temas.length === 1 ? "erro" : "erros"}
                       </Badge>
                     </h4>
-                    <ul className="space-y-2.5 mt-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3">
                       {temas.map((t) => (
-                        <li
+                        <div
                           key={t.questao}
-                          className="text-sm text-muted-foreground flex items-start gap-2.5"
+                          className="flex flex-col gap-1.5 p-3 rounded-lg bg-muted/30 border border-border/50 hover:bg-muted/50 transition-colors"
                         >
-                          <X className="w-4 h-4 text-rose-500/80 mt-0.5 shrink-0" />
-                          <span className="leading-snug">
-                            Q{t.questao}: {t.tema}
+                          <div className="flex items-center justify-between">
+                            <span className="text-[10px] font-bold text-foreground bg-white dark:bg-background px-1.5 py-0.5 rounded border border-border shadow-sm">
+                              Q{t.questao}
+                            </span>
+                            <X className="w-3.5 h-3.5 text-rose-500/80" />
+                          </div>
+                          <span className="text-xs font-semibold text-muted-foreground leading-snug">
+                            {t.tema}
                           </span>
-                        </li>
+                        </div>
                       ))}
-                    </ul>
+                    </div>
                   </div>
                 ))}
               </div>

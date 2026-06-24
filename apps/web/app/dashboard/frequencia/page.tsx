@@ -6,8 +6,8 @@ import { useFrequencia } from "@/contexts/FrequenciaContext";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { ChamadaDiaria } from "@/components/frequencia/ChamadaDiaria";
-import { PainelAbonos } from "@/components/frequencia/PainelAbonos";
 import { ControleJanelaValidacao } from "@/components/frequencia/ControleJanelaValidacao";
+import { HistoricoAbonosView } from "@/components/frequencia/HistoricoAbonosView";
 import { formatDate } from "@/lib/utils";
 import { ClipboardList, ShieldAlert, Timer, CheckCircle2 } from "lucide-react";
 
@@ -106,11 +106,10 @@ export default function FrequenciaPage() {
           </TabsContent>
 
           <TabsContent value="abonos" className="mt-0 outline-none px-4 md:px-8">
-            <PainelAbonos
+            <HistoricoAbonosView
               abonos={abonos}
               alunos={alunos}
               dataReferencia={dataSelecionada}
-              onAddAbono={addAbono}
             />
           </TabsContent>
 
