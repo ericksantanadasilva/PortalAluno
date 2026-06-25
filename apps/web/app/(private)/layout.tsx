@@ -4,7 +4,7 @@ import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { tenantConfigMock, alunoProfileMock } from "@repo/database-mocks";
 import { FrequenciaProvider } from "@/contexts/FrequenciaContext";
-import { BookOpen, User, Calendar, LogOut, Menu, X, Laptop } from "lucide-react";
+import { BookOpen, User, Calendar, LogOut, Menu, X, Laptop, Settings } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
@@ -15,6 +15,7 @@ export default function DashboardLayout({
 }) {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const userRole = 'admin'; // TODO: Substituir por contexto real de autenticação
 
   return (
     <div className="flex h-screen overflow-hidden bg-muted relative">
@@ -71,19 +72,6 @@ export default function DashboardLayout({
               Meu Boletim
             </Button>
           </Link>
-          <Link href="/dashboard/frequencia" passHref>
-            <Button
-              variant={pathname === "/dashboard/frequencia" ? "secondary" : "ghost"}
-              onClick={() => setIsMobileMenuOpen(false)}
-              className={`w-full justify-start font-medium ${pathname === "/dashboard/frequencia"
-                ? "bg-primary/10 text-primary hover:bg-primary/20"
-                : "text-muted-foreground hover:text-foreground"
-                }`}
-            >
-              <Calendar className="mr-3 h-5 w-5" />
-              Frequência & Abonos
-            </Button>
-          </Link>
           <Link href="/dashboard/presenca-online" passHref>
             <Button
               variant={pathname === "/dashboard/presenca-online" ? "secondary" : "ghost"}
@@ -97,6 +85,38 @@ export default function DashboardLayout({
               Confirmar Presença
             </Button>
           </Link>
+
+          {userRole === 'admin' && (
+            <>
+              <Link href="/dashboard/frequencia" passHref>
+                <Button
+                  variant={pathname === "/dashboard/frequencia" ? "secondary" : "ghost"}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={`w-full justify-start font-medium ${pathname === "/dashboard/frequencia"
+                    ? "bg-primary/10 text-primary hover:bg-primary/20"
+                    : "text-muted-foreground hover:text-foreground"
+                    }`}
+                >
+                  <Calendar className="mr-3 h-5 w-5" />
+                  Frequência & Abonos
+                </Button>
+              </Link>
+              <Link href="/admin/settings" passHref>
+                <Button
+                  variant={pathname === "/admin/settings" ? "secondary" : "ghost"}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={`w-full justify-start font-medium ${pathname === "/admin/settings"
+                    ? "bg-primary/10 text-primary hover:bg-primary/20"
+                    : "text-muted-foreground hover:text-foreground"
+                    }`}
+                >
+                  <Settings className="mr-3 h-5 w-5" />
+                  Configurações
+                </Button>
+              </Link>
+            </>
+          )}
+
           <Link href="#" passHref>
             <Button
               variant="ghost"
@@ -154,18 +174,6 @@ export default function DashboardLayout({
               Meu Boletim
             </Button>
           </Link>
-          <Link href="/dashboard/frequencia" passHref>
-            <Button
-              variant={pathname === "/dashboard/frequencia" ? "secondary" : "ghost"}
-              className={`w-full justify-start font-medium ${pathname === "/dashboard/frequencia"
-                ? "bg-primary/10 text-primary hover:bg-primary/20"
-                : "text-muted-foreground hover:text-foreground"
-                }`}
-            >
-              <Calendar className="mr-3 h-5 w-5" />
-              Frequência & Abonos
-            </Button>
-          </Link>
           <Link href="/dashboard/presenca-online" passHref>
             <Button
               variant={pathname === "/dashboard/presenca-online" ? "secondary" : "ghost"}
@@ -178,6 +186,36 @@ export default function DashboardLayout({
               Confirmar Presença
             </Button>
           </Link>
+
+          {userRole === 'admin' && (
+            <>
+              <Link href="/dashboard/frequencia" passHref>
+                <Button
+                  variant={pathname === "/dashboard/frequencia" ? "secondary" : "ghost"}
+                  className={`w-full justify-start font-medium ${pathname === "/dashboard/frequencia"
+                    ? "bg-primary/10 text-primary hover:bg-primary/20"
+                    : "text-muted-foreground hover:text-foreground"
+                    }`}
+                >
+                  <Calendar className="mr-3 h-5 w-5" />
+                  Frequência & Abonos
+                </Button>
+              </Link>
+              <Link href="/admin/settings" passHref>
+                <Button
+                  variant={pathname === "/admin/settings" ? "secondary" : "ghost"}
+                  className={`w-full justify-start font-medium ${pathname === "/admin/settings"
+                    ? "bg-primary/10 text-primary hover:bg-primary/20"
+                    : "text-muted-foreground hover:text-foreground"
+                    }`}
+                >
+                  <Settings className="mr-3 h-5 w-5" />
+                  Configurações
+                </Button>
+              </Link>
+            </>
+          )}
+
           <Link href="#" passHref>
             <Button
               variant="ghost"

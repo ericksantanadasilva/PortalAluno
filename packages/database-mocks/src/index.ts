@@ -415,7 +415,7 @@ export const tenantConfigMock: TenantConfig = {
   slug: "progressao",
   nome: "Curso Progressão",
   logo_url: "https://ui-avatars.com/api/?name=CP&background=1e3a8a&color=fff&size=128",
-  cor_primaria: "130 60% 45%",
+  cor_primaria: "130 30% 45%",
   cor_secundaria: "10 90% 50%",
   background_login: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=2070&auto=format&fit=crop",
 };
