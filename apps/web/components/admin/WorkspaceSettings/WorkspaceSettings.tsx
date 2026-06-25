@@ -33,7 +33,9 @@ export function WorkspaceSettings() {
         <div className="md:hidden">
           <Select value={activeTab} onValueChange={setActiveTab}>
             <SelectTrigger className="w-full h-12 bg-background">
-              <SelectValue placeholder="Navegar pelas configurações..." />
+              <SelectValue placeholder="Navegar pelas configurações...">
+                {TABS.find(t => t.id === activeTab)?.label}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
               {TABS.map((tab) => {
