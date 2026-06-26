@@ -210,8 +210,8 @@ export const mockBoletins: Record<TipoSimulado, BoletimData> = {
   // ── 1) UERJ — Exame de Qualificação (conceito B, 38/60) ──
   UERJ: {
     aluno: {
-      nome: "ÁGATHA MARIA SILVA DE OLIVEIRA",
-      matricula: "2026001042",
+      nome: "Ágatha Maria Silva de Oliveira",
+      matricula: "3402",
       turma: "Turma Medicina – Manhã",
     },
     simulado: {
@@ -273,8 +273,8 @@ export const mockBoletins: Record<TipoSimulado, BoletimData> = {
   // ── 2) ENEM — Notas TRI altas de medicina ────────────────
   ENEM: {
     aluno: {
-      nome: "ÁGATHA MARIA SILVA DE OLIVEIRA",
-      matricula: "2026001042",
+      nome: "Ágatha Maria Silva de Oliveira",
+      matricula: "3402",
       turma: "Turma Medicina – Manhã",
     },
     simulado: {
@@ -324,8 +324,8 @@ export const mockBoletins: Record<TipoSimulado, BoletimData> = {
   // ── 3) ENEM PARCIAL — Só dia 1, sem raio-x ───────────────
   ENEM_PARCIAL: {
     aluno: {
-      nome: "ÁGATHA MARIA SILVA DE OLIVEIRA",
-      matricula: "2026001042",
+      nome: "Ágatha Maria Silva de Oliveira",
+      matricula: "3402",
       turma: "Turma Medicina – Manhã",
     },
     simulado: {
@@ -370,8 +370,8 @@ export const mockBoletins: Record<TipoSimulado, BoletimData> = {
   // ── 4) DISCURSIVO — Nota decimal 16.5 ─────────────────────
   DISCURSIVO: {
     aluno: {
-      nome: "ÁGATHA MARIA SILVA DE OLIVEIRA",
-      matricula: "2026001042",
+      nome: "Ágatha Maria Silva de Oliveira",
+      matricula: "3402",
       turma: "Turma Medicina – Manhã",
     },
     simulado: {

@@ -31,38 +31,69 @@ const ALUNO_ONLINE_ID = "al-1";
 
 export function ValidacaoOnline({
   aluno,
-  disciplinaAtiva = "Biologia",
+  disciplinaAtiva = "Matemática",
 }: ValidacaoOnlineProps) {
   const { alunos, janelas, confirmarPresencaOnline } = useFrequencia();
-  const [agora, setAgora] = useState(() => new Date());
+  const [agora, setAgora] = useState<Date | null>(null);
   const [feedback, setFeedback] = useState<{ type: "success" | "error"; text: string } | null>(
     null
   );
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    const interval = setInterval(() => setAgora(new Date()), 30_000);
+    setAgora(new Date());
+    const interval = setInterval(() => setAgora(new Date()), 1000);
     return () => clearInterval(interval);
   }, []);
 
   const alunoChamada = alunos.find((a) => a.id === ALUNO_ONLINE_ID);
   const isPresente = alunoChamada?.status_atual === "Presente";
 
-  const janela = useMemo(
-    () =>
-      janelas.find(
-        (j) => j.disciplina === disciplinaAtiva && j.turma === aluno.turma
-      ),
-    [janelas, disciplinaAtiva, aluno.turma]
-  );
+  const janela = useMemo(() => {
+    if (!agora) return undefined;
+    const janelasDaTurma = janelas.filter((j) => j.turma === aluno.turma);
+    if (janelasDaTurma.length === 0) return undefined;
 
-  const statusJanela = janela ? getStatusJanelaValidacao(janela, agora) : "fechada";
-  const hojeEhDiaDaJanela = janela ? isDiaJanelaAtiva(janela, agora) : false;
+    const hoje = agora.getDay();
+    const agoraMinutos = agora.getHours() * 60 + agora.getMinutes();
+
+    const getMinutosAteJanela = (j: JanelaValidacao) => {
+      const [abH, abM] = j.horaAbertura.split(":").map(Number);
+      const [feH, feM] = j.horaFechamento.split(":").map(Number);
+      const horaAb = abH! * 60 + abM!;
+      const horaFe = feH! * 60 + feM!;
+
+      let diasDiferenca = j.diaSemana - hoje;
+      if (diasDiferenca < 0) diasDiferenca += 7;
+
+      // Se é hoje, mas a janela já fechou, joga pra próxima semana
+      if (diasDiferenca === 0 && agoraMinutos > horaFe) {
+        diasDiferenca += 7;
+      }
+
+      // Se é hoje, e a janela está aberta AGORA, prioriza como imediata
+      if (diasDiferenca === 0 && agoraMinutos >= horaAb && agoraMinutos <= horaFe) {
+        return -1;
+      }
+
+      return diasDiferenca * 24 * 60 + horaAb - agoraMinutos;
+    };
+
+    // Ordena para pegar a janela atual ou a próxima mais próxima no tempo
+    const janelasOrdenadas = [...janelasDaTurma].sort((a, b) => {
+      return getMinutosAteJanela(a) - getMinutosAteJanela(b);
+    });
+
+    return janelasOrdenadas[0];
+  }, [janelas, aluno.turma, agora]);
+
+  const statusJanela = janela && agora ? getStatusJanelaValidacao(janela, agora) : "fechada";
+  const hojeEhDiaDaJanela = janela && agora ? isDiaJanelaAtiva(janela, agora) : false;
 
   const mensagemStatus = useMemo(() => {
     if (!janela) return "A secretaria ainda não configurou a janela para esta matéria.";
     if (!hojeEhDiaDaJanela) {
-      return `Validação disponível toda ${getLabelDiaSemana(janela.diaSemana)}, das ${janela.horaAbertura} às ${janela.horaFechamento}.`;
+      return `Validação disponível ${getLabelDiaSemana(janela.diaSemana)}, das ${janela.horaAbertura} às ${janela.horaFechamento}.`;
     }
     if (statusJanela === "aguardando") {
       return `A validação abre hoje às ${janela.horaAbertura}.`;
@@ -98,7 +129,7 @@ export function ValidacaoOnline({
       if (!isDiaJanelaAtiva(janela, new Date())) {
         setFeedback({
           type: "error",
-          text: `Hoje não é dia de validação. Disponível toda ${getLabelDiaSemana(janela.diaSemana)}.`,
+          text: `Hoje não é dia de validação. Disponível ${getLabelDiaSemana(janela.diaSemana)}.`,
         });
         return;
       }
@@ -171,11 +202,13 @@ export function ValidacaoOnline({
         <CardContent className="p-6 space-y-5">
           <div className="flex items-center gap-2 text-sm flex-wrap">
             <BookOpen className="w-4 h-4 text-primary shrink-0" />
-            <span className="font-semibold text-foreground">{disciplinaAtiva}</span>
+            <span className="font-semibold text-foreground">
+              {janela ? janela.disciplina : disciplinaAtiva}
+            </span>
             {janela && (
               <Badge variant="outline" className="text-[10px] gap-1 font-medium">
                 <Repeat className="w-3 h-3" />
-                Toda {getLabelDiaSemana(janela.diaSemana)}
+                {getLabelDiaSemana(janela.diaSemana)}
               </Badge>
             )}
           </div>
@@ -184,7 +217,7 @@ export function ValidacaoOnline({
             <div className="flex items-center justify-between p-4 rounded-lg border border-border bg-muted/30 gap-3">
               <div className="space-y-0.5 min-w-0">
                 <span className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">
-                  Horário semanal
+                  Horário
                 </span>
                 <p className="text-sm font-bold text-foreground flex items-center gap-1.5">
                   <Timer className="w-4 h-4 text-primary shrink-0" />
@@ -219,11 +252,10 @@ export function ValidacaoOnline({
 
               {feedback && (
                 <div
-                  className={`p-3 rounded-lg flex items-start gap-2 text-xs font-medium border ${
-                    feedback.type === "success"
-                      ? "bg-emerald-500/10 text-emerald-800 border-emerald-500/25 dark:text-emerald-400"
-                      : "bg-rose-500/10 text-rose-800 border-rose-500/25 dark:text-rose-400"
-                  }`}
+                  className={`p-3 rounded-lg flex items-start gap-2 text-xs font-medium border ${feedback.type === "success"
+                    ? "bg-emerald-500/10 text-emerald-800 border-emerald-500/25 dark:text-emerald-400"
+                    : "bg-rose-500/10 text-rose-800 border-rose-500/25 dark:text-rose-400"
+                    }`}
                 >
                   {feedback.type === "success" ? (
                     <CheckCircle className="w-4 h-4 shrink-0" />

@@ -65,11 +65,11 @@ export function ExamsTab() {
     });
   };
 
-  const atualizarQuestao = (index: number, campo: keyof QuestaoSimulado, valor: string) => {
+  const atualizarQuestao = (index: number, campo: 'conteudo' | 'disciplina', valor: string) => {
     if (!form.questoes) return;
     
     const novasQuestoes = [...form.questoes];
-    novasQuestoes[index] = { ...novasQuestoes[index], [campo]: valor };
+    novasQuestoes[index] = { ...novasQuestoes[index], [campo]: valor } as QuestaoSimulado;
     
     setForm({ ...form, questoes: novasQuestoes });
   };
@@ -102,9 +102,9 @@ export function ExamsTab() {
                     <TableCell className="uppercase">{simulado.tipo.replace('_', ' ')}</TableCell>
                     <TableCell>
                       {simulado.isPublished ? (
-                        <Badge className="bg-emerald-500 hover:bg-emerald-600">Publicado</Badge>
+                        <Badge className="rounded-full bg-emerald-500 hover:bg-emerald-600">Publicado</Badge>
                       ) : (
-                        <Badge variant="secondary">Oculto</Badge>
+                        <Badge variant="secondary" className="rounded-full">Oculto</Badge>
                       )}
                     </TableCell>
                     <TableCell>
@@ -228,7 +228,7 @@ export function ExamsTab() {
                       <td className="px-4 py-2">
                         <Select 
                           value={q.disciplina} 
-                          onValueChange={(val) => atualizarQuestao(index, 'disciplina', val)}
+                          onValueChange={(val) => atualizarQuestao(index, 'disciplina', val || '')}
                         >
                           <SelectTrigger className="h-8">
                             <SelectValue placeholder="Disciplina..." />

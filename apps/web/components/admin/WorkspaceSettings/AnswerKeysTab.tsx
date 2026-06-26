@@ -61,14 +61,14 @@ export function AnswerKeysTab() {
 
   return (
     <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>Lançamento de Gabaritos Oficiais</CardTitle>
-          <CardDescription>
-            Selecione o simulado e preencha rapidamente o gabarito oficial. A interface é otimizada para lançamentos velozes.
+      <Card className="shadow-[0_8px_30px_rgb(0,0,0,0.02)] border-none rounded-2xl bg-white">
+        <CardHeader className="bg-primary/5 border-b border-primary/10 rounded-t-2xl pb-6">
+          <CardTitle className="text-primary text-xl">Lançamento de Gabaritos Oficiais</CardTitle>
+          <CardDescription className="text-primary/70 text-sm md:text-base mt-2">
+            Selecione o simulado e preencha rapidamente o gabarito oficial. A interface é otimizada para lançamentos velozes e precisos.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-8 pt-8">
           <div className="max-w-md">
             <Select value={simuladoSelecionado} onValueChange={setSimuladoSelecionado}>
               <SelectTrigger>
@@ -84,26 +84,26 @@ export function AnswerKeysTab() {
 
           {simuladoSelecionado && (
             <div className="pt-4 border-t">
-              <div className="flex items-center justify-between mb-4">
-                <div className="font-semibold flex items-center gap-2">
+              <div className="flex items-center justify-between mb-6">
+                <div className="font-semibold flex items-center gap-2 text-slate-800">
                   <CheckCircle2 className="w-5 h-5 text-emerald-500" />
                   Cartão-Resposta Digital
                 </div>
-                <div className="text-sm text-muted-foreground">
+                <div className="text-sm font-bold bg-slate-100 text-slate-600 px-3 py-1 rounded-full">
                   {form.respostas?.length} Questões
                 </div>
               </div>
 
               {/* Grid compacto de gabarito */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-x-8 gap-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-8 gap-y-5">
                 {Array.from({ length: QTD_QUESTOES_MOCK }, (_, i) => i + 1).map((numero) => {
                   const anulada = isQuestaoAnulada(numero);
                   return (
-                    <div key={numero} className={`flex items-center gap-2 p-1.5 rounded-lg transition-colors ${anulada ? 'bg-muted opacity-70 grayscale' : ''}`}>
-                      <span className="font-mono font-medium text-muted-foreground w-5 text-right text-sm">
+                    <div key={numero} className={`flex items-center gap-3 p-2 rounded-xl transition-all ${anulada ? 'bg-slate-50 opacity-50 grayscale' : 'hover:bg-slate-50 border border-transparent hover:border-slate-100 hover:shadow-[0_4px_15px_rgb(0,0,0,0.02)]'}`}>
+                      <span className="font-mono font-bold text-slate-400 w-6 text-right text-sm">
                         {numero}.
                       </span>
-                      <div className="flex bg-muted/30 rounded-md p-1 border">
+                      <div className="flex bg-slate-100 rounded-lg p-1 border border-slate-200/50 shadow-inner">
                         {ALTERNATIVAS.map((alt) => {
                           const isSelected = getAlternativaSelecionada(numero) === alt;
                           return (
@@ -136,8 +136,8 @@ export function AnswerKeysTab() {
             </div>
           )}
         </CardContent>
-        <CardFooter className="flex justify-end border-t pt-6">
-          <Button disabled={!simuladoSelecionado} className="gap-2">
+        <CardFooter className="flex justify-end border-t border-slate-100 p-6">
+          <Button disabled={!simuladoSelecionado} className="gap-2 rounded-full px-8 shadow-md">
             <Save className="w-4 h-4" />
             Salvar Gabarito Oficial
           </Button>

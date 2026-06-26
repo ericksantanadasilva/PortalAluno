@@ -49,8 +49,8 @@ function StatusActionButtons({
         variant={aluno.status_atual === "Presente" ? "default" : "outline"}
         className={
           aluno.status_atual === "Presente"
-            ? "bg-emerald-600 hover:bg-emerald-700 text-white font-semibold"
-            : "text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 border-emerald-200 font-semibold"
+            ? "rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-sm"
+            : "rounded-full text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 border-emerald-200 font-semibold"
         }
         onClick={() => onUpdateStatus(aluno.id, "Presente")}
       >
@@ -63,8 +63,8 @@ function StatusActionButtons({
         variant={aluno.status_atual === "Falta" ? "default" : "outline"}
         className={
           aluno.status_atual === "Falta"
-            ? "bg-rose-600 hover:bg-rose-700 text-white font-semibold"
-            : "text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 border-rose-200 font-semibold"
+            ? "rounded-full bg-rose-600 hover:bg-rose-700 text-white font-semibold shadow-sm"
+            : "rounded-full text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 border-rose-200 font-semibold"
         }
         onClick={() => onUpdateStatus(aluno.id, "Falta")}
       >
@@ -77,8 +77,8 @@ function StatusActionButtons({
         variant={aluno.status_atual === "Abonado" ? "default" : "outline"}
         className={
           aluno.status_atual === "Abonado"
-            ? "bg-blue-600 hover:bg-blue-700 text-white font-semibold"
-            : "text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/30 border-blue-200 font-semibold"
+            ? "rounded-full bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-sm"
+            : "rounded-full text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/30 border-blue-200 font-semibold"
         }
         onClick={() => onUpdateStatus(aluno.id, "Abonado")}
       >
@@ -94,7 +94,7 @@ function OnlineStatusIndicator({ status }: { status: StatusChamada }) {
     return (
       <Badge
         variant="outline"
-        className="bg-emerald-500/10 text-emerald-700 border-emerald-500/25 dark:text-emerald-400 font-medium"
+        className="rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100 font-semibold tracking-wide uppercase text-[10px]"
       >
         <UserCheck className="w-3.5 h-3.5 mr-1" />
         Validado via Portal
@@ -122,7 +122,7 @@ export function ChamadaDiaria({
   setDataSelecionada,
 }: ChamadaDiariaProps) {
   return (
-    <div className="w-full rounded-none border-y border-border bg-card overflow-hidden shadow-sm">
+    <div className="w-full rounded-2xl border-none shadow-[0_8px_30px_rgb(0,0,0,0.02)] bg-white overflow-hidden">
 
       <div className="px-4 md:px-8 py-4 md:py-5 border-b border-border">
         <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">
@@ -133,7 +133,7 @@ export function ChamadaDiaria({
         </p>
       </div>
       {/* Barra de filtros integrada ao painel */}
-      <div className="flex flex-col sm:flex-row sm:items-end gap-4 p-4 md:px-8 md:py-5 border-b border-border bg-muted/20">
+      <div className="flex flex-col sm:flex-row sm:items-end gap-4 p-4 md:px-8 md:py-5 border-b border-slate-100 bg-primary/5">
         <div className="flex-1 min-w-0 space-y-1.5">
           <label
             htmlFor="turma-select"
@@ -184,30 +184,36 @@ export function ChamadaDiaria({
       <div className="hidden lg:block w-full overflow-x-auto">
         <Table className="w-full">
           <TableHeader>
-            <TableRow className="bg-muted/30 hover:bg-muted/30">
-              <TableHead className="w-[130px] pl-5">Matrícula</TableHead>
-              <TableHead>Aluno</TableHead>
-              <TableHead className="w-[130px]">Modalidade</TableHead>
-              <TableHead className="w-[200px]">Portal Online</TableHead>
-              <TableHead className="w-[280px] text-right pr-5">Ações</TableHead>
+            <TableRow className="hover:bg-transparent border-none">
+              <TableHead className="text-xs font-semibold tracking-wide uppercase text-slate-500 pl-5 w-[300px]">Aluno</TableHead>
+              <TableHead className="text-xs font-semibold tracking-wide uppercase text-slate-500 w-[130px]">Modalidade</TableHead>
+              <TableHead className="text-xs font-semibold tracking-wide uppercase text-slate-500 w-[200px]">Portal Online</TableHead>
+              <TableHead className="text-xs font-semibold tracking-wide uppercase text-slate-500 w-[280px] text-right pr-5">Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {alunos.map((aluno) => {
               const isOnline = aluno.modalidade === "Online";
               return (
-                <TableRow key={aluno.id} className="hover:bg-muted/15">
-                  <TableCell className="font-mono text-xs text-muted-foreground pl-5 py-4">
-                    {aluno.matricula}
+                <TableRow key={aluno.id} className="hover:bg-slate-50/80 transition-colors border-none">
+                  <TableCell className="py-4 pl-5 align-middle">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full overflow-hidden border border-slate-200 bg-slate-50 shrink-0">
+                        <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(aluno.nome)}&background=random`} alt={aluno.nome} />
+                      </div>
+                      <div>
+                        <p className="font-semibold text-foreground text-sm">{aluno.nome}</p>
+                        <p className="font-normal text-xs text-slate-400">{aluno.matricula}</p>
+                      </div>
+                    </div>
                   </TableCell>
-                  <TableCell className="font-medium py-4">{aluno.nome}</TableCell>
                   <TableCell className="py-4">
                     <Badge
                       variant="outline"
                       className={
                         isOnline
-                          ? "bg-indigo-500/10 text-indigo-700 border-none dark:text-indigo-400"
-                          : "bg-amber-500/10 text-amber-700 border-none dark:text-amber-400"
+                          ? "rounded-full bg-blue-50 text-blue-700 border border-blue-100 font-semibold tracking-wide uppercase text-[10px]"
+                          : "rounded-full bg-slate-50 text-slate-700 border border-slate-200/60 font-semibold tracking-wide uppercase text-[10px]"
                       }
                     >
                       {isOnline ? (
@@ -237,50 +243,59 @@ export function ChamadaDiaria({
       </div>
 
       {/* Lista mobile/tablet */}
-      <div className="lg:hidden divide-y divide-border">
+      <div className="lg:hidden divide-y divide-slate-100">
         {alunos.map((aluno) => {
           const isOnline = aluno.modalidade === "Online";
           return (
             <div
               key={aluno.id}
-              className="p-4 md:p-5 space-y-3 hover:bg-muted/10"
+              className="p-4 md:p-5 space-y-4 hover:bg-slate-50/80 transition-colors"
             >
               <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0 space-y-1">
-                  <p className="font-semibold text-foreground">{aluno.nome}</p>
-                  <p className="font-mono text-xs text-muted-foreground">{aluno.matricula}</p>
-                  <div className="flex flex-wrap items-center gap-2 pt-0.5">
-                    <Badge
-                      variant="outline"
-                      className={
-                        isOnline
-                          ? "text-xs bg-indigo-500/10 text-indigo-700 border-none dark:text-indigo-400"
-                          : "text-xs bg-amber-500/10 text-amber-700 border-none dark:text-amber-400"
-                      }
-                    >
-                      {isOnline ? "Online" : "Presencial"}
-                    </Badge>
-                    <Badge
-                      variant="outline"
-                      className={
-                        aluno.status_atual === "Presente"
-                          ? "text-xs bg-emerald-500/10 text-emerald-700 border-emerald-500/25"
-                          : aluno.status_atual === "Falta"
-                            ? "text-xs bg-rose-500/10 text-rose-700 border-rose-500/25"
-                            : "text-xs bg-blue-500/10 text-blue-700 border-blue-500/25"
-                      }
-                    >
-                      {aluno.status_atual}
-                    </Badge>
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-10 h-10 rounded-full overflow-hidden border border-slate-200 bg-slate-50 shrink-0">
+                    <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(aluno.nome)}&background=random`} alt={aluno.nome} />
+                  </div>
+                  <div className="space-y-0.5">
+                    <p className="font-semibold text-foreground text-sm">{aluno.nome}</p>
+                    <p className="font-normal text-xs text-slate-400">{aluno.matricula}</p>
                   </div>
                 </div>
                 {isOnline && <OnlineStatusIndicator status={aluno.status_atual} />}
               </div>
-              <StatusActionButtons
-                aluno={aluno}
-                onUpdateStatus={onUpdateStatus}
-                compact
-              />
+              
+              <div className="flex flex-wrap items-center gap-2 pt-1 pl-13">
+                <Badge
+                  variant="outline"
+                  className={
+                    isOnline
+                      ? "rounded-full bg-blue-50 text-blue-700 border border-blue-100 font-semibold tracking-wide uppercase text-[10px]"
+                      : "rounded-full bg-slate-50 text-slate-700 border border-slate-200/60 font-semibold tracking-wide uppercase text-[10px]"
+                  }
+                >
+                  {isOnline ? "Online" : "Presencial"}
+                </Badge>
+                <Badge
+                  variant="outline"
+                  className={
+                    aluno.status_atual === "Presente"
+                      ? "rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100 font-semibold tracking-wide uppercase text-[10px]"
+                      : aluno.status_atual === "Falta"
+                        ? "rounded-full bg-rose-50 text-rose-700 border border-rose-100 font-semibold tracking-wide uppercase text-[10px]"
+                        : "rounded-full bg-blue-50 text-blue-700 border border-blue-100 font-semibold tracking-wide uppercase text-[10px]"
+                  }
+                >
+                  {aluno.status_atual}
+                </Badge>
+              </div>
+
+              <div className="pl-13 pt-1">
+                <StatusActionButtons
+                  aluno={aluno}
+                  onUpdateStatus={onUpdateStatus}
+                  compact
+                />
+              </div>
             </div>
           );
         })}

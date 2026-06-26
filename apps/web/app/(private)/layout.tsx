@@ -241,9 +241,9 @@ export default function DashboardLayout({
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col min-w-0">
+      <main className="flex-1 flex flex-col min-w-0 bg-[#F8FAFC]">
         {/* Header Responsivo */}
-        <header className="h-20 bg-muted border-b border-border flex items-center justify-between px-4 md:px-8 shadow-sm">
+        <header className="h-20 backdrop-blur-md bg-white/80 border-b border-slate-100 flex items-center justify-between px-4 md:px-8 z-30 relative shadow-[0_8px_30px_rgb(0,0,0,0.02)]">
           <div className="flex items-center gap-3">
             <Button
               variant="ghost"

@@ -13,8 +13,7 @@ export function DestaqueUerj({ data }: DestaqueUerjProps) {
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       {/* Conceito Principal */}
       <Card
-        className="md:col-span-1 shadow-lg border-2 overflow-hidden relative"
-        style={{ borderColor: "hsl(var(--primary))" }}
+        className="md:col-span-1 shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-2xl border-none overflow-hidden relative bg-white"
       >
         <div
           className="absolute inset-0 opacity-[0.04]"
@@ -23,18 +22,17 @@ export function DestaqueUerj({ data }: DestaqueUerjProps) {
           }}
         />
         <CardContent className="flex flex-col items-center justify-center py-10 relative">
-          <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-2">
+          <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-widest mb-3">
             Conceito Obtido
           </p>
           <div
-            className="w-28 h-28 rounded-2xl flex items-center justify-center text-6xl font-black text-white shadow-xl mb-3"
-            style={{ backgroundColor: "hsl(var(--primary))" }}
+            className="w-32 h-32 rounded-[2rem] flex items-center justify-center text-7xl font-black shadow-sm mb-4 bg-emerald-50 text-emerald-700 border border-emerald-100"
           >
             {data.destaqueGeral.conceitoUerj}
           </div>
-          <p className="text-sm text-muted-foreground mt-1">
+          <p className="text-sm text-slate-500 mt-2">
             Conceito médio da turma:{" "}
-            <span className="font-semibold text-foreground">
+            <span className="font-bold text-slate-700">
               {data.resultadoTime.conceitoMedioTurma}
             </span>
           </p>
@@ -42,7 +40,7 @@ export function DestaqueUerj({ data }: DestaqueUerjProps) {
       </Card>
 
       {/* Acertos e turma */}
-      <Card className="md:col-span-2 shadow-sm flex flex-col justify-center">
+      <Card className="md:col-span-2 shadow-[0_8px_30px_rgb(0,0,0,0.02)] rounded-2xl bg-white border-none flex flex-col justify-center">
         <CardContent className="grid grid-cols-2 sm:grid-cols-3 gap-6 py-8">
           <StatBlock
             icon={<Trophy className="w-5 h-5" />}

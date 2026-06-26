@@ -16,8 +16,7 @@ export function DestaqueDiscursivo({ data }: DestaqueDiscursivoProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       <Card
-        className="md:col-span-1 shadow-lg border-2 overflow-hidden relative"
-        style={{ borderColor: "hsl(var(--primary))" }}
+        className="md:col-span-1 shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-2xl border-none overflow-hidden relative bg-white"
       >
         <div
           className="absolute inset-0 opacity-[0.04]"
@@ -47,13 +46,14 @@ export function DestaqueDiscursivo({ data }: DestaqueDiscursivoProps) {
         </CardContent>
       </Card>
 
-      <Card className="md:col-span-2 shadow-sm">
+      <Card className="md:col-span-2 shadow-[0_8px_30px_rgb(0,0,0,0.02)] rounded-2xl bg-white border-none flex flex-col justify-center">
         <CardContent className="grid grid-cols-2 sm:grid-cols-3 gap-6 py-8">
           <StatBlock
             icon={<TrendingUp className="w-5 h-5" />}
             label="Média da Turma"
             value={`${data.resultadoTime.mediaTurma}`}
             sub="pontos em média"
+            className="text-5xl"
           />
           <StatBlock
             icon={<Sparkles className="w-5 h-5" />}
@@ -61,12 +61,14 @@ export function DestaqueDiscursivo({ data }: DestaqueDiscursivoProps) {
             value={`${data.resultadoTime.maiorNota}`}
             sub="maior nota da turma"
             highlight
+            className="text-5xl"
           />
           <StatBlock
             icon={<Target className="w-5 h-5" />}
             label="Menor Nota"
             value={`${data.resultadoTime.menorNota}`}
             sub="menor da turma"
+            className="text-5xl"
           />
         </CardContent>
       </Card>

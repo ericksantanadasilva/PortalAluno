@@ -10,7 +10,7 @@ export interface AlunoForm {
   email: string;
   matricula: string;
   turma: string;
-  modalidade: 'presencial' | 'online';
+  modalidade: string;
   anoLetivo: number;
 }
 

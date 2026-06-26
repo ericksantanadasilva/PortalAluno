@@ -10,6 +10,7 @@ import {
   type DisciplinaDisponivel,
   type JanelaValidacao,
   type TurmaDisponivel,
+  turmasDisponiveis,
 } from "@repo/database-mocks";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -29,6 +30,7 @@ import {
 interface ControleJanelaValidacaoProps {
   janelas: JanelaValidacao[];
   turmaSelecionada: TurmaDisponivel;
+  setTurmaSelecionada: (turma: TurmaDisponivel) => void;
   onSalvarJanela: (janela: Omit<JanelaValidacao, "id"> & { id?: string }) => boolean;
   onRemoverJanela: (id: string) => void;
 }
@@ -56,6 +58,7 @@ const HORARIO_PADRAO = { abertura: "08:00", fechamento: "12:00" };
 export function ControleJanelaValidacao({
   janelas,
   turmaSelecionada,
+  setTurmaSelecionada,
   onSalvarJanela,
   onRemoverJanela,
 }: ControleJanelaValidacaoProps) {
@@ -159,12 +162,28 @@ export function ControleJanelaValidacao({
                 : "Configure o dia da semana e o horário de validação por matéria, ou clique em Editar em um card da grade."}
             </p>
           </div>
-          {modoEdicao && (
-            <Button type="button" variant="outline" size="sm" onClick={limparFormulario} className="shrink-0 gap-1.5">
-              <Plus className="w-3.5 h-3.5" />
-              Nova janela
-            </Button>
-          )}
+          <div className="flex flex-col sm:flex-row items-end gap-3">
+            <div className="relative">
+              <select
+                value={turmaSelecionada}
+                onChange={(e) => setTurmaSelecionada(e.target.value as TurmaDisponivel)}
+                className="appearance-none w-full sm:w-[220px] bg-background border border-border rounded-lg px-3 py-2 pr-9 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary"
+              >
+                {turmasDisponiveis.map((turma) => (
+                  <option key={turma} value={turma}>
+                    {turma}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+            </div>
+            {modoEdicao && (
+              <Button type="button" variant="outline" size="sm" onClick={limparFormulario} className="shrink-0 gap-1.5 h-9">
+                <Plus className="w-3.5 h-3.5" />
+                Nova janela
+              </Button>
+            )}
+          </div>
         </div>
 
         <form

@@ -197,7 +197,7 @@ export function PainelAbonos({
         </div>
         <Button
           onClick={() => setIsModalOpen(true)}
-          className="font-semibold px-4 py-2 flex items-center gap-1.5 shadow-sm shrink-0"
+          className="hidden lg:flex font-semibold px-6 py-2 items-center gap-2 shadow-sm shrink-0 rounded-full"
         >
           <Plus className="w-4 h-4" />
           Cadastrar Novo Abono
@@ -267,11 +267,10 @@ export function PainelAbonos({
       </div>
 
       {/* Tabela desktop */}
-      <Card className="hidden lg:block border border-border shadow-sm overflow-hidden rounded-xl">
-        <CardHeader className="bg-muted/30 border-b border-border py-3 px-4">
-          <CardTitle className="text-sm font-bold">
-            {abonosFiltrados.length} abono{abonosFiltrados.length !== 1 ? "s" : ""} exibido
-            {abonosFiltrados.length !== 1 ? "s" : ""}
+      <Card className="hidden lg:block border-none shadow-[0_8px_30px_rgb(0,0,0,0.02)] overflow-hidden rounded-2xl bg-white">
+        <CardHeader className="bg-primary/5 border-b border-primary/10 py-4 px-6">
+          <CardTitle className="text-sm font-bold text-primary">
+            {abonosFiltrados.length} abono{abonosFiltrados.length !== 1 ? "s" : ""} exibido{abonosFiltrados.length !== 1 ? "s" : ""}
           </CardTitle>
         </CardHeader>
         <div className="overflow-x-auto max-h-[520px] overflow-y-auto">
@@ -297,7 +296,7 @@ export function PainelAbonos({
                 abonosFiltrados.map((abono) => {
                   const vigente = isAbonoAtivo(abono, dataReferencia);
                   return (
-                    <TableRow key={abono.id} className="hover:bg-muted/15">
+                    <TableRow key={abono.id} className="hover:bg-slate-50 transition-colors border-b border-slate-100">
                       <TableCell>
                         <div className="space-y-0.5">
                           <p className="font-medium text-sm text-foreground leading-snug">
@@ -366,12 +365,10 @@ export function PainelAbonos({
             return (
               <Card
                 key={abono.id}
-                className={`border shadow-sm overflow-hidden ${
-                  isMerito ? "border-indigo-500/20" : "border-amber-500/20"
-                }`}
+                className={`border-none shadow-[0_4px_15px_rgb(0,0,0,0.02)] rounded-2xl overflow-hidden bg-white`}
               >
-                <div className={`h-0.5 ${isMerito ? "bg-indigo-500" : "bg-amber-500"}`} />
-                <CardContent className="p-4 space-y-3">
+                <div className={`h-1 ${isMerito ? "bg-indigo-500" : "bg-amber-500"}`} />
+                <CardContent className="p-5 space-y-4">
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0 space-y-1">
                       <div className="flex flex-wrap items-center gap-1.5">
@@ -392,11 +389,13 @@ export function PainelAbonos({
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 gap-2 text-xs border-t border-border pt-3">
-                    <div className="flex items-start gap-2">
-                      <User className="w-3.5 h-3.5 text-primary shrink-0 mt-0.5" />
+                  <div className="grid grid-cols-1 gap-3 text-xs border-t border-slate-100 pt-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full border-2 border-white ring-1 ring-slate-200 bg-primary/10 flex items-center justify-center shrink-0">
+                        <User className="w-4 h-4 text-primary" />
+                      </div>
                       <div>
-                        <p className="font-semibold text-foreground">{abono.alunoNome}</p>
+                        <p className="font-semibold text-foreground text-sm">{abono.alunoNome}</p>
                         <p className="text-muted-foreground font-mono text-[10px]">
                           {abono.alunoId}
                           {matriculaPorAlunoId[abono.alunoId]
@@ -426,6 +425,16 @@ export function PainelAbonos({
             );
           })
         )}
+      </div>
+
+      {/* FAB Mobile */}
+      <div className="lg:hidden fixed bottom-6 right-6 z-40">
+        <Button
+          onClick={() => setIsModalOpen(true)}
+          className="rounded-full h-14 w-14 shadow-xl flex items-center justify-center p-0 bg-primary hover:bg-primary/90 transition-transform active:scale-95"
+        >
+          <Plus className="w-6 h-6 text-primary-foreground" />
+        </Button>
       </div>
 
       {/* Modal de cadastro */}

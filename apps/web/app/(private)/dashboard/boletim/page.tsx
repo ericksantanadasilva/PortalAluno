@@ -56,11 +56,11 @@ export default function BoletimDetalhado() {
 
   return (
     <div
-      className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500"
+      className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500 bg-[#F8FAFC] p-4 sm:p-8 rounded-3xl"
       style={{ "--primary": primaryHSL } as React.CSSProperties}
     >
       {/* ── Cabeçalho Fixo (Título, Matrícula, Nome e Turma) ── */}
-      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 border-b pb-6">
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 border-b border-slate-100 pb-8">
         <div className="space-y-2">
           <h1 className="text-3xl font-bold tracking-tight text-foreground">
             Boletim Pedagógico Avançado
@@ -72,26 +72,26 @@ export default function BoletimDetalhado() {
         </div>
 
         {/* Informações do Aluno */}
-        <div className="flex flex-col sm:flex-row gap-4 sm:gap-8 bg-card border border-border rounded-2xl p-5 shadow-sm text-sm shrink-0 w-full lg:w-auto">
-          <div className="space-y-1">
-            <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+        <div className="flex flex-col sm:flex-row gap-8 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.015)] border-0 rounded-2xl p-6 shrink-0 w-full lg:w-auto">
+          <div className="space-y-1.5 border-b sm:border-b-0 sm:border-r border-slate-100 pb-4 sm:pb-0 sm:pr-8">
+            <span className="text-xs font-medium text-slate-400 uppercase tracking-wider block">
               Aluno
             </span>
-            <p className="font-bold text-foreground">{data.aluno.nome}</p>
+            <p className="text-xl font-semibold text-slate-800 tracking-tight">{data.aluno.nome}</p>
           </div>
-          <div className="space-y-1">
-            <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          <div className="space-y-1.5 border-b sm:border-b-0 sm:border-r border-slate-100 pb-4 sm:pb-0 sm:pr-8">
+            <span className="text-xs font-medium text-slate-400 uppercase tracking-wider block">
               Matrícula
             </span>
-            <p className="font-medium text-foreground tabular-nums">
+            <p className="text-lg font-medium text-slate-700 tabular-nums">
               {data.aluno.matricula}
             </p>
           </div>
-          <div className="space-y-1">
-            <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          <div className="space-y-1.5">
+            <span className="text-xs font-medium text-slate-400 uppercase tracking-wider block">
               Turma
             </span>
-            <p className="font-medium text-foreground">{data.aluno.turma}</p>
+            <p className="text-lg font-medium text-slate-700">{data.aluno.turma}</p>
           </div>
         </div>
       </div>
@@ -111,7 +111,7 @@ export default function BoletimDetalhado() {
             onChange={(e) => {
               setTipoAtivo(e.target.value as TipoSimulado);
             }}
-            className="appearance-none bg-card border border-border rounded-xl px-4 py-2.5 pr-10 text-sm font-medium text-foreground shadow-sm cursor-pointer transition-all hover:shadow-md focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+            className="appearance-none bg-white border-0 shadow-[0_4px_15px_rgb(0,0,0,0.015)] rounded-xl px-4 py-2.5 pr-10 text-sm font-medium text-slate-700 cursor-pointer transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.03)] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
           >
             {(Object.keys(mockBoletins) as TipoSimulado[]).map((tipo) => (
               <option key={tipo} value={tipo}>
@@ -123,7 +123,7 @@ export default function BoletimDetalhado() {
         </div>
         <Badge
           variant="default"
-          className="gap-1.5 py-1 px-3 text-xs font-semibold"
+          className="gap-1.5 py-1 px-3 text-xs font-semibold rounded-full"
         >
           {ICON_SIMULADO[tipoAtivo]}
           {data.simulado.totalQuestoes} questões

@@ -180,7 +180,7 @@ export function StudentsTab() {
 
         <TabsContent value="lista">
           {/* Lista de Alunos Matriculados */}
-          <Card className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+          <Card className="animate-in fade-in slide-in-from-bottom-2 duration-300 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border-none rounded-2xl bg-white">
             <CardHeader className="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
               <div>
                 <CardTitle>Alunos Matriculados</CardTitle>
@@ -188,7 +188,7 @@ export function StudentsTab() {
               </div>
               <div className="flex flex-col sm:flex-row items-center gap-2">
                 
-                <Select value={filtroTurma} onValueChange={setFiltroTurma}>
+                <Select value={filtroTurma} onValueChange={(val) => setFiltroTurma(val || 'todas')}>
                   <SelectTrigger className="w-full sm:w-[160px] bg-background">
                     <SelectValue placeholder="Turma">
                       {filtroTurma === 'todas' ? 'Todas as Turmas' : filtroTurma}
@@ -200,7 +200,7 @@ export function StudentsTab() {
                   </SelectContent>
                 </Select>
                 
-                <Select value={filtroModalidade} onValueChange={setFiltroModalidade}>
+                <Select value={filtroModalidade} onValueChange={(val) => setFiltroModalidade(val || 'todas')}>
                   <SelectTrigger className="w-full sm:w-[160px] bg-background capitalize">
                     <SelectValue placeholder="Modalidade">
                       {filtroModalidade === 'todas' ? 'Todas Modalidades' : filtroModalidade}
@@ -251,7 +251,7 @@ export function StudentsTab() {
                         <TableCell>{aluno.email}</TableCell>
                         <TableCell>{aluno.turma}</TableCell>
                         <TableCell>
-                          <Badge variant={aluno.modalidade === 'presencial' ? 'default' : 'secondary'} className="capitalize">
+                          <Badge variant={aluno.modalidade === 'presencial' ? 'default' : 'secondary'} className="rounded-full capitalize">
                             {aluno.modalidade}
                           </Badge>
                         </TableCell>
@@ -300,7 +300,7 @@ export function StudentsTab() {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Cadastro Individual */}
-            <Card>
+            <Card className="shadow-[0_8px_30px_rgb(0,0,0,0.02)] border-none rounded-2xl bg-white">
               <CardHeader>
                 <CardTitle>Cadastro Individual</CardTitle>
                 <CardDescription>Insira os dados do aluno manualmente no sistema.</CardDescription>
@@ -372,7 +372,7 @@ export function StudentsTab() {
                     <Label>Turma</Label>
                     <Select 
                       value={alunoForm.turma || ''} 
-                      onValueChange={(val) => setAlunoForm({ ...alunoForm, turma: val })}
+                      onValueChange={(val) => setAlunoForm({ ...alunoForm, turma: val || '' })}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Selecione a Turma" />
@@ -390,7 +390,7 @@ export function StudentsTab() {
                     <Label>Modalidade</Label>
                     <Select 
                       value={alunoForm.modalidade || ''}
-                      onValueChange={(val) => setAlunoForm({ ...alunoForm, modalidade: val })}
+                      onValueChange={(val) => setAlunoForm({ ...alunoForm, modalidade: val || '' })}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Modalidade" />
@@ -415,7 +415,7 @@ export function StudentsTab() {
             </Card>
 
             {/* Importação em Massa */}
-            <Card>
+            <Card className="shadow-[0_8px_30px_rgb(0,0,0,0.02)] border-none rounded-2xl bg-white">
               <CardHeader>
                 <CardTitle>Importação em Massa (CSV)</CardTitle>
                 <CardDescription>Cadastre múltiplos alunos de uma vez através de uma planilha.</CardDescription>
@@ -427,18 +427,20 @@ export function StudentsTab() {
                 </Button>
 
                 <div
-                  className={`border-2 border-dashed rounded-lg p-8 flex flex-col items-center justify-center gap-3 transition-colors ${
-                    dragActive ? 'border-primary bg-primary/5' : 'border-border hover:bg-muted/50'
+                  className={`border-2 border-dashed rounded-2xl p-8 flex flex-col items-center justify-center gap-4 transition-all duration-300 cursor-pointer ${
+                    dragActive ? 'border-primary bg-primary/5 scale-[1.02]' : 'border-slate-200 bg-slate-50/50 hover:bg-slate-50'
                   }`}
                   onDragEnter={handleDrag}
                   onDragLeave={handleDrag}
                   onDragOver={handleDrag}
                   onDrop={handleDrop}
                 >
-                  <UploadCloud className={`w-10 h-10 ${dragActive ? 'text-primary' : 'text-muted-foreground'}`} />
+                  <div className={`p-4 rounded-full transition-colors ${dragActive ? 'bg-primary/10 text-primary' : 'bg-white text-slate-400 shadow-sm'}`}>
+                    <UploadCloud className="w-8 h-8" />
+                  </div>
                   <div className="text-center">
-                    <p className="text-sm font-medium">Arraste e solte o arquivo CSV aqui</p>
-                    <p className="text-xs text-muted-foreground mt-1">Ou clique para procurar em seus arquivos</p>
+                    <p className="text-sm font-semibold text-slate-700">Arraste e solte a planilha CSV</p>
+                    <p className="text-xs text-slate-500 mt-1">Ou clique para procurar em seus arquivos</p>
                   </div>
                 </div>
 
@@ -485,7 +487,7 @@ export function StudentsTab() {
         </TabsContent>
 
         <TabsContent value="config" className="animate-in fade-in slide-in-from-bottom-2 duration-300">
-          <Card>
+          <Card className="shadow-[0_8px_30px_rgb(0,0,0,0.02)] border-none rounded-2xl bg-white">
             <CardHeader>
               <CardTitle>Turmas e Modalidades</CardTitle>
               <CardDescription>Crie as categorias que serão disponibilizadas no momento do cadastro do aluno.</CardDescription>
@@ -497,7 +499,7 @@ export function StudentsTab() {
                 <h3 className="text-sm font-medium border-b pb-2">Turmas Ativas</h3>
                 <div className="flex flex-wrap gap-2">
                   {turmas.map(t => (
-                    <Badge key={t} variant="outline" className="px-3 py-1 flex items-center gap-2 text-sm bg-muted/40 font-normal">
+                    <Badge key={t} variant="outline" className="rounded-full px-3 py-1 flex items-center gap-2 text-sm bg-muted/40 font-normal">
                       {t}
                       <button 
                         onClick={() => removerTurma(t)}
@@ -526,7 +528,7 @@ export function StudentsTab() {
                 <h3 className="text-sm font-medium border-b pb-2">Modalidades de Ensino</h3>
                 <div className="flex flex-wrap gap-2">
                   {modalidades.map(m => (
-                    <Badge key={m} variant="outline" className="px-3 py-1 flex items-center gap-2 text-sm capitalize bg-muted/40 font-normal">
+                    <Badge key={m} variant="outline" className="rounded-full px-3 py-1 flex items-center gap-2 text-sm capitalize bg-muted/40 font-normal">
                       {m}
                       <button 
                         onClick={() => removerModalidade(m)}

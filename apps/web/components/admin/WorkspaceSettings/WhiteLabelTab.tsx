@@ -14,7 +14,7 @@ export function WhiteLabelTab() {
     secondaryColor: '#1e40af',
   });
 
-  const hexToHSL = (hex: string) => {
+  const hexToHSL = (hex: string | any) => {
     let r = 0, g = 0, b = 0;
     if (hex.length === 4) {
       r = parseInt(hex[1] + hex[1], 16);
@@ -47,7 +47,7 @@ export function WhiteLabelTab() {
       ...config,
       [name]: value,
     });
-    
+
     // Atualiza a variável CSS no :root convertendo para HSL do Tailwind
     const hslValue = hexToHSL(value);
     if (name === 'primaryColor') {
@@ -61,7 +61,7 @@ export function WhiteLabelTab() {
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       {/* Config Form */}
       <div className="lg:col-span-2 flex flex-col gap-6">
-        <Card>
+        <Card className="shadow-[0_8px_30px_rgb(0,0,0,0.02)] border-none rounded-2xl bg-white">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <PaintBucket className="w-5 h-5 text-muted-foreground" />
@@ -123,7 +123,7 @@ export function WhiteLabelTab() {
           </CardFooter>
         </Card>
 
-        <Card>
+        <Card className="shadow-[0_8px_30px_rgb(0,0,0,0.02)] border-none rounded-2xl bg-white">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <ImageIcon className="w-5 h-5 text-muted-foreground" />
@@ -142,7 +142,7 @@ export function WhiteLabelTab() {
                 <span className="text-xs">PNG, JPG ou SVG (Máx. 2MB)</span>
               </div>
             </div>
-            
+
             <div className="space-y-3">
               <Label>Plano de Fundo (Login)</Label>
               <div className="border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center gap-2 text-muted-foreground hover:bg-muted/50 transition-colors cursor-pointer">
@@ -157,7 +157,7 @@ export function WhiteLabelTab() {
 
       {/* Real-time Preview */}
       <div>
-        <Card className="sticky top-6 overflow-hidden">
+        <Card className="sticky top-6 overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.06)] border-none rounded-3xl bg-white">
           <CardHeader className="bg-muted/30 border-b">
             <CardTitle className="text-base">Preview em Tempo Real</CardTitle>
             <CardDescription className="text-xs">
@@ -180,34 +180,45 @@ export function WhiteLabelTab() {
 
               {/* Fake Content Area */}
               <div className="space-y-4">
-                <div className="bg-background rounded-lg p-4 shadow-sm border border-border/50">
-                  <div className="text-sm font-medium mb-2">Resumo de Desempenho</div>
-                  <div className="w-full h-2 rounded-full bg-muted overflow-hidden">
-                    <div 
-                      className="h-full rounded-full transition-all duration-300" 
-                      style={{ width: '65%', backgroundColor: config.primaryColor }} 
+                <div className="bg-white rounded-2xl p-5 shadow-[0_4px_15px_rgb(0,0,0,0.02)] border-none transition-transform hover:-translate-y-1">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="text-sm font-bold text-slate-800">Desempenho Geral</div>
+                    <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ backgroundColor: config.primaryColor + '20', color: config.primaryColor }}>
+                      <span className="text-[10px] font-bold">92%</span>
+                    </div>
+                  </div>
+                  <div className="w-full h-2.5 rounded-full bg-slate-100 overflow-hidden">
+                    <div
+                      className="h-full rounded-full transition-all duration-700 ease-out"
+                      style={{ width: '92%', backgroundColor: config.primaryColor }}
                     />
                   </div>
                   <div className="flex justify-end mt-4">
-                    <Button 
-                      size="sm" 
-                      style={{ 
-                        backgroundColor: config.primaryColor, 
-                        color: '#fff' 
+                    <Button
+                      size="sm"
+                      style={{
+                        backgroundColor: config.primaryColor,
+                        color: '#fff',
+                        boxShadow: `0 4px 14px 0 ${config.primaryColor}40`
                       }}
-                      className="hover:opacity-90 transition-opacity"
+                      className="rounded-full px-5 hover:opacity-90 transition-all font-semibold"
                     >
-                      Acessar Relatório
+                      Ver Relatório
                     </Button>
                   </div>
                 </div>
 
-                <div 
-                  className="rounded-lg p-4 text-white text-sm"
+                <div
+                  className="rounded-2xl p-4 text-white text-sm shadow-md transition-all hover:-translate-y-1"
                   style={{ backgroundColor: config.secondaryColor }}
                 >
-                  <div className="font-semibold mb-1">Aviso Importante</div>
-                  <div className="opacity-90 text-xs">As aulas de reforço começarão amanhã às 14h. Não perca!</div>
+                  <div className="font-bold mb-1 flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-white animate-pulse" />
+                    Comunicado Oficial
+                  </div>
+                  <div className="opacity-90 text-xs mt-2 leading-relaxed">
+                    O novo módulo intensivo de exatas já está disponível na plataforma. Acesse e turbine seus estudos.
+                  </div>
                 </div>
               </div>
             </div>

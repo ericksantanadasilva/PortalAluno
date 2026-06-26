@@ -114,6 +114,7 @@ export default function FrequenciaPage() {
             <ControleJanelaValidacao
               janelas={janelas}
               turmaSelecionada={turmaSelecionada}
+              setTurmaSelecionada={setTurmaSelecionada}
               onSalvarJanela={upsertJanela}
               onRemoverJanela={removerJanela}
             />

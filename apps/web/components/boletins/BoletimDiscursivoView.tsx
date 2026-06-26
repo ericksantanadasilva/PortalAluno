@@ -90,9 +90,9 @@ export default function BoletimDiscursivoView({ data }: BoletimDiscursivoViewPro
       <div className={`grid gap-8 ${temRaioX ? "grid-cols-1 lg:grid-cols-3" : "grid-cols-1"}`}>
         {/* Desempenho por Disciplina */}
         <Card
-          className={`shadow-sm flex flex-col ${temRaioX ? "lg:col-span-1" : "col-span-1"}`}
+          className={`shadow-[0_8px_30px_rgb(0,0,0,0.02)] rounded-2xl bg-white border-none flex flex-col ${temRaioX ? "lg:col-span-1" : "col-span-1"}`}
         >
-          <CardHeader>
+          <CardHeader className="p-8 pb-4">
             <CardTitle className="flex items-center gap-2">
               <BarChart3 className="w-5 h-5" style={{ color: "hsl(var(--primary))" }} />
               Desempenho por Disciplina
@@ -101,7 +101,7 @@ export default function BoletimDiscursivoView({ data }: BoletimDiscursivoViewPro
               Nota relativa por disciplina discursiva
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-5 flex-1">
+          <CardContent className="space-y-6 flex-1 px-8 pb-8">
             {data.desempenhoPorDisciplina.map((disc, i) => {
               const percent = Math.round((disc.acertos / disc.total) * 100);
               return (
@@ -157,49 +157,47 @@ export default function BoletimDiscursivoView({ data }: BoletimDiscursivoViewPro
 
       {/* ── Foco de Revisão ── */}
       {data.temasParaRevisar.length > 0 && (
-        <Card className="border-rose-100 shadow-sm overflow-hidden dark:border-rose-900/30">
-          <div className="bg-rose-50/50 dark:bg-rose-900/10 border-b border-rose-100 dark:border-rose-900/30 p-6 flex items-start gap-4">
-            <div className="p-3 bg-rose-100 dark:bg-rose-900/40 text-rose-600 dark:text-rose-400 rounded-full shrink-0">
+        <Card className="border-none shadow-[0_8px_30px_rgb(0,0,0,0.02)] rounded-2xl bg-white overflow-hidden">
+          <div className="bg-primary/5 border-b border-primary/10 p-8 flex items-start gap-4">
+            <div className="p-3 bg-white text-primary rounded-xl shadow-sm shrink-0">
               <BookOpen className="w-6 h-6" />
             </div>
             <div>
-              <CardTitle className="text-rose-700 dark:text-rose-400 text-xl">
-                Foco de Revisão
+              <CardTitle className="text-primary text-xl">
+                Plano de Ação Primário: Tópicos Críticos para Revisão
               </CardTitle>
-              <CardDescription className="text-rose-600/80 dark:text-rose-300/70 mt-1 text-sm md:text-base">
-                Tópicos das questões que você errou. Priorize o estudo destes temas para
-                alavancar sua nota nos próximos simulados.
+              <CardDescription className="text-primary/70 mt-1 text-sm md:text-base">
+                Mapeamento inteligente das lacunas de conhecimento. Priorize estes temas para maximizar a sua evolução de nota.
               </CardDescription>
             </div>
           </div>
-          <CardContent className="p-6">
+          <CardContent className="p-8">
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {Object.entries(revisaoPorDisciplina).map(([disciplina, temas]) => (
                 <div
                   key={disciplina}
-                  className="space-y-3 bg-white dark:bg-card p-5 rounded-xl border border-border border-l-4 shadow-sm"
+                  className="space-y-4 bg-white dark:bg-card p-6 rounded-2xl border-l-4 shadow-[0_4px_15px_rgb(0,0,0,0.02)] transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)]"
                   style={{ borderLeftColor: `hsl(${primaryHSL})` }}
                 >
-                  <h4 className="font-bold flex items-center justify-between border-b border-border/50 pb-2.5 text-sm text-foreground">
+                  <h4 className="font-bold flex items-center justify-between pb-2 text-sm text-foreground">
                     {disciplina}
                     <Badge
-                      variant="destructive"
-                      className="bg-rose-600 text-white hover:bg-rose-700 dark:bg-rose-900/80 dark:text-rose-100 text-[10px] font-bold px-2 py-0.5 rounded-md"
+                      variant="secondary"
+                      className="bg-primary/10 text-primary hover:bg-primary/20 text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm"
                     >
                       {temas.length} {temas.length === 1 ? "erro" : "erros"}
                     </Badge>
                   </h4>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3">
+                  <div className="grid grid-cols-1 gap-3">
                     {temas.map((t) => (
                       <div
                         key={t.questao}
-                        className="flex flex-col gap-1.5 p-3 rounded-lg bg-muted/30 border border-border/50 hover:bg-muted/50 transition-colors"
+                        className="flex flex-col gap-2 p-3.5 rounded-xl bg-slate-50 border border-slate-100 hover:bg-slate-100 transition-colors"
                       >
                         <div className="flex items-center justify-between">
                           <span className="text-[10px] font-bold text-foreground bg-white dark:bg-background px-1.5 py-0.5 rounded border border-border shadow-sm">
                             Q{t.questao}
                           </span>
-                          <X className="w-3.5 h-3.5 text-rose-500/80" />
                         </div>
                         <span className="text-xs font-semibold text-muted-foreground leading-snug">
                           {t.tema}

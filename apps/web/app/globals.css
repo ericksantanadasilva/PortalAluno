@@ -4,10 +4,10 @@
 
 @layer base {
   :root {
-    --background: 214.3 31.8% 95%; /* Softer gray background */
+    --background: 210 40% 98%; /* #F8FAFC Off-white premium */
     --foreground: 222.2 84% 4.9%;
 
-    --card: 210 40% 98%; /* Off-white for cards */
+    --card: 0 0% 100%; /* Pure white for floating cards */
     --card-foreground: 222.2 84% 4.9%;
 
     --popover: 0 0% 100%;

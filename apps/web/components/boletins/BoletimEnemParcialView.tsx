@@ -236,14 +236,14 @@ export default function BoletimEnemParcialView({ data }: BoletimEnemParcialViewP
                           {q.disciplina}
                         </p>
                         <p className="text-sm font-medium mt-1 leading-snug">{q.tema}</p>
-                        <div className="flex justify-between items-center pt-2 mt-2 border-t border-border/50 text-xs">
-                          <span className="text-muted-foreground font-medium">
-                            Acerto da turma:
-                          </span>
-                          <Badge variant="secondary" className="font-bold text-xs">
-                            {q.taxa_acerto_turma}%
-                          </Badge>
-                        </div>
+                          <div className="flex justify-between items-center pt-2 mt-2 border-t border-border/50 text-xs">
+                            <span className="text-muted-foreground font-medium">
+                              Acerto da turma:
+                            </span>
+                            <Badge variant="secondary" className="rounded-full font-bold text-xs">
+                              {q.taxa_acerto_turma}%
+                            </Badge>
+                          </div>
                       </div>
                     </TooltipContent>
                   </Tooltip>
@@ -340,7 +340,6 @@ export default function BoletimEnemParcialView({ data }: BoletimEnemParcialViewP
                           <span className="text-[10px] font-bold text-foreground bg-white dark:bg-background px-1.5 py-0.5 rounded border border-border shadow-sm">
                             Q{t.questao}
                           </span>
-                          <X className="w-3.5 h-3.5 text-rose-500/80" />
                         </div>
                         <span className="text-xs font-semibold text-muted-foreground leading-snug">
                           {t.tema}
