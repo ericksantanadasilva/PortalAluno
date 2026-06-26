@@ -28,8 +28,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR" className={cn("font-sans", geist.variable)}>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-background`}>
+    // O suppressHydrationWarning impede que extensões de terceiros que injetam 
+    // atributos nas tags quebrem o ciclo de vida do React no mobile.
+    <html lang="pt-BR" className={cn("font-sans", geist.variable)} suppressHydrationWarning>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-background`}
+        suppressHydrationWarning
+      >
         <TenantProvider tenantConfig={tenantConfigMock}>
           {children}
         </TenantProvider>
