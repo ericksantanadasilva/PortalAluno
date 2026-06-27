@@ -173,10 +173,10 @@ export default function BoletimUerjView({ data }: BoletimUerjViewProps) {
               <CardHeader className="p-8 pb-4">
                 <CardTitle className="flex items-center gap-2">
                   <Target className="w-5 h-5" style={{ color: "hsl(var(--primary))" }} />
-                  Mapeamento Analítico de Questões e Teoria de Resposta ao Item
+                  Raio-X do Simulado
                 </CardTitle>
                 <CardDescription>
-                  Análise de diagnóstico das {data.raioXQuestoes!.length} questões. Cores refletem a dificuldade coletiva.
+                  Análise de diagnóstico das {data.raioXQuestoes!.length} questões. Clique em uma questão para ver os detalhes.
                 </CardDescription>
                 <div className="flex flex-wrap gap-4 mt-2 text-xs">
                   <div className="flex items-center gap-1.5 font-medium">

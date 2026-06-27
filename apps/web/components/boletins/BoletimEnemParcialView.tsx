@@ -42,10 +42,10 @@ import { DestaqueEnem } from "./DestaqueEnem";
 // Helper de cor de dificuldade específico deste simulado (caso venha a ter raioXQuestoes futuramente)
 function getDifficultyColor(taxa: number) {
   if (taxa >= 75)
-    return "bg-[#E6F4EA] text-[#137333] dark:bg-emerald-900/30 dark:text-emerald-400 border-none";
+    return "bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400 border-none";
   if (taxa >= 45)
-    return "bg-[#FEF7E0] text-[#B06000] dark:bg-amber-900/30 dark:text-amber-400 border-none";
-  return "bg-[#FCE8E6] text-[#C5221F] dark:bg-rose-900/30 dark:text-rose-400 border-none";
+    return "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border-none";
+  return "bg-rose-50 text-rose-700 dark:bg-rose-900/20 dark:text-rose-400 border-none";
 }
 
 interface BoletimEnemParcialViewProps {
@@ -175,20 +175,19 @@ export default function BoletimEnemParcialView({ data }: BoletimEnemParcialViewP
                 Raio-X do Simulado
               </CardTitle>
               <CardDescription>
-                Mapeamento das {data.raioXQuestoes!.length} questões. Cores = dificuldade real
-                (taxa de acerto da turma). Clique em uma questão para ver os detalhes.
+                Análise de diagnóstico das {data.raioXQuestoes!.length} questões. Clique em uma questão para ver os detalhes.
               </CardDescription>
               <div className="flex flex-wrap gap-4 mt-2 text-xs">
                 <div className="flex items-center gap-1.5 font-medium">
-                  <div className="w-3 h-3 rounded-full bg-[#E6F4EA]" />
+                  <div className="w-3 h-3 rounded-full bg-emerald-50 border border-emerald-100" />
                   Fácil (≥75%)
                 </div>
                 <div className="flex items-center gap-1.5 font-medium">
-                  <div className="w-3 h-3 rounded-full bg-[#FEF7E0]" />
+                  <div className="w-3 h-3 rounded-full bg-slate-100 border border-slate-200" />
                   Média (45-74%)
                 </div>
                 <div className="flex items-center gap-1.5 font-medium">
-                  <div className="w-3 h-3 rounded-full bg-[#FCE8E6]" />
+                  <div className="w-3 h-3 rounded-full bg-rose-50 border border-rose-100" />
                   Difícil (&lt;45%)
                 </div>
               </div>
