@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import { prisma } from "@repo/database";
+import godRoutes from "./routes/god.routes";
 
 dotenv.config();
 
@@ -26,6 +27,8 @@ app.get('/health', async (req, res) => {
         res.status(500).json({ status: 'error', message: (error as Error).message });
     }
 });
+
+app.use('/api/god', godRoutes);
 
 app.listen(port, () => {
     console.log(`Api do portal rodando na porta ${port}`)
