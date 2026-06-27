@@ -196,8 +196,8 @@ export default function BoletimEnemView({ data }: BoletimEnemViewProps) {
               <CardContent className="flex-1 space-y-8 px-8 pb-8">
                 <div
                   className={`grid gap-2 ${data.raioXQuestoes!.length > 60
-                      ? "grid-cols-4 sm:grid-cols-8 md:grid-cols-12 lg:grid-cols-15"
-                      : "grid-cols-5 sm:grid-cols-8 md:grid-cols-10"
+                    ? "grid-cols-4 sm:grid-cols-8 md:grid-cols-12 lg:grid-cols-15"
+                    : "grid-cols-5 sm:grid-cols-8 md:grid-cols-10"
                     }`}
                 >
                   {data.raioXQuestoes!.map((q) => (
@@ -208,8 +208,8 @@ export default function BoletimEnemView({ data }: BoletimEnemViewProps) {
                           className={`relative flex items-center justify-center w-full h-auto aspect-square rounded-lg font-semibold cursor-pointer transition-all hover:scale-105 hover:shadow-md ${getDifficultyColor(
                             q.taxa_acerto_turma
                           )} ${questaoSelecionada?.numero === q.numero
-                              ? "ring-2 ring-primary ring-offset-2 scale-110"
-                              : ""
+                            ? "ring-2 ring-primary ring-offset-2 scale-110"
+                            : ""
                             }`}
                         >
                           {q.numero}
@@ -228,24 +228,6 @@ export default function BoletimEnemView({ data }: BoletimEnemViewProps) {
                           </div>
                         </div>
                       </TooltipTrigger>
-                      <TooltipContent className="p-4 max-w-[280px] shadow-xl border-border rounded-xl z-50">
-                        <div className="space-y-1.5">
-                          <p className="font-bold border-b border-border/50 pb-1.5 text-sm">
-                            Questão {q.numero}{" "}
-                            <span className="text-muted-foreground font-normal mx-1">•</span>{" "}
-                            {q.disciplina}
-                          </p>
-                          <p className="text-sm font-medium mt-1 leading-snug">{q.tema}</p>
-                          <div className="flex justify-between items-center pt-2 mt-2 border-t border-border/50 text-xs">
-                            <span className="text-muted-foreground font-medium">
-                              Acerto da turma:
-                            </span>
-                            <Badge variant="secondary" className="rounded-full font-bold text-xs">
-                              {q.taxa_acerto_turma}%
-                            </Badge>
-                          </div>
-                        </div>
-                      </TooltipContent>
                     </Tooltip>
                   ))}
                 </div>
