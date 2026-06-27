@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import { prisma } from "@repo/database";
 import godRoutes from "./routes/god.routes";
+import authRoutes from "./routes/auth.routes";
 
 dotenv.config();
 
@@ -28,6 +29,7 @@ app.get('/health', async (req, res) => {
     }
 });
 
+app.use('/api/auth', authRoutes);
 app.use('/api/god', godRoutes);
 
 app.listen(port, () => {
