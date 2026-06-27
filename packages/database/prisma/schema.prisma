@@ -1,0 +1,214 @@
+datasource db {
+    provider = "postgresql"
+    url      = env("DIRECT_URL")
+}
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+enum Role {
+    admin
+    secretaria
+    professor
+    aluno
+}
+
+enum AttendanceStatus {
+    presente
+    falta
+}
+
+enum Modality {
+    presencial
+    online
+}
+
+enum ExcuseType {
+    merito
+    eventualidade
+    medico
+}
+
+enum ExcuseStatus {
+    vigente
+    agendado
+    encerrado
+}
+
+enum DifficultyTier {
+    facil
+    medio
+    dificil
+}
+
+model Tenant {
+    id           String   @id @default(uuid()) @db.Uuid
+    name         String
+    slug         String   @unique
+    primaryColor String   @default("#10b981") @map("primary_color")
+    logoUrl      String?  @map("logo_url")
+    createdAt    DateTime @default(now()) @map("created_at")
+    updatedAt    DateTime @updatedAt @map("updated_at")
+
+    users             User[]
+    subjects          Subject[]
+    classes           Class[]
+    attendanceRecords AttendanceRecord[]
+    attendanceExcuses AttendanceExcuse[]
+    exams             Exam[]
+    studentResponses  StudentResponse[]
+
+    @@map("tenants")
+}
+
+model User {
+    id                 String   @id @default(uuid()) @db.Uuid
+    tenantId           String   @map("tenant_id") @db.Uuid
+    name               String
+    email              String
+    passwordHash       String   @map("password_hash")
+    role               Role
+    registrationNumber String   @map("registration_number")
+    mustChangePassword Boolean  @default(true) @map("must_change_password")
+    createdAt          DateTime @default(now()) @map("created_at")
+    updatedAt          DateTime @updatedAt @map("updated_at")
+
+    tenant            Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+    attendanceRecords AttendanceRecord[]
+    attendanceExcuses AttendanceExcuse[]
+    studentResponses  StudentResponse[]
+
+    @@unique([tenantId, email])
+    @@unique([tenantId, registrationNumber])
+    @@index([tenantId])
+    @@map("users")
+}
+
+model Subject {
+    id        String   @id @default(uuid()) @db.Uuid
+    tenantId  String   @map("tenant_id") @db.Uuid
+    name      String
+    createdAt DateTime @default(now()) @map("created_at")
+
+    tenant            Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+    attendanceRecords AttendanceRecord[]
+    excuseSubjects    ExcuseSubject[]
+    examQuestions     ExamQuestion[]
+
+    @@unique([tenantId, name])
+    @@map("subjects")
+}
+
+model Class {
+    id        String   @id @default(uuid()) @db.Uuid
+    tenantId  String   @map("tenant_id") @db.Uuid
+    name      String
+    createdAt DateTime @default(now()) @map("created_at")
+
+    tenant            Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+    attendanceRecords AttendanceRecord[]
+
+    @@unique([tenantId, name])
+    @@map("classes")
+}
+
+model AttendanceRecord {
+    id        String           @id @default(uuid()) @db.Uuid
+    tenantId  String           @map("tenant_id") @db.Uuid
+    classId   String           @map("class_id") @db.Uuid
+    subjectId String           @map("subject_id") @db.Uuid
+    studentId String           @map("student_id") @db.Uuid
+    date      DateTime         @db.Date
+    status    AttendanceStatus
+    modality  Modality
+    createdAt DateTime         @default(now()) @map("created_at")
+
+    tenant  Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+    class   Class   @relation(fields: [classId], references: [id], onDelete: Cascade)
+    subject Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+    student User    @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+    @@index([tenantId, classId, date])
+    @@map("attendance_records")
+}
+
+model AttendanceExcuse {
+    id        String       @id @default(uuid()) @db.Uuid
+    tenantId  String       @map("tenant_id") @db.Uuid
+    studentId String       @map("student_id") @db.Uuid
+    type      ExcuseType
+    reason    String
+    startDate DateTime     @map("start_date") @db.Date
+    endDate   DateTime     @map("end_date") @db.Date
+    status    ExcuseStatus
+    createdAt DateTime     @default(now()) @map("created_at")
+
+    tenant         Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+    student        User            @relation(fields: [studentId], references: [id], onDelete: Cascade)
+    excuseSubjects ExcuseSubject[]
+
+    @@map("attendance_excuses")
+}
+
+model ExcuseSubject {
+    excuseId  String @map("excuse_id") @db.Uuid
+    subjectId String @map("subject_id") @db.Uuid
+
+    excuse  AttendanceExcuse @relation(fields: [excuseId], references: [id], onDelete: Cascade)
+    subject Subject          @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+
+    @@id([excuseId, subjectId])
+    @@map("excuse_subjects")
+}
+
+model Exam {
+    id             String   @id @default(uuid()) @db.Uuid
+    tenantId       String   @map("tenant_id") @db.Uuid
+    title          String
+    date           DateTime @db.Date
+    totalQuestions Int      @default(60) @map("total_questions")
+    createdAt      DateTime @default(now()) @map("created_at")
+
+    tenant           Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+    examQuestions    ExamQuestion[]
+    studentResponses StudentResponse[]
+
+    @@map("exams")
+}
+
+model ExamQuestion {
+    id                 String         @id @default(uuid()) @db.Uuid
+    examId             String         @map("exam_id") @db.Uuid
+    questionNumber     Int            @map("question_number")
+    correctAlternative String         @map("correct_alternative") @db.Char(1)
+    difficultyTier     DifficultyTier @map("difficulty_tier")
+    isAnnulled         Boolean        @default(false) @map("is_annulled")
+    subjectId          String         @map("subject_id") @db.Uuid
+
+    exam    Exam    @relation(fields: [examId], references: [id], onDelete: Cascade)
+    subject Subject @relation(fields: [subjectId], references: [id], onDelete: Restrict)
+
+    @@unique([examId, questionNumber])
+    @@map("exam_questions")
+}
+
+model StudentResponse {
+    id                String   @id @default(uuid()) @db.Uuid
+    tenantId          String   @map("tenant_id") @db.Uuid
+    studentId         String   @map("student_id") @db.Uuid
+    examId            String   @map("exam_id") @db.Uuid
+    questionNumber    Int      @map("question_number")
+    chosenAlternative String?  @map("chosen_alternative") @db.Char(1)
+    isCorrect         Boolean  @default(false) @map("is_correct")
+    importedViaRemark Boolean  @default(false) @map("imported_via_remark")
+    createdAt         DateTime @default(now()) @map("created_at")
+
+    tenant  Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+    student User   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+    exam    Exam   @relation(fields: [examId], references: [id], onDelete: Cascade)
+
+    @@unique([studentId, examId, questionNumber])
+    @@index([studentId, examId])
+    @@map("student_responses")
+}
