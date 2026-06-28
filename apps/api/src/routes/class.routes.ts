@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router, Request, Response } from "express";
 import { prisma } from "@repo/database";
 import { requireAuth, requireAdmin } from "../middlewares/auth.middleware";
 
@@ -68,6 +68,33 @@ router.get('/', requireAuth, async (req, res) => {
         return res.json(classes);
     } catch {
         return res.status(500).json({ error: 'Erro ao buscar turmas.' });
+    }
+});
+
+// 3. DELETE /api/classes/:id -> deleta uma turma
+router.delete('/:id', requireAuth, requireAdmin, async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const tenantId = req.user!.tenantId;
+
+    try {
+        // valida se a turma existe e pertence ao tenant
+        const classExists = await prisma.class.findFirst({
+            where: { id, tenantId }
+        });
+
+        if (!classExists) {
+            return res.status(404).json({ error: 'Turma não encontrada ou nao pertence a esta instituição.' })
+        }
+
+        //3. Executa a deleção
+        await prisma.class.delete({
+            where: { id }
+        });
+
+        return res.status(204).send();
+    } catch (error) {
+        console.error('Erro ao deletar turma:', error);
+        return res.status(500).json({ error: 'Erro interno ao processar exclusão da turma' })
     }
 });
 

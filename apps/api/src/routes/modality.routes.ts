@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router, Request, Response } from "express";
 import { prisma } from "@repo/database";
 import { requireAuth, requireAdmin } from "../middlewares/auth.middleware";
 
@@ -88,6 +88,41 @@ router.get('/types', requireAuth, (req, res) => {
         { id: 'presencial', name: 'Presencial' },
         { id: 'online', name: 'Online / EAD' }
     ]);
+});
+
+//3. DELETE /api/modalities/:id -> deleta uma modalidade
+router.delete('/:id', requireAuth, requireAdmin, async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const tenantId = req.user!.tenantId;
+
+    try {
+        // garante que a modalidade pertence ao tenant antes de fazer qualquer operação
+        const modalityExists = await prisma.modality.findFirst({
+            where: { id, tenantId }
+        });
+
+        if (!modalityExists) {
+            return res.status(404).json({ error: 'Modalidade não encontrada ou não pertence a esta instituição' });
+        }
+
+        // 2 transaçao para apagar as dependencias de forma segura
+        await prisma.$transaction([
+            prisma.modalitySubject.deleteMany({
+                where: { modalityId: id }
+            }),
+            prisma.class.deleteMany({
+                where: { modalityId: id, tenantId }
+            }),
+            prisma.modality.delete({
+                where: { id }
+            })
+        ]);
+
+        return res.status(204).send();
+    } catch (error) {
+        console.error('Erro ao deletar modalidade:', error);
+        return res.status(500).json({ error: 'Erro interno ao processar exclusão da modalidade' })
+    }
 });
 
 export default router;

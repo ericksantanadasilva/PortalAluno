@@ -115,8 +115,8 @@ export function StudentsTab() {
   }, [alunosList, loading]);
 
   useEffect(() => {
-    if (modalidades.length > 0 && !alunoForm.modalidade) {
-      setAlunoForm(prev => ({ ...prev, modalidade: modalidades[0].id }));
+    if (modalidades.length > 0 && modalidades[0] && !alunoForm.modalidade) {
+      setAlunoForm(prev => ({ ...prev, modalidade: modalidades[0]!.id }));
     }
   }, [modalidades]);
 
@@ -654,7 +654,7 @@ export function StudentsTab() {
                   {turmas.map(t => (
                     <Badge key={t.id} variant="outline" className="rounded-full px-3 py-1 flex items-center gap-2 text-sm bg-muted/40 font-normal">
                       <span>{t.name}</span>
-                      <span className="text-[10px] uppercase font-bold text-primary bg-primary/10 px-1.5 py-0.5 rounded">
+                      <span className="text-[10px] uppercase font-bold text-primary px-1 rounded-full">
                         {t.modality?.name || 'Sem combo'}
                       </span>
                       <button
