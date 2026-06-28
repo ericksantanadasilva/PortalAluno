@@ -19,7 +19,7 @@ enum AttendanceStatus {
     falta
 }
 
-enum Modality {
+enum ModalityType {
     presencial
     online
 }
@@ -53,6 +53,7 @@ model Tenant {
 
     users             User[]
     subjects          Subject[]
+    modalities        Modality[]
     classes           Class[]
     attendanceRecords AttendanceRecord[]
     attendanceExcuses AttendanceExcuse[]
@@ -95,22 +96,53 @@ model Subject {
     attendanceRecords AttendanceRecord[]
     excuseSubjects    ExcuseSubject[]
     examQuestions     ExamQuestion[]
+    modalitySubjects  ModalitySubject[]
 
     @@unique([tenantId, name])
     @@map("subjects")
 }
 
-model Class {
+// 1. MODALIDADE (O Combo de Cursos: ex: "Especificas + Exatas", "Semipresencial")
+model Modality {
     id        String   @id @default(uuid()) @db.Uuid
     tenantId  String   @map("tenant_id") @db.Uuid
     name      String
     createdAt DateTime @default(now()) @map("created_at")
 
-    tenant            Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-    attendanceRecords AttendanceRecord[]
+    tenant           Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+    classes          Class[]
+    modalitySubjects ModalitySubject[]
 
     @@unique([tenantId, name])
+    @@map("modalities")
+}
+
+// 2. TURMA (O agrupamento real de pessoas dentro de um combo: ex: "Med A", "Med B")
+model Class {
+    id         String   @id @default(uuid()) @db.Uuid
+    tenantId   String   @map("tenant_id") @db.Uuid
+    modalityId String   @map("modality_id") @db.Uuid
+    name       String
+    createdAt  DateTime @default(now()) @map("created_at")
+
+    tenant            Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+    modality          Modality           @relation(fields: [modalityId], references: [id], onDelete: Cascade)
+    attendanceRecords AttendanceRecord[]
+
+    @@unique([tenantId, modalityId, name])
     @@map("classes")
+}
+
+// 3. TABELA PIVÔ: Vincula as matérias que cada modalidade/combo oferece
+model ModalitySubject {
+    modalityId String @map("modality_id") @db.Uuid
+    subjectId  String @map("subject_id") @db.Uuid
+
+    modality Modality @relation(fields: [modalityId], references: [id], onDelete: Cascade)
+    subject  Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+
+    @@id([modalityId, subjectId])
+    @@map("modality_subjects")
 }
 
 model AttendanceRecord {
@@ -121,7 +153,7 @@ model AttendanceRecord {
     studentId String           @map("student_id") @db.Uuid
     date      DateTime         @db.Date
     status    AttendanceStatus
-    modality  Modality
+    modality  ModalityType // Se o aluno assistiu no formato presencial ou online/EAD
     createdAt DateTime         @default(now()) @map("created_at")
 
     tenant  Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
