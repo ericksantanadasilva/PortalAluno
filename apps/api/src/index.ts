@@ -6,6 +6,7 @@ import godRoutes from "./routes/god.routes";
 import authRoutes from "./routes/auth.routes";
 import classRoutes from "./routes/class.routes";
 import modalityRoutes from "./routes/modality.routes";
+import employeeRoutes from "./routes/employee.routes";
 
 dotenv.config();
 
@@ -35,6 +36,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/god', godRoutes);
 app.use('/api/classes', classRoutes);
 app.use('/api/modalities', modalityRoutes);
+app.use('/api/employees', employeeRoutes);
 
 app.listen(port, () => {
     console.log(`Api do portal rodando na porta ${port}`)

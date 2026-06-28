@@ -7,11 +7,13 @@ import { WhiteLabelTab } from './WhiteLabelTab';
 import { StudentsTab } from './StudentsTab';
 import { ExamsTab } from './ExamsTab';
 import { AnswerKeysTab } from './AnswerKeysTab';
-import { Palette, Users, FileSignature, LayoutList } from 'lucide-react';
+import { EmployeesTab } from './EmployeesTab';
+import { Palette, Users, FileSignature, LayoutList, Briefcase } from 'lucide-react';
 
 const TABS = [
   { id: 'whitelabel', label: 'Personalização', icon: Palette, component: WhiteLabelTab },
   { id: 'students', label: 'Alunos e Matrículas', icon: Users, component: StudentsTab },
+  { id: 'employees', label: 'Equipe e Funcionários', icon: Briefcase, component: EmployeesTab },
   { id: 'exams', label: 'Simulados', icon: FileSignature, component: ExamsTab },
   { id: 'answers', label: 'Gabaritos', icon: LayoutList, component: AnswerKeysTab },
 ];
