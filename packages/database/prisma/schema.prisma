@@ -73,10 +73,12 @@ model User {
     registrationNumber String   @map("registration_number")
     mustChangePassword Boolean  @default(true) @map("must_change_password")
     department         String?  @map("department")
+    classId            String?  @map("class_id") @db.Uuid
     createdAt          DateTime @default(now()) @map("created_at")
     updatedAt          DateTime @updatedAt @map("updated_at")
 
     tenant            Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+    class             Class?             @relation(fields: [classId], references: [id], onDelete: SetNull)
     attendanceRecords AttendanceRecord[]
     attendanceExcuses AttendanceExcuse[]
     studentResponses  StudentResponse[]
@@ -129,6 +131,7 @@ model Class {
     tenant            Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
     modality          Modality           @relation(fields: [modalityId], references: [id], onDelete: Cascade)
     attendanceRecords AttendanceRecord[]
+    users             User[]
 
     @@unique([tenantId, modalityId, name])
     @@map("classes")

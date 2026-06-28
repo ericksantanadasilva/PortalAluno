@@ -1,12 +1,12 @@
 import { Router } from 'express';
 import { prisma } from '@repo/database';
-import { requireAuth, requireAdmin } from '../middlewares/auth.middleware';
+import { requireAuth, requireStaff, requireStrictAdmin } from '../middlewares/auth.middleware';
 import bcrypt from 'bcrypt';
 
 const router = Router();
 
 // GET /api/employees - Lista todos os funcionários (roles: admin, secretaria, professor) do tenant
-router.get('/', requireAuth, requireAdmin, async (req, res) => {
+router.get('/', requireAuth, requireStaff, async (req, res) => {
     try {
         const tenantId = req.user!.tenantId;
 
@@ -39,7 +39,7 @@ router.get('/', requireAuth, requireAdmin, async (req, res) => {
 });
 
 // POST /api/employees - Convida um novo funcionário
-router.post('/', requireAuth, requireAdmin, async (req, res) => {
+router.post('/', requireAuth, requireStrictAdmin, async (req, res) => {
     try {
         const tenantId = req.user!.tenantId;
         const { name, email, department } = req.body;
@@ -112,7 +112,7 @@ router.post('/', requireAuth, requireAdmin, async (req, res) => {
 });
 
 // DELETE /api/employees/:id - Remove um funcionário
-router.delete('/:id', requireAuth, requireAdmin, async (req, res) => {
+router.delete('/:id', requireAuth, requireStrictAdmin, async (req, res) => {
     try {
         const tenantId = req.user!.tenantId;
         const employeeId = req.params.id;

@@ -33,6 +33,7 @@ export function EmployeesTab() {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [departmentFilter, setDepartmentFilter] = useState('');
+  const [userRole, setUserRole] = useState<string | null>(null);
 
   // Formulário
   const [formName, setFormName] = useState('');
@@ -71,6 +72,7 @@ export function EmployeesTab() {
   };
 
   useEffect(() => {
+    setUserRole(localStorage.getItem('user_role'));
     carregarFuncionarios();
   }, []);
 
@@ -147,10 +149,12 @@ export function EmployeesTab() {
   return (
     <div className="space-y-6">
       <Tabs defaultValue="lista" className="w-full flex flex-col space-y-6">
-        <TabsList className="w-full justify-start h-auto p-1 bg-muted/50 border rounded-lg flex-col sm:flex-row">
-          <TabsTrigger value="lista" className="py-2.5 px-4">Lista de Funcionários</TabsTrigger>
-          <TabsTrigger value="convidar" className="py-2.5 px-4">Convidar Funcionário</TabsTrigger>
-        </TabsList>
+        {userRole === 'admin' && (
+          <TabsList className="w-full justify-start h-auto p-1 bg-muted/50 border rounded-lg flex-col sm:flex-row">
+            <TabsTrigger value="lista" className="py-2.5 px-4">Lista de Funcionários</TabsTrigger>
+            <TabsTrigger value="convidar" className="py-2.5 px-4">Convidar Funcionário</TabsTrigger>
+          </TabsList>
+        )}
 
         <TabsContent value="lista">
           <Card className="animate-in fade-in slide-in-from-bottom-2 duration-300 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border-none rounded-2xl bg-white">
@@ -190,7 +194,7 @@ export function EmployeesTab() {
                       <TableHead>E-mail</TableHead>
                       <TableHead>Setor</TableHead>
                       <TableHead>Tem acesso?</TableHead>
-                      <TableHead className="text-right">Ações</TableHead>
+                      {userRole === 'admin' && <TableHead className="text-right">Ações</TableHead>}
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -214,11 +218,13 @@ export function EmployeesTab() {
                             </Badge>
                           )}
                         </TableCell>
-                        <TableCell className="text-right">
-                          <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => handleRemover(emp.id)}>
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </TableCell>
+                        {userRole === 'admin' && (
+                          <TableCell className="text-right">
+                            <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => handleRemover(emp.id)}>
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </TableCell>
+                        )}
                       </TableRow>
                     ))}
                     {filteredEmployees.length === 0 && (

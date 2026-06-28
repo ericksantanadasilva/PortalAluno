@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { usePathname } from "next/navigation";
+import { useState, useEffect } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { tenantConfigMock, alunoProfileMock } from "@repo/database-mocks";
 import { FrequenciaProvider } from "@/contexts/FrequenciaContext";
 import { BookOpen, User, Calendar, LogOut, Menu, X, Laptop, Settings } from "lucide-react";
@@ -14,8 +14,27 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const userRole = 'admin'; // TODO: Substituir por contexto real de autenticação
+  const [userRole, setUserRole] = useState<string | null>(null);
+  const [isCheckingRole, setIsCheckingRole] = useState(true);
+
+  useEffect(() => {
+    const role = localStorage.getItem('user_role');
+    setUserRole(role);
+
+    // Se o usuário for aluno e tentar acessar páginas restritas, redireciona para o boletim
+    if (role === 'aluno' && (pathname.includes('/dashboard/frequencia') || pathname.includes('/admin/settings'))) {
+      router.replace('/dashboard/boletim');
+    } else {
+      setIsCheckingRole(false);
+    }
+  }, [pathname, router]);
+
+  // Evita o "flash" da página protegida enquanto o useEffect avalia o redirecionamento
+  if (isCheckingRole) {
+    return <div className="h-screen w-full flex items-center justify-center bg-muted text-muted-foreground text-sm">Carregando acessos...</div>;
+  }
 
   return (
     <div className="flex h-screen overflow-hidden bg-muted relative">
@@ -86,7 +105,7 @@ export default function DashboardLayout({
             </Button>
           </Link>
 
-          {userRole === 'admin' && (
+          {userRole !== 'aluno' && (
             <>
               <Link href="/dashboard/frequencia" passHref>
                 <Button
@@ -187,7 +206,7 @@ export default function DashboardLayout({
             </Button>
           </Link>
 
-          {userRole === 'admin' && (
+          {userRole !== 'aluno' && (
             <>
               <Link href="/dashboard/frequencia" passHref>
                 <Button

@@ -9,7 +9,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from '@/components/ui/badge';
-import { Download, UploadCloud, Plus, FileSpreadsheet, Search, X } from 'lucide-react';
+import { Download, UploadCloud, Plus, FileSpreadsheet, Search, X, Trash2, ShieldAlert } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { AlunoForm } from '../types/workspace-settings.types';
 import { AlunoForm } from '../types/workspace-settings.types';
 
 // URL base do seu servidor Express no Monorepo
@@ -30,9 +39,10 @@ interface Class {
 interface Student {
   id: string;
   name: string;
-  registration: string;
+  registrationNumber: string;
   email: string;
-  classId: string;
+  classId: string | null;
+  mustChangePassword: boolean;
   class?: {
     name: string;
     modality?: {
@@ -45,6 +55,12 @@ export function StudentsTab() {
   const [dragActive, setDragActive] = useState(false);
   const [csvPreview, setCsvPreview] = useState<{ nome: string; email: string; turma: string }[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Dialog State (God Mode)
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [generatedPassword, setGeneratedPassword] = useState('');
+  const [tempStudentName, setTempStudentName] = useState('');
+  const [userRole, setUserRole] = useState<string | null>(null);
 
   // Estados dinâmicos do Banco de Dados
   const [alunosList, setAlunosList] = useState<Student[]>([]);
@@ -90,12 +106,12 @@ export function StudentsTab() {
       const [resModalidades, resTurmas, resAlunos] = await Promise.all([
         fetch(`${API_URL}/modalities`, { headers }),
         fetch(`${API_URL}/classes`, { headers }),
-        fetch(`${API_URL}/students`, { headers }).catch(() => null) // Fallback caso a rota de alunos ainda não exista
+        fetch(`${API_URL}/students`, { headers })
       ]);
 
       if (resModalidades.ok) setModalidades(await resModalidades.json());
       if (resTurmas.ok) setTurmas(await resTurmas.json());
-      if (resAlunos && resAlunos.ok) setAlunosList(await resAlunos.json());
+      if (resAlunos.ok) setAlunosList(await resAlunos.json());
 
     } catch (err) {
       console.error("Erro ao conectar à API Express:", err);
@@ -105,6 +121,7 @@ export function StudentsTab() {
   };
 
   useEffect(() => {
+    setUserRole(localStorage.getItem('user_role'));
     carregarDadosDoPainel();
   }, []);
 
@@ -125,7 +142,7 @@ export function StudentsTab() {
     const max = Math.floor(range.max);
     if (min > max) return;
 
-    const matriculasEmUso = new Set(alunosList.map(a => Number(a.registration)));
+    const matriculasEmUso = new Set(alunosList.map(a => Number(a.registrationNumber)));
     let ocupadasNoRange = 0;
     matriculasEmUso.forEach(m => {
       if (m >= min && m <= max) ocupadasNoRange++;
@@ -166,8 +183,11 @@ export function StudentsTab() {
 
       if (res.ok) {
         const data = await res.json();
-        setAlunosList(prev => [data, ...prev]);
-        alert("Aluno matriculado com sucesso!");
+        setAlunosList(prev => [data.student, ...prev]);
+        
+        setTempStudentName(data.student.name);
+        setGeneratedPassword(data.tempPassword);
+        setIsDialogOpen(true);
 
         setAlunoForm({
           nome: '',
@@ -177,10 +197,32 @@ export function StudentsTab() {
           matricula: ''
         });
       } else {
-        alert("Falha ao registrar aluno no servidor.");
+        const errData = await res.json();
+        alert(errData.error || "Falha ao registrar aluno no servidor.");
       }
     } catch (error) {
       console.error(error);
+      alert("Erro de conexão ao cadastrar aluno.");
+    }
+  };
+
+  const handleRemoverAluno = async (id: string) => {
+    if (!confirm("Tem certeza que deseja remover este aluno? Todos os seus dados serão apagados.")) return;
+    
+    try {
+      const res = await fetch(`${API_URL}/students/${id}`, {
+        method: 'DELETE',
+        headers: getHeaders()
+      });
+
+      if (res.ok) {
+        setAlunosList(prev => prev.filter(s => s.id !== id));
+      } else {
+        const errData = await res.json();
+        alert(errData.error || "Erro ao remover aluno.");
+      }
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -297,11 +339,13 @@ export function StudentsTab() {
   return (
     <div className="space-y-6">
       <Tabs defaultValue="lista" className="w-full flex flex-col space-y-6">
-        <TabsList className="w-full justify-start h-auto p-1 bg-muted/50 border rounded-lg flex-col sm:flex-row">
-          <TabsTrigger value="lista" className="py-2.5 px-4">Lista de Alunos</TabsTrigger>
-          <TabsTrigger value="cadastro" className="py-2.5 px-4">Cadastros & Importação</TabsTrigger>
-          <TabsTrigger value="config" className="py-2.5 px-4">Turmas e Modalidades</TabsTrigger>
-        </TabsList>
+        {userRole !== 'professor' && (
+          <TabsList className="w-full justify-start h-auto p-1 bg-muted/50 border rounded-lg flex-col sm:flex-row">
+            <TabsTrigger value="lista" className="py-2.5 px-4">Lista de Alunos</TabsTrigger>
+            <TabsTrigger value="cadastro" className="py-2.5 px-4">Cadastros & Importação</TabsTrigger>
+            <TabsTrigger value="config" className="py-2.5 px-4">Turmas e Modalidades</TabsTrigger>
+          </TabsList>
+        )}
 
         <TabsContent value="lista">
           <Card className="animate-in fade-in slide-in-from-bottom-2 duration-300 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border-none rounded-2xl bg-white">
@@ -358,12 +402,14 @@ export function StudentsTab() {
                       <TableHead>E-mail</TableHead>
                       <TableHead>Turma</TableHead>
                       <TableHead>Modalidade</TableHead>
+                      <TableHead>Tem Acesso?</TableHead>
+                      {userRole !== 'professor' && <TableHead className="text-right">Ações</TableHead>}
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {alunosList
                       .filter((aluno) => {
-                        const matchBusca = aluno.name.toLowerCase().includes(searchQuery.toLowerCase()) || aluno.registration.includes(searchQuery);
+                        const matchBusca = aluno.name.toLowerCase().includes(searchQuery.toLowerCase()) || aluno.registrationNumber.includes(searchQuery);
                         const matchTurma = filtroTurma === 'todas' || aluno.classId === filtroTurma;
                         const matchModalidade = filtroModalidade === 'todas' || aluno.class?.modality?.name === modalidades.find(m => m.id === filtroModalidade)?.name;
 
@@ -371,7 +417,7 @@ export function StudentsTab() {
                       })
                       .map((aluno) => (
                         <TableRow key={aluno.id}>
-                          <TableCell className="font-mono text-muted-foreground">{aluno.registration}</TableCell>
+                          <TableCell className="font-mono text-muted-foreground">{aluno.registrationNumber}</TableCell>
                           <TableCell className="font-medium">{aluno.name}</TableCell>
                           <TableCell>{aluno.email}</TableCell>
                           <TableCell>{aluno.class?.name || 'Não alocado'}</TableCell>
@@ -380,10 +426,28 @@ export function StudentsTab() {
                               {aluno.class?.modality?.name || 'Sem modalidade'}
                             </Badge>
                           </TableCell>
+                          <TableCell>
+                            {aluno.mustChangePassword ? (
+                              <Badge variant="secondary" className="bg-amber-100 text-amber-800 hover:bg-amber-100">
+                                Pendente
+                              </Badge>
+                            ) : (
+                              <Badge variant="secondary" className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100">
+                                Sim
+                              </Badge>
+                            )}
+                          </TableCell>
+                          {userRole !== 'professor' && (
+                            <TableCell className="text-right">
+                              <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => handleRemoverAluno(aluno.id)}>
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </TableCell>
+                          )}
                         </TableRow>
                       ))}
                     {alunosList.filter((aluno) => {
-                      const matchBusca = aluno.name.toLowerCase().includes(searchQuery.toLowerCase()) || aluno.registration.includes(searchQuery);
+                      const matchBusca = aluno.name.toLowerCase().includes(searchQuery.toLowerCase()) || aluno.registrationNumber.includes(searchQuery);
                       const matchTurma = filtroTurma === 'todas' || aluno.classId === filtroTurma;
                       const matchModalidade = filtroModalidade === 'todas' || aluno.class?.modality?.name === modalidades.find(m => m.id === filtroModalidade)?.name;
                       return matchBusca && matchTurma && matchModalidade;
@@ -702,6 +766,48 @@ export function StudentsTab() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Dialog para mostrar a senha provisória do aluno */}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <ShieldAlert className="w-5 h-5 text-amber-500" />
+              Matrícula Criada com Sucesso
+            </DialogTitle>
+            <DialogDescription>
+              O aluno <strong>{tempStudentName}</strong> foi adicionado ao sistema.
+              <br/><br/>
+              Como o envio de e-mails de boas-vindas ainda não está ativo, copie a senha provisória abaixo e envie para ele de forma segura. O login é o próprio email ou matrícula.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex items-center space-x-2 bg-muted p-4 rounded-md">
+            <div className="grid flex-1 gap-2">
+              <Label htmlFor="link" className="sr-only">
+                Senha
+              </Label>
+              <Input
+                id="link"
+                value={generatedPassword}
+                readOnly
+                className="font-mono text-center text-lg tracking-widest bg-background"
+              />
+            </div>
+            <Button size="sm" className="px-3" onClick={() => {
+              navigator.clipboard.writeText(generatedPassword);
+              alert("Copiado!");
+            }}>
+              <span className="sr-only">Copy</span>
+              Copiar
+            </Button>
+          </div>
+          <DialogFooter className="sm:justify-start">
+            <Button type="button" variant="secondary" onClick={() => setIsDialogOpen(false)}>
+              Fechar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

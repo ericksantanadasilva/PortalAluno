@@ -34,10 +34,26 @@ export function requireAuth(req: Request, res: Response, next: NextFunction) {
     }
 }
 
-// Bloqueia se não for admin ou secretaria da escola
+// Bloqueia se não for admin (usado para configurações avançadas e convites de equipe)
+export function requireStrictAdmin(req: Request, res: Response, next: NextFunction) {
+    if (!req.user || req.user.role !== 'admin') {
+        return res.status(403).json({ error: 'Acesso negado. Apenas administradores.' });
+    }
+    next();
+}
+
+// Bloqueia se não for admin ou secretaria da escola (usado para gerenciar alunos)
 export function requireAdmin(req: Request, res: Response, next: NextFunction) {
     if (!req.user || (req.user.role !== 'admin' && req.user.role !== 'secretaria')) {
         return res.status(403).json({ error: 'Acesso negado. Permissão insuficiente' });
+    }
+    next();
+}
+
+// Bloqueia se não for parte da equipe da escola (admin, secretaria, professor) (usado para listar dados gerais)
+export function requireStaff(req: Request, res: Response, next: NextFunction) {
+    if (!req.user || (req.user.role !== 'admin' && req.user.role !== 'secretaria' && req.user.role !== 'professor')) {
+        return res.status(403).json({ error: 'Acesso negado. Restrito à equipe.' });
     }
     next();
 }
