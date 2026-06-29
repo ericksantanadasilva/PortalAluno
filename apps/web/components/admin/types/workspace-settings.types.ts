@@ -1,5 +1,6 @@
 export interface TenantStyleConfig {
   logoUrl?: string;
+  loginUrl?: string;
   backgroundUrl?: string;
   primaryColor: string;
   secondaryColor: string;

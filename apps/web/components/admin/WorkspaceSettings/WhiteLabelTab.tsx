@@ -1,20 +1,61 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { TenantStyleConfig } from '../types/workspace-settings.types';
-import { UploadCloud, Image as ImageIcon, PaintBucket } from 'lucide-react';
+import { UploadCloud, Image as ImageIcon, PaintBucket, Loader2 } from 'lucide-react';
+import Image from 'next/image';
+
+const API_URL = "http://localhost:3001/api";
 
 export function WhiteLabelTab() {
   const [config, setConfig] = useState<TenantStyleConfig>({
     primaryColor: '#3b82f6',
     secondaryColor: '#1e40af',
   });
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [uploadingLogin, setUploadingLogin] = useState(false);
+
+  const logoInputRef = useRef<HTMLInputElement>(null);
+  const loginInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    fetchConfig();
+  }, []);
+
+  const fetchConfig = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch(`${API_URL}/tenant/config`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const newConfig = {
+          primaryColor: data.primaryColor || '#3b82f6',
+          secondaryColor: data.secondaryColor || '#1e40af',
+          logoUrl: data.logoUrl,
+          loginUrl: data.loginUrl
+        };
+        setConfig(newConfig);
+        applyCssVariables(newConfig.primaryColor, newConfig.secondaryColor);
+      }
+    } catch (error) {
+      console.error('Error fetching config', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const hexToHSL = (hex: string | any) => {
+    if (!hex || typeof hex !== 'string') return '0 0% 0%';
     let r = 0, g = 0, b = 0;
     if (hex.length === 4) {
       r = parseInt(hex[1] + hex[1], 16);
@@ -41,21 +82,86 @@ export function WhiteLabelTab() {
     return `${Math.round(h * 360)} ${(s * 100).toFixed(1)}% ${(l * 100).toFixed(1)}%`;
   };
 
+  const applyCssVariables = (primary: string, secondary: string) => {
+    document.documentElement.style.setProperty('--primary', hexToHSL(primary));
+    document.documentElement.style.setProperty('--secondary', hexToHSL(secondary));
+  };
+
   const handleChangeColor = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setConfig({
-      ...config,
-      [name]: value,
-    });
+    const newConfig = { ...config, [name]: value };
+    setConfig(newConfig);
+    applyCssVariables(newConfig.primaryColor, newConfig.secondaryColor);
+  };
 
-    // Atualiza a variável CSS no :root convertendo para HSL do Tailwind
-    const hslValue = hexToHSL(value);
-    if (name === 'primaryColor') {
-      document.documentElement.style.setProperty('--primary', hslValue);
-    } else if (name === 'secondaryColor') {
-      document.documentElement.style.setProperty('--secondary', hslValue);
+  const saveConfig = async () => {
+    setSaving(true);
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch(`${API_URL}/tenant/config`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(config)
+      });
+      if (res.ok) {
+        alert('Configurações salvas com sucesso!');
+      } else {
+        alert('Erro ao salvar as configurações.');
+      }
+    } catch (error) {
+      console.error(error);
+      alert('Erro ao salvar as configurações.');
+    } finally {
+      setSaving(false);
     }
   };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'logo' | 'login') => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (type === 'logo') setUploadingLogo(true);
+    else setUploadingLogin(true);
+
+    try {
+      const token = localStorage.getItem('token');
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const res = await fetch(`${API_URL}/upload`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: formData
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data.url) {
+          setConfig(prev => ({
+            ...prev,
+            [type === 'logo' ? 'logoUrl' : 'loginUrl']: data.url
+          }));
+        }
+      } else {
+        alert('Erro ao fazer o upload para o Google Drive.');
+      }
+    } catch (error) {
+      console.error('Upload falhou', error);
+      alert('Erro ao fazer o upload para o Google Drive.');
+    } finally {
+      if (type === 'logo') setUploadingLogo(false);
+      else setUploadingLogin(false);
+    }
+  };
+
+  if (loading) {
+    return <div className="flex justify-center p-8"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>;
+  }
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -118,9 +224,6 @@ export function WhiteLabelTab() {
               </div>
             </div>
           </CardContent>
-          <CardFooter>
-            <Button className="w-full sm:w-auto">Salvar Cores</Button>
-          </CardFooter>
         </Card>
 
         <Card className="shadow-[0_8px_30px_rgb(0,0,0,0.02)] border-none rounded-2xl bg-white">
@@ -130,28 +233,59 @@ export function WhiteLabelTab() {
               Imagens e Logomarcas
             </CardTitle>
             <CardDescription>
-              Faça o upload da logomarca do seu curso e da imagem de fundo da tela de login.
+              Faça o upload da logomarca do seu curso e da imagem de fundo da tela de login. Elas serão salvas no Google Drive de forma automática.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
+            <input type="file" ref={logoInputRef} className="hidden" accept="image/*" onChange={(e) => handleFileUpload(e, 'logo')} />
+            <input type="file" ref={loginInputRef} className="hidden" accept="image/*" onChange={(e) => handleFileUpload(e, 'login')} />
+
             <div className="space-y-3">
               <Label>Logo do Curso</Label>
-              <div className="border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center gap-2 text-muted-foreground hover:bg-muted/50 transition-colors cursor-pointer">
-                <UploadCloud className="w-8 h-8" />
-                <span className="text-sm font-medium">Clique ou arraste a imagem da logo</span>
-                <span className="text-xs">PNG, JPG ou SVG (Máx. 2MB)</span>
+              <div 
+                onClick={() => !uploadingLogo && logoInputRef.current?.click()}
+                className="border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center gap-2 text-muted-foreground hover:bg-muted/50 transition-colors cursor-pointer relative overflow-hidden h-40"
+              >
+                {uploadingLogo ? (
+                  <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                ) : config.logoUrl ? (
+                  <Image src={config.logoUrl} alt="Logo preview" fill className="object-contain p-2" unoptimized />
+                ) : (
+                  <>
+                    <UploadCloud className="w-8 h-8" />
+                    <span className="text-sm font-medium">Clique para escolher a logo</span>
+                    <span className="text-xs">PNG, JPG ou SVG (Máx. 2MB)</span>
+                  </>
+                )}
               </div>
             </div>
 
             <div className="space-y-3">
               <Label>Plano de Fundo (Login)</Label>
-              <div className="border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center gap-2 text-muted-foreground hover:bg-muted/50 transition-colors cursor-pointer">
-                <UploadCloud className="w-8 h-8" />
-                <span className="text-sm font-medium">Clique ou arraste a imagem de fundo</span>
-                <span className="text-xs">PNG, JPG (Máx. 5MB)</span>
+              <div 
+                onClick={() => !uploadingLogin && loginInputRef.current?.click()}
+                className="border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center gap-2 text-muted-foreground hover:bg-muted/50 transition-colors cursor-pointer relative overflow-hidden h-40"
+              >
+                {uploadingLogin ? (
+                  <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                ) : config.loginUrl ? (
+                  <Image src={config.loginUrl} alt="Login background preview" fill className="object-cover opacity-50" unoptimized />
+                ) : (
+                  <>
+                    <UploadCloud className="w-8 h-8" />
+                    <span className="text-sm font-medium">Clique para escolher a imagem de fundo</span>
+                    <span className="text-xs">PNG, JPG (Máx. 5MB)</span>
+                  </>
+                )}
               </div>
             </div>
           </CardContent>
+          <CardFooter>
+            <Button onClick={saveConfig} disabled={saving} className="w-full sm:w-auto">
+              {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+              Salvar Configurações
+            </Button>
+          </CardFooter>
         </Card>
       </div>
 
@@ -165,11 +299,22 @@ export function WhiteLabelTab() {
             </CardDescription>
           </CardHeader>
           <CardContent className="p-0">
-            <div className="p-4" style={{ backgroundColor: config.primaryColor + '10' }}>
+            <div className="p-4 relative min-h-[300px]" style={{ backgroundColor: config.primaryColor + '10' }}>
+              {config.loginUrl && (
+                  <div className="absolute inset-0 opacity-10 pointer-events-none" style={{
+                      backgroundImage: `url('${config.loginUrl}')`,
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center',
+                  }} />
+              )}
               {/* Fake Dashboard Header */}
-              <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center justify-between mb-6 relative z-10">
                 <div className="font-bold text-lg tracking-tight flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-full" style={{ backgroundColor: config.primaryColor }} />
+                  {config.logoUrl ? (
+                    <div className="relative w-8 h-8"><Image src={config.logoUrl} alt="Logo" fill className="object-contain" unoptimized /></div>
+                  ) : (
+                    <div className="w-6 h-6 rounded-full" style={{ backgroundColor: config.primaryColor }} />
+                  )}
                   Sua Marca
                 </div>
                 <div className="flex gap-2">
@@ -179,7 +324,7 @@ export function WhiteLabelTab() {
               </div>
 
               {/* Fake Content Area */}
-              <div className="space-y-4">
+              <div className="space-y-4 relative z-10">
                 <div className="bg-white rounded-2xl p-5 shadow-[0_4px_15px_rgb(0,0,0,0.02)] border-none transition-transform hover:-translate-y-1">
                   <div className="flex items-center justify-between mb-4">
                     <div className="text-sm font-bold text-slate-800">Desempenho Geral</div>

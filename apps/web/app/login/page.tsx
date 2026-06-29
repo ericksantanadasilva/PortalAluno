@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { tenantConfigMock } from "@repo/database-mocks";
+import { useTenant } from "@/components/TenantProvider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const router = useRouter();
+  const tenantConfig = useTenant();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -115,8 +116,8 @@ export default function LoginPage() {
           <div className="flex flex-col space-y-2 text-center items-center">
             <div className="w-24 h-24 rounded-full overflow-hidden mb-4 ring-4 ring-primary/20">
               <img
-                src={tenantConfigMock.logo_url}
-                alt={`Logo ${tenantConfigMock.nome}`}
+                src={tenantConfig.logo_url}
+                alt={`Logo ${tenantConfig.nome}`}
                 className="w-full h-full object-cover"
               />
             </div>
@@ -126,7 +127,7 @@ export default function LoginPage() {
             <p className="text-sm text-muted-foreground">
               {mustReset
                 ? "Substitua a sua senha temporária de primeiro acesso"
-                : `Acesse sua conta do ${tenantConfigMock.nome}`}
+                : `Acesse sua conta do ${tenantConfig.nome}`}
             </p>
           </div>
 

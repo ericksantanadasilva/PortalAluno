@@ -47,7 +47,9 @@ model Tenant {
     name         String
     slug         String   @unique
     primaryColor String   @default("#10b981") @map("primary_color")
+    secondaryColor String? @map("secondary_color")
     logoUrl      String?  @map("logo_url")
+    loginUrl     String?  @map("login_url")
     createdAt    DateTime @default(now()) @map("created_at")
     updatedAt    DateTime @updatedAt @map("updated_at")
 

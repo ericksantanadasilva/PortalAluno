@@ -1,7 +1,18 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, createContext, useContext } from "react";
 import { TenantConfig } from "@repo/database-mocks";
+
+// Cria o contexto para as configurações
+export const TenantContext = createContext<TenantConfig | null>(null);
+
+export function useTenant() {
+  const context = useContext(TenantContext);
+  if (!context) {
+    throw new Error("useTenant must be used within a TenantProvider");
+  }
+  return context;
+}
 
 export default function TenantProvider({
   children,
@@ -17,5 +28,9 @@ export default function TenantProvider({
     document.documentElement.style.setProperty("--background-login", `url('${tenantConfig.background_login}')`);
   }, [tenantConfig]);
 
-  return <>{children}</>;
+  return (
+    <TenantContext.Provider value={tenantConfig}>
+      {children}
+    </TenantContext.Provider>
+  );
 }

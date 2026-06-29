@@ -8,7 +8,8 @@ import classRoutes from "./routes/class.routes";
 import modalityRoutes from "./routes/modality.routes";
 import employeeRoutes from "./routes/employee.routes";
 import studentRoutes from "./routes/student.routes";
-
+import tenantRoutes from "./routes/tenant.routes";
+import uploadRoutes from "./routes/upload.routes";
 dotenv.config();
 
 const app = express();
@@ -39,7 +40,8 @@ app.use('/api/classes', classRoutes);
 app.use('/api/modalities', modalityRoutes);
 app.use('/api/employees', employeeRoutes);
 app.use('/api/students', studentRoutes);
-
+app.use('/api/tenant', tenantRoutes);
+app.use('/api/upload', uploadRoutes);
 app.listen(port, () => {
     console.log(`Api do portal rodando na porta ${port}`)
 });

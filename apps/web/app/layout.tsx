@@ -22,11 +22,32 @@ export const metadata: Metadata = {
   description: "Sistema escolar de alta performance",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
+  // Busca a configuração do Tenant da API pública (para Single-tenant, pega o primeiro)
+  let tenantConfig = tenantConfigMock;
+  try {
+    const res = await fetch('http://localhost:3001/api/tenant/public-config', { cache: 'no-store' });
+    if (res.ok) {
+      const data = await res.json();
+      // Mapeia do backend pro formato esperado pelo frontend
+      tenantConfig = {
+        ...tenantConfigMock,
+        cor_primaria: data.primaryColor || tenantConfigMock.cor_primaria,
+        cor_secundaria: data.secondaryColor || tenantConfigMock.cor_secundaria,
+        logo_url: data.logoUrl || tenantConfigMock.logo_url,
+        background_login: data.loginUrl || tenantConfigMock.background_login,
+        nome: data.name || tenantConfigMock.nome
+      };
+    }
+  } catch (error) {
+    console.error('Erro ao buscar tenant config:', error);
+  }
+
   return (
     // O suppressHydrationWarning impede que extensões de terceiros que injetam 
     // atributos nas tags quebrem o ciclo de vida do React no mobile.
@@ -35,7 +56,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-background`}
         suppressHydrationWarning
       >
-        <TenantProvider tenantConfig={tenantConfigMock}>
+        <TenantProvider tenantConfig={tenantConfig}>
           {children}
         </TenantProvider>
       </body>

@@ -47,7 +47,7 @@ export function WorkspaceSettings() {
       <div className="flex flex-col space-y-6">
         {/* Mobile Navigation (Select) */}
         <div className="md:hidden">
-          <Select value={activeTab} onValueChange={setActiveTab}>
+          <Select value={activeTab} onValueChange={(val) => { if (val) setActiveTab(val); }}>
             <SelectTrigger className="w-full h-12 bg-background">
               <SelectValue placeholder="Navegar pelas configurações...">
                 {filteredTabs.find(t => t.id === activeTab)?.label}

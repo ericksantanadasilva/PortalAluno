@@ -19,7 +19,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { AlunoForm } from '../types/workspace-settings.types';
-import { AlunoForm } from '../types/workspace-settings.types';
+
 
 // URL base do seu servidor Express no Monorepo
 const API_URL = "http://localhost:3001/api";
@@ -184,7 +184,7 @@ export function StudentsTab() {
       if (res.ok) {
         const data = await res.json();
         setAlunosList(prev => [data.student, ...prev]);
-        
+
         setTempStudentName(data.student.name);
         setGeneratedPassword(data.tempPassword);
         setIsDialogOpen(true);
@@ -208,7 +208,7 @@ export function StudentsTab() {
 
   const handleRemoverAluno = async (id: string) => {
     if (!confirm("Tem certeza que deseja remover este aluno? Todos os seus dados serão apagados.")) return;
-    
+
     try {
       const res = await fetch(`${API_URL}/students/${id}`, {
         method: 'DELETE',
@@ -777,7 +777,7 @@ export function StudentsTab() {
             </DialogTitle>
             <DialogDescription>
               O aluno <strong>{tempStudentName}</strong> foi adicionado ao sistema.
-              <br/><br/>
+              <br /><br />
               Como o envio de e-mails de boas-vindas ainda não está ativo, copie a senha provisória abaixo e envie para ele de forma segura. O login é o próprio email ou matrícula.
             </DialogDescription>
           </DialogHeader>

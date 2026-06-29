@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { tenantConfigMock, alunoProfileMock } from "@repo/database-mocks";
+import { alunoProfileMock } from "@repo/database-mocks";
+import { useTenant } from "@/components/TenantProvider";
 import { FrequenciaProvider } from "@/contexts/FrequenciaContext";
 import { BookOpen, User, Calendar, LogOut, Menu, X, Laptop, Settings } from "lucide-react";
 import Link from "next/link";
@@ -15,6 +16,7 @@ export default function DashboardLayout({
 }) {
   const pathname = usePathname();
   const router = useRouter();
+  const tenantConfig = useTenant();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [userRole, setUserRole] = useState<string | null>(null);
   const [isCheckingRole, setIsCheckingRole] = useState(true);
@@ -55,14 +57,14 @@ export default function DashboardLayout({
           <div className="flex items-center">
             <div className="w-10 h-10 rounded-full overflow-hidden mr-3 ring-2 ring-primary">
               <img
-                src={tenantConfigMock.logo_url}
+                src={tenantConfig.logo_url}
                 alt="Logo"
                 className="w-full h-full object-cover"
               />
             </div>
             <div>
               <h2 className="font-semibold text-lg leading-tight text-primary">
-                {tenantConfigMock.nome}
+                {tenantConfig.nome}
               </h2>
               <p className="text-xs text-muted-foreground">Área do Aluno</p>
             </div>
@@ -166,16 +168,16 @@ export default function DashboardLayout({
       <aside className="hidden md:flex w-64 h-full flex-col bg-muted border-r border-border shadow-sm shrink-0">
         <div className="h-20 flex items-center px-6 border-b border-border">
           <div className="w-10 h-10 rounded-full overflow-hidden mr-3 ring-2 ring-primary">
-            <img
-              src={tenantConfigMock.logo_url}
-              alt="Logo"
+            <img 
+              src={tenantConfig.logo_url} 
+              alt="Logo" 
               className="w-full h-full object-cover"
             />
           </div>
           <div>
-            <h2 className="font-semibold text-lg leading-tight text-primary">
-              {tenantConfigMock.nome}
-            </h2>
+            <span className="font-semibold text-lg text-sidebar-foreground truncate max-w-[140px]">
+              {tenantConfig.nome}
+            </span>
             <p className="text-xs text-muted-foreground">Área do Aluno</p>
           </div>
         </div>
