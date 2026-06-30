@@ -244,10 +244,15 @@ export default function LoginPage() {
       </div>
 
       {/* Lado da Imagem (White-Label Background) */}
-      <div
-        className="hidden lg:flex flex-1 relative bg-cover bg-center"
-        style={{ backgroundImage: `var(--background-login)` }}
-      >
+      <div className="hidden lg:flex flex-1 relative bg-muted overflow-hidden">
+        <img
+          src={tenantConfig.background_login}
+          alt="Login Background"
+          className="absolute inset-0 w-full h-full object-cover"
+          loading="eager"
+          // @ts-ignore - fetchPriority is supported in most modern browsers but types might lag
+          fetchPriority="high"
+        />
         <div className="absolute inset-0 bg-primary/20 mix-blend-multiply" />
         <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
       </div>

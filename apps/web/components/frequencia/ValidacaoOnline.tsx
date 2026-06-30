@@ -219,7 +219,6 @@ export function ValidacaoOnline({
             </span>
             {janela && (
               <Badge variant="outline" className="text-[10px] gap-1 font-medium">
-                <Repeat className="w-3 h-3" />
                 {getLabelDiaSemana(janela.diaSemana as any)}
               </Badge>
             )}
@@ -270,7 +269,7 @@ export function ValidacaoOnline({
                     }`}
                 >
                   {feedback.type === "success" ? (
-                     <CheckCircle className="w-4 h-4 shrink-0" />
+                    <CheckCircle className="w-4 h-4 shrink-0" />
                   ) : (
                     <XCircle className="w-4 h-4 shrink-0" />
                   )}

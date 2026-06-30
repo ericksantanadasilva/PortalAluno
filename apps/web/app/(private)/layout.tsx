@@ -19,11 +19,32 @@ export default function DashboardLayout({
   const tenantConfig = useTenant();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [userRole, setUserRole] = useState<string | null>(null);
+  const [userProfile, setUserProfile] = useState<any>(null);
   const [isCheckingRole, setIsCheckingRole] = useState(true);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user_role");
+    localStorage.removeItem("tenant_slug");
+    router.push("/login");
+  };
 
   useEffect(() => {
     const role = localStorage.getItem('user_role');
+    const token = localStorage.getItem('token');
     setUserRole(role);
+
+    // Carrega o perfil logado
+    if (token) {
+      fetch('http://localhost:3001/api/auth/me', {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (!data.error) setUserProfile(data);
+      })
+      .catch(err => console.error(err));
+    }
 
     // Se o usuário for aluno e tentar acessar páginas restritas, redireciona para o boletim
     if (role === 'aluno' && (pathname.includes('/dashboard/frequencia') || pathname.includes('/admin/settings'))) {
@@ -177,16 +198,14 @@ export default function DashboardLayout({
         </nav>
 
         <div className="p-4 border-t border-border">
-          <Link href="/login" passHref>
-            <Button
-              variant="outline"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10 border-none"
-            >
-              <LogOut className="mr-3 h-5 w-5" />
-              Sair
-            </Button>
-          </Link>
+          <Button
+            variant="outline"
+            onClick={handleLogout}
+            className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10 border-none"
+          >
+            <LogOut className="mr-3 h-5 w-5" />
+            Sair
+          </Button>
         </div>
       </aside>
 
@@ -299,15 +318,14 @@ export default function DashboardLayout({
         </nav>
 
         <div className="p-4 border-t border-border">
-          <Link href="/login" passHref>
-            <Button
-              variant="outline"
-              className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10 border-none"
-            >
-              <LogOut className="mr-3 h-5 w-5" />
-              Sair
-            </Button>
-          </Link>
+          <Button
+            variant="outline"
+            onClick={handleLogout}
+            className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10 border-none"
+          >
+            <LogOut className="mr-3 h-5 w-5" />
+            Sair
+          </Button>
         </div>
       </aside>
 
@@ -330,16 +348,18 @@ export default function DashboardLayout({
           <div className="flex items-center space-x-4">
             <div className="text-right hidden sm:block">
               <p className="text-sm font-medium leading-none text-foreground">
-                {alunoProfileMock.nome}
+                {userProfile ? userProfile.name : "Carregando..."}
               </p>
-              <p className="text-xs text-muted-foreground">{alunoProfileMock.turma}</p>
+              <p className="text-xs text-muted-foreground">
+                {userProfile 
+                  ? (userProfile.role === 'aluno' ? `${userProfile.registrationNumber} • ${userProfile.className || 'Sem Turma'}` : 'Equipe') 
+                  : "..."}
+              </p>
             </div>
             <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold border border-primary/20">
-              {alunoProfileMock.nome
-                .split(" ")
-                .map((n) => n[0])
-                .slice(0, 2)
-                .join("")}
+              {userProfile && userProfile.name
+                ? userProfile.name.split(" ").map((n: string) => n[0]).slice(0, 2).join("")
+                : "US"}
             </div>
           </div>
         </header>
