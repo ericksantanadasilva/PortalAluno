@@ -1,42 +1,31 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { WhiteLabelTab } from './WhiteLabelTab';
-import { StudentsTab } from './StudentsTab';
-import { EmployeesTab } from './EmployeesTab';
-import { Palette, Users, Briefcase } from 'lucide-react';
+import { ExamsManager } from '@/components/simulados/ExamsManager';
+import { AnswerKeysManager } from '@/components/simulados/AnswerKeysManager';
+import { FileSignature, LayoutList } from 'lucide-react';
 
 const TABS = [
-  { id: 'whitelabel', label: 'Personalização', icon: Palette, component: WhiteLabelTab },
-  { id: 'students', label: 'Alunos e Matrículas', icon: Users, component: StudentsTab },
-  { id: 'employees', label: 'Equipe e Funcionários', icon: Briefcase, component: EmployeesTab },
+  { id: 'exams', label: 'Gestão de Simulados', icon: FileSignature, component: ExamsManager },
+  { id: 'answers', label: 'Gabaritos', icon: LayoutList, component: AnswerKeysManager },
 ];
 
-export function WorkspaceSettings() {
-  const [activeTab, setActiveTab] = useState<string>('students'); // Alterar padrão inicial
-  const [userRole, setUserRole] = useState<string | null>(null);
+export default function SimuladosPage() {
+  const [activeTab, setActiveTab] = useState<string>('exams');
+  const [updateTrigger, setUpdateTrigger] = useState(0);
 
-  React.useEffect(() => {
-    const role = localStorage.getItem('user_role');
-    setUserRole(role);
-    if (role === 'admin') {
-      setActiveTab('whitelabel');
-    }
-  }, []);
-
-  const filteredTabs = React.useMemo(() => {
-    if (userRole === 'admin') return TABS;
-    return TABS.filter(t => t.id !== 'whitelabel');
-  }, [userRole]);
+  const handleUpdate = () => {
+    setUpdateTrigger(prev => prev + 1);
+  };
 
   return (
     <div className="w-full max-w-7xl mx-auto space-y-8 p-4 md:p-8">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Configurações da Unidade</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Simulados e Avaliações</h1>
         <p className="text-muted-foreground mt-2">
-          Gerencie a identidade visual, alunos matriculados e a equipe da sua instituição.
+          Gerencie os simulados, crie provas e importe os gabaritos dos seus alunos.
         </p>
       </div>
 
@@ -45,12 +34,12 @@ export function WorkspaceSettings() {
         <div className="md:hidden">
           <Select value={activeTab} onValueChange={(val) => { if (val) setActiveTab(val); }}>
             <SelectTrigger className="w-full h-12 bg-background">
-              <SelectValue placeholder="Navegar pelas configurações...">
-                {filteredTabs.find(t => t.id === activeTab)?.label}
+              <SelectValue placeholder="Navegar...">
+                {TABS.find(t => t.id === activeTab)?.label}
               </SelectValue>
             </SelectTrigger>
             <SelectContent>
-              {filteredTabs.map((tab) => {
+              {TABS.map((tab) => {
                 const Icon = tab.icon;
                 return (
                   <SelectItem key={tab.id} value={tab.id}>
@@ -72,7 +61,7 @@ export function WorkspaceSettings() {
           className="hidden md:block w-full"
         >
           <TabsList className="w-full justify-start h-auto p-1 bg-muted/50 border">
-            {filteredTabs.map((tab) => {
+            {TABS.map((tab) => {
               const Icon = tab.icon;
               return (
                 <TabsTrigger 
@@ -90,9 +79,9 @@ export function WorkspaceSettings() {
 
         {/* Tab Content Container */}
         <div className="mt-6">
-          {filteredTabs.map((tab) => (
+          {TABS.map((tab) => (
             <div key={tab.id} className={activeTab === tab.id ? 'block animate-in fade-in slide-in-from-bottom-2 duration-300' : 'hidden'}>
-              <tab.component />
+              <tab.component onUpdate={handleUpdate} updateTrigger={updateTrigger} />
             </div>
           ))}
         </div>

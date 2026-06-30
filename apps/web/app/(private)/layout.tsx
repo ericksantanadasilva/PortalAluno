@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { alunoProfileMock } from "@repo/database-mocks";
 import { useTenant } from "@/components/TenantProvider";
 import { FrequenciaProvider } from "@/contexts/FrequenciaContext";
-import { BookOpen, User, Calendar, LogOut, Menu, X, Laptop, Settings } from "lucide-react";
+import { BookOpen, User, Calendar, LogOut, Menu, X, Laptop, Settings, FileSignature, Library } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
@@ -122,6 +122,32 @@ export default function DashboardLayout({
                   Frequência & Abonos
                 </Button>
               </Link>
+              <Link href="/materias" passHref>
+                <Button
+                  variant={pathname === "/materias" ? "secondary" : "ghost"}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={`w-full justify-start font-medium ${pathname === "/materias"
+                    ? "bg-primary/10 text-primary hover:bg-primary/20"
+                    : "text-muted-foreground hover:text-foreground"
+                    }`}
+                >
+                  <Library className="mr-3 h-5 w-5" />
+                  Disciplinas
+                </Button>
+              </Link>
+              <Link href="/simulados" passHref>
+                <Button
+                  variant={pathname === "/simulados" ? "secondary" : "ghost"}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={`w-full justify-start font-medium ${pathname === "/simulados"
+                    ? "bg-primary/10 text-primary hover:bg-primary/20"
+                    : "text-muted-foreground hover:text-foreground"
+                    }`}
+                >
+                  <FileSignature className="mr-3 h-5 w-5" />
+                  Simulados
+                </Button>
+              </Link>
               <Link href="/admin/settings" passHref>
                 <Button
                   variant={pathname === "/admin/settings" ? "secondary" : "ghost"}
@@ -220,6 +246,30 @@ export default function DashboardLayout({
                 >
                   <Calendar className="mr-3 h-5 w-5" />
                   Frequência & Abonos
+                </Button>
+              </Link>
+              <Link href="/materias" passHref>
+                <Button
+                  variant={pathname === "/materias" ? "secondary" : "ghost"}
+                  className={`w-full justify-start font-medium ${pathname === "/materias"
+                    ? "bg-primary/10 text-primary hover:bg-primary/20"
+                    : "text-muted-foreground hover:text-foreground"
+                    }`}
+                >
+                  <Library className="mr-3 h-5 w-5" />
+                  Disciplinas
+                </Button>
+              </Link>
+              <Link href="/simulados" passHref>
+                <Button
+                  variant={pathname === "/simulados" ? "secondary" : "ghost"}
+                  className={`w-full justify-start font-medium ${pathname === "/simulados"
+                    ? "bg-primary/10 text-primary hover:bg-primary/20"
+                    : "text-muted-foreground hover:text-foreground"
+                    }`}
+                >
+                  <FileSignature className="mr-3 h-5 w-5" />
+                  Simulados
                 </Button>
               </Link>
               <Link href="/admin/settings" passHref>

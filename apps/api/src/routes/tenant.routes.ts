@@ -92,4 +92,19 @@ router.put('/config', async (req, res) => {
     }
 });
 
+// GET /api/tenant/subjects - Lista as disciplinas da unidade
+router.get('/subjects', async (req, res) => {
+    try {
+        const tenantId = req.user!.tenantId;
+        const subjects = await prisma.subject.findMany({
+            where: { tenantId },
+            orderBy: { name: 'asc' }
+        });
+        return res.json(subjects);
+    } catch (error) {
+        console.error('Error fetching tenant subjects:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 export default router;

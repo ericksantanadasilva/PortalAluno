@@ -428,11 +428,11 @@ export function StudentsTab() {
                           </TableCell>
                           <TableCell>
                             {aluno.mustChangePassword ? (
-                              <Badge variant="secondary" className="bg-amber-100 text-amber-800 hover:bg-amber-100">
+                              <Badge variant="secondary" className="bg-amber-100 text-amber-800 hover:bg-amber-100 rounded-full">
                                 Pendente
                               </Badge>
                             ) : (
-                              <Badge variant="secondary" className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100">
+                              <Badge variant="secondary" className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100 rounded-full">
                                 Sim
                               </Badge>
                             )}

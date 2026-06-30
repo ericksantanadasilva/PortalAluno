@@ -206,6 +206,8 @@ model Exam {
     title          String
     date           DateTime @db.Date
     totalQuestions Int      @default(60) @map("total_questions")
+    type           String   @default("enem")
+    isPublished    Boolean  @default(false) @map("is_published")
     createdAt      DateTime @default(now()) @map("created_at")
 
     tenant           Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
@@ -223,11 +225,13 @@ model ExamQuestion {
     difficultyTier     DifficultyTier @map("difficulty_tier")
     isAnnulled         Boolean        @default(false) @map("is_annulled")
     subjectId          String         @map("subject_id") @db.Uuid
+    theme              String?
+    language           String         @default("none")
 
     exam    Exam    @relation(fields: [examId], references: [id], onDelete: Cascade)
     subject Subject @relation(fields: [subjectId], references: [id], onDelete: Restrict)
 
-    @@unique([examId, questionNumber])
+    @@unique([examId, questionNumber, language])
     @@map("exam_questions")
 }
 
@@ -240,6 +244,7 @@ model StudentResponse {
     chosenAlternative String?  @map("chosen_alternative") @db.Char(1)
     isCorrect         Boolean  @default(false) @map("is_correct")
     importedViaRemark Boolean  @default(false) @map("imported_via_remark")
+    language          String   @default("none")
     createdAt         DateTime @default(now()) @map("created_at")
 
     tenant  Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)

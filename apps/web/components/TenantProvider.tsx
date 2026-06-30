@@ -2,6 +2,7 @@
 
 import { useEffect, createContext, useContext } from "react";
 import { TenantConfig } from "@repo/database-mocks";
+import { hexToHSL } from "@/lib/utils";
 
 // Cria o contexto para as configurações
 export const TenantContext = createContext<TenantConfig | null>(null);
@@ -23,8 +24,8 @@ export default function TenantProvider({
 }) {
   useEffect(() => {
     // Injeta as variáveis de cor no :root
-    document.documentElement.style.setProperty("--primary", tenantConfig.cor_primaria);
-    document.documentElement.style.setProperty("--secondary", tenantConfig.cor_secundaria);
+    document.documentElement.style.setProperty("--primary", hexToHSL(tenantConfig.cor_primaria));
+    document.documentElement.style.setProperty("--secondary", hexToHSL(tenantConfig.cor_secundaria));
     document.documentElement.style.setProperty("--background-login", `url('${tenantConfig.background_login}')`);
   }, [tenantConfig]);
 
