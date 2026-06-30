@@ -8,7 +8,7 @@ const router = Router();
 // ============================================================================
 // 1. CHAMADA DIÁRIA (Alunos de uma turma em uma data)
 // ============================================================================
-router.get('/classes/:classId/students', requireAuth, requireStaff, async (req, res) => {
+router.get('/classes/:classId/students', requireAuth, async (req, res) => {
     try {
         const { classId } = req.params;
         const { date, subjectId } = req.query; // date (YYYY-MM-DD), subjectId (uuid)
@@ -75,7 +75,7 @@ router.get('/classes/:classId/students', requireAuth, requireStaff, async (req, 
 });
 
 // Registrar presença/falta
-router.post('/record', requireAuth, requireStaff, async (req, res) => {
+router.post('/record', requireAuth, async (req, res) => {
     try {
         const tenantId = req.user!.tenantId;
         const schema = z.object({
@@ -89,6 +89,11 @@ router.post('/record', requireAuth, requireStaff, async (req, res) => {
 
         const data = schema.parse(req.body);
         const dateObj = new Date(data.date);
+
+        // Segurança: Alunos só podem registrar a própria presença
+        if (req.user!.role === 'aluno' && req.user!.userId !== data.studentId) {
+            return res.status(403).json({ error: 'Você só pode registrar sua própria presença.' });
+        }
 
         const existing = await prisma.attendanceRecord.findFirst({
             where: { tenantId, classId: data.classId, subjectId: data.subjectId, studentId: data.studentId, date: dateObj }
@@ -254,7 +259,7 @@ router.delete('/excuses/:id', requireAuth, requireStaff, async (req, res) => {
 // ============================================================================
 // 3. JANELAS DE PRESENÇA ONLINE
 // ============================================================================
-router.get('/windows', requireAuth, requireStaff, async (req, res) => {
+router.get('/windows', requireAuth, async (req, res) => {
     try {
         const tenantId = req.user!.tenantId;
         const windows = await prisma.presenceWindow.findMany({

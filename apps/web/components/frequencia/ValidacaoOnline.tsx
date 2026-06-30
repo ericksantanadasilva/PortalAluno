@@ -5,7 +5,6 @@ import {
   getLabelDiaSemana,
   getStatusJanelaValidacao,
   isDiaJanelaAtiva,
-  type AlunoProfile,
 } from "@repo/database-mocks";
 import { useFrequencia } from "@/contexts/FrequenciaContext";
 import { Card, CardContent } from "@/components/ui/card";
@@ -22,7 +21,13 @@ import {
 } from "lucide-react";
 
 interface ValidacaoOnlineProps {
-  aluno: AlunoProfile;
+  aluno: {
+    id: string;
+    nome: string;
+    matricula: string;
+    turma: string;
+    turmaNome?: string;
+  };
   disciplinaAtivaId?: string;
   disciplinaAtivaNome?: string;
 }
@@ -34,7 +39,7 @@ export function ValidacaoOnline({
   disciplinaAtivaId = "id-da-disciplina",
   disciplinaAtivaNome = "Matemática",
 }: ValidacaoOnlineProps) {
-  const { alunos, janelas, confirmarPresencaOnline } = useFrequencia();
+  const { alunos, janelas, confirmarPresencaOnline, loadAlunos } = useFrequencia();
   const [agora, setAgora] = useState<Date | null>(null);
   const [feedback, setFeedback] = useState<{ type: "success" | "error"; text: string } | null>(
     null
@@ -47,7 +52,7 @@ export function ValidacaoOnline({
     return () => clearInterval(interval);
   }, []);
 
-  const alunoChamada = alunos.find((a) => a.id === ALUNO_ONLINE_ID);
+  const alunoChamada = alunos.find((a) => a.id === aluno.id);
   const isPresente = alunoChamada?.status_atual === "Presente";
 
   const janela = useMemo(() => {
@@ -102,6 +107,14 @@ export function ValidacaoOnline({
     return `A validação de hoje encerrou às ${janela.horaFechamento}.`;
   }, [janela, hojeEhDiaDaJanela, statusJanela]);
 
+  // Carrega a presença atual do aluno quando descobre qual a janela do dia
+  useEffect(() => {
+    if (janela && aluno.turma) {
+      const dataHoje = new Date().toLocaleDateString("en-CA");
+      loadAlunos(aluno.turma, dataHoje, janela.subjectId);
+    }
+  }, [janela, aluno.turma, loadAlunos]);
+
   const iniciais = aluno.nome
     .split(" ")
     .map((n) => n[0])
@@ -151,7 +164,7 @@ export function ValidacaoOnline({
       }
 
       const dataHoje = new Date().toLocaleDateString("en-CA");
-      confirmarPresencaOnline(ALUNO_ONLINE_ID, aluno.turma, dataHoje, janela.subjectId);
+      confirmarPresencaOnline(aluno.id, aluno.turma, dataHoje, janela.subjectId);
       setFeedback({
         type: "success",
         text: "Presença confirmada! Seu check-in foi registrado na chamada da secretaria.",
@@ -192,7 +205,7 @@ export function ValidacaoOnline({
             <div>
               <h3 className="text-lg font-bold">{aluno.nome}</h3>
               <p className="text-xs text-white/70">
-                {aluno.matricula} · {aluno.turma}
+                {aluno.matricula} · {aluno.turmaNome || aluno.turma}
               </p>
             </div>
           </div>

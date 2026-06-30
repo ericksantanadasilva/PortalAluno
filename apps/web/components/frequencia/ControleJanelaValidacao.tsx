@@ -306,7 +306,7 @@ export function ControleJanelaValidacao({
             Nenhuma janela configurada para esta turma.
           </p>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 rounded-sm">
             {janelasDaTurma.map((janela) => {
               const status = getStatusJanelaValidacao(janela as any);
               const cfg = STATUS_LABEL[status];
@@ -315,11 +315,10 @@ export function ControleJanelaValidacao({
               return (
                 <div
                   key={janela.id}
-                  className={`border bg-card rounded-lg p-4 space-y-3 transition-all ${
-                    selecionada
-                      ? "border-primary ring-2 ring-primary/20 shadow-sm"
-                      : "border-border hover:border-primary/30"
-                  }`}
+                  className={`border bg-card rounded-lg p-4 space-y-3 transition-all ${selecionada
+                    ? "border-primary ring-2 ring-primary/20 shadow-sm"
+                    : "border-border hover:border-primary/30"
+                    }`}
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div>
@@ -328,7 +327,7 @@ export function ControleJanelaValidacao({
                         Toda {getLabelDiaSemana(janela.diaSemana as any)}
                       </p>
                     </div>
-                    <Badge variant="outline" className={`text-xs shrink-0 ${cfg?.className || ''}`}>
+                    <Badge variant="outline" className={`text-xs shrink-0 rounded-full ${cfg?.className || ''}`}>
                       {cfg?.label || status}
                     </Badge>
                   </div>
@@ -343,7 +342,7 @@ export function ControleJanelaValidacao({
                       variant={selecionada ? "default" : "outline"}
                       size="sm"
                       onClick={() => iniciarEdicao(janela)}
-                      className="flex-1 gap-1.5 text-xs font-semibold"
+                      className="flex-1 gap-1.5 text-xs font-semibold rounded-md"
                     >
                       <Pencil className="w-3.5 h-3.5" />
                       Editar
@@ -353,7 +352,7 @@ export function ControleJanelaValidacao({
                       variant="outline"
                       size="sm"
                       onClick={() => handleExcluir(janela)}
-                      className="gap-1.5 text-xs font-semibold text-rose-600 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/30 border-rose-200 dark:border-rose-900/50"
+                      className="gap-1.5 text-xs font-semibold text-rose-600 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/30 border-rose-200 dark:border-rose-900/50 rounded-md"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                       <span className="sr-only sm:not-sr-only">Excluir</span>

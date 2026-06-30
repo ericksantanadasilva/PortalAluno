@@ -2,6 +2,7 @@ import { Router } from "express";
 import { prisma } from "@repo/database";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { requireAuth } from "../middlewares/auth.middleware";
 
 const router = Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'seu_secret_super_seguro_aqui';
@@ -93,5 +94,48 @@ router.post('/reset-password', async (req, res) => {
         return res.status(500).json({ error: 'Erro ao atualizar senha.' })
     }
 })
+
+// 3. Endpoint para retornar os dados do próprio usuário autenticado
+router.get('/me', requireAuth, async (req, res) => {
+    try {
+        const userId = req.user!.userId;
+        const tenantId = req.user!.tenantId;
+
+        const user = await prisma.user.findFirst({
+            where: {
+                id: userId,
+                tenantId: tenantId
+            },
+            include: {
+                tenant: true,
+                class: true
+            }
+        });
+
+        if (!user) {
+            return res.status(404).json({ error: 'Usuário não encontrado.' });
+        }
+
+        return res.json({
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            registrationNumber: user.registrationNumber,
+            mustChangePassword: user.mustChangePassword,
+            classId: user.classId,
+            className: user.class?.name || null,
+            tenant: {
+                id: user.tenant.id,
+                name: user.tenant.name,
+                slug: user.tenant.slug,
+                primaryColor: user.tenant.primaryColor
+            }
+        });
+    } catch (error) {
+        console.error("Erro ao carregar perfil /me:", error);
+        return res.status(500).json({ error: 'Erro ao carregar perfil.' });
+    }
+});
 
 export default router;

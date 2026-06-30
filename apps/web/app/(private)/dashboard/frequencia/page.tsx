@@ -11,19 +11,19 @@ import { HistoricoAbonosView } from "@/components/frequencia/HistoricoAbonosView
 import { ClipboardList, ShieldAlert, Timer, CheckCircle2 } from "lucide-react";
 
 export default function FrequenciaPage() {
-  const { 
-    alunos, 
-    abonos, 
-    janelas, 
-    classes, 
+  const {
+    alunos,
+    abonos,
+    janelas,
+    classes,
     subjects,
     loadAlunos,
-    updateStatus, 
-    addAbono, 
+    updateStatus,
+    addAbono,
     updateAbono,
     deleteAbono,
-    upsertJanela, 
-    removerJanela 
+    upsertJanela,
+    removerJanela
   } = useFrequencia();
 
   const [turmaSelecionada, setTurmaSelecionada] = useState<string>("");
@@ -92,7 +92,7 @@ export default function FrequenciaPage() {
               </TabsTrigger>
             </TabsList>
 
-            <div className="flex items-center gap-2 shrink-0 pb-1 sm:pb-0">
+            {/* <div className="flex items-center gap-2 shrink-0 pb-1 sm:pb-0">
               <Badge
                 variant="outline"
                 className="text-xs bg-emerald-500/10 text-emerald-700 border-emerald-500/25 dark:text-emerald-400 gap-1"
@@ -112,7 +112,7 @@ export default function FrequenciaPage() {
               >
                 {totalAbonados} abonos
               </Badge>
-            </div>
+            </div> */}
           </div>
         </div>
 
