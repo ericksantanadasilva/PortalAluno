@@ -66,6 +66,8 @@ export interface RaioXQuestao {
 }
 
 export interface BoletimData {
+  id: string;
+  tenantColor?: string;
   aluno: {
     nome: string;
     matricula: string;

@@ -52,12 +52,14 @@ interface BoletimEnemViewProps {
   data: BoletimData;
 }
 
+import { hexToHSL } from "@/lib/utils";
+
 export default function BoletimEnemView({ data }: BoletimEnemViewProps) {
   const [questaoSelecionada, setQuestaoSelecionada] = useState<
     NonNullable<BoletimData["raioXQuestoes"]>[number] | null
   >(null);
 
-  const primaryHSL = tenantConfigMock.cor_primaria;
+  const primaryHSL = hexToHSL(data.tenantColor || tenantConfigMock.cor_primaria);
 
   // Agrupa temas para revisão por disciplina
   const revisaoPorDisciplina = useMemo(() => {

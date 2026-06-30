@@ -30,6 +30,7 @@ import {
 } from "recharts";
 
 import { DestaqueDiscursivo } from "./DestaqueDiscursivo";
+import { hexToHSL } from "@/lib/utils";
 
 // Helper de cor de dificuldade específico deste simulado (caso precise)
 function getDifficultyColor(taxa: number) {
@@ -45,7 +46,7 @@ interface BoletimDiscursivoViewProps {
 }
 
 export default function BoletimDiscursivoView({ data }: BoletimDiscursivoViewProps) {
-  const primaryHSL = tenantConfigMock.cor_primaria;
+  const primaryHSL = hexToHSL(data.tenantColor || tenantConfigMock.cor_primaria);
 
   // Agrupa temas para revisão por disciplina
   const revisaoPorDisciplina = useMemo(() => {
