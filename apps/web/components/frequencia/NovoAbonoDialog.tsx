@@ -16,10 +16,12 @@ interface NovoAbonoDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   alunos: AlunoChamada[];
-  onSalvar: (abono: Omit<HistoricoAbono, "id">) => void;
+  subjects: { id: string; name: string }[];
+  onSalvar: (abono: any) => void;
+  abonoEmEdicao?: HistoricoAbono | null;
 }
 
-export function NovoAbonoDialog({ open, onOpenChange, alunos, onSalvar }: NovoAbonoDialogProps) {
+export function NovoAbonoDialog({ open, onOpenChange, alunos, subjects, onSalvar, abonoEmEdicao }: NovoAbonoDialogProps) {
   const [alunoId, setAlunoId] = useState("");
   const [alunoPopoverOpen, setAlunoPopoverOpen] = useState(false);
   const [tipo, setTipo] = useState<TipoAbonoSaaS | "">("");
@@ -31,6 +33,33 @@ export function NovoAbonoDialog({ open, onOpenChange, alunos, onSalvar }: NovoAb
   const [disciplinasSelecionadas, setDisciplinasSelecionadas] = useState<string[]>([]);
   const [disciplinaPopoverOpen, setDisciplinaPopoverOpen] = useState(false);
 
+  React.useEffect(() => {
+    if (open && abonoEmEdicao) {
+      setAlunoId(abonoEmEdicao.alunoId);
+      setTipo(abonoEmEdicao.tipo as TipoAbonoSaaS);
+      setMotivo(abonoEmEdicao.motivo);
+      setDataInicio(abonoEmEdicao.dataInicio);
+      setDataFim(abonoEmEdicao.dataFim);
+      setEscopo(abonoEmEdicao.escopo as EscopoAbono);
+      if (abonoEmEdicao.escopo === "Disciplina Específica" && abonoEmEdicao.disciplina) {
+        // Encontrar os ids baseados nos nomes
+        const nomes = abonoEmEdicao.disciplina.split(",").map(d => d.trim());
+        const ids = subjects.filter(s => nomes.includes(s.name)).map(s => s.id);
+        setDisciplinasSelecionadas(ids);
+      } else {
+        setDisciplinasSelecionadas([]);
+      }
+    } else if (!open) {
+      setAlunoId("");
+      setTipo("");
+      setMotivo("");
+      setDataInicio("");
+      setDataFim("");
+      setEscopo("");
+      setDisciplinasSelecionadas([]);
+    }
+  }, [open, abonoEmEdicao, subjects]);
+
   const handleSalvar = (e: React.FormEvent) => {
     e.preventDefault();
     if (!alunoId || !tipo || !motivo || !dataInicio || !dataFim || !escopo) return;
@@ -38,6 +67,11 @@ export function NovoAbonoDialog({ open, onOpenChange, alunos, onSalvar }: NovoAb
 
     const aluno = alunos.find((a) => a.id === alunoId);
     if (!aluno) return;
+
+    const nomesDisciplinas = disciplinasSelecionadas
+      .map(id => subjects.find(s => s.id === id)?.name)
+      .filter(Boolean)
+      .join(", ");
 
     onSalvar({
       alunoId,
@@ -47,24 +81,19 @@ export function NovoAbonoDialog({ open, onOpenChange, alunos, onSalvar }: NovoAb
       dataInicio,
       dataFim,
       escopo: escopo as EscopoAbono,
-      disciplina: escopo === "Disciplina Específica" ? disciplinasSelecionadas.join(", ") : undefined,
+      disciplina: escopo === "Disciplina Específica" ? nomesDisciplinas : undefined,
+      subjectIds: escopo === "Disciplina Específica" ? disciplinasSelecionadas : undefined
     });
-
-    setAlunoId("");
-    setTipo("");
-    setMotivo("");
-    setDataInicio("");
-    setDataFim("");
-    setEscopo("");
-    setDisciplinasSelecionadas([]);
+    
+    // Os states são limpos pelo useEffect quando open ficar false
     onOpenChange(false);
   };
 
-  const toggleDisciplina = (disciplina: string) => {
+  const toggleDisciplina = (disciplinaId: string) => {
     setDisciplinasSelecionadas((prev) => 
-      prev.includes(disciplina) 
-        ? prev.filter((d) => d !== disciplina)
-        : [...prev, disciplina]
+      prev.includes(disciplinaId) 
+        ? prev.filter((d) => d !== disciplinaId)
+        : [...prev, disciplinaId]
     );
   };
 
@@ -72,9 +101,9 @@ export function NovoAbonoDialog({ open, onOpenChange, alunos, onSalvar }: NovoAb
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Cadastrar Novo Abono</DialogTitle>
+          <DialogTitle>{abonoEmEdicao ? "Editar Abono" : "Cadastrar Novo Abono"}</DialogTitle>
           <DialogDescription>
-            Preencha os detalhes para registrar um novo abono ou eventualidade.
+            {abonoEmEdicao ? "Altere os detalhes do abono." : "Preencha os detalhes para registrar um novo abono ou eventualidade."}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSalvar} className="space-y-4 py-2">
@@ -132,6 +161,7 @@ export function NovoAbonoDialog({ open, onOpenChange, alunos, onSalvar }: NovoAb
                 <SelectContent>
                   <SelectItem value="Eventualidade">Eventualidade</SelectItem>
                   <SelectItem value="Mérito">Mérito</SelectItem>
+                  <SelectItem value="Atestado Médico">Atestado Médico</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -159,7 +189,7 @@ export function NovoAbonoDialog({ open, onOpenChange, alunos, onSalvar }: NovoAb
                   aria-expanded={disciplinaPopoverOpen}
                 >
                   {disciplinasSelecionadas.length > 0 
-                    ? disciplinasSelecionadas.join(", ")
+                    ? disciplinasSelecionadas.map(id => subjects.find(s => s.id === id)?.name).join(", ")
                     : "Selecione uma ou mais disciplinas..."}
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </PopoverTrigger>
@@ -169,19 +199,19 @@ export function NovoAbonoDialog({ open, onOpenChange, alunos, onSalvar }: NovoAb
                     <CommandList>
                       <CommandEmpty>Nenhuma disciplina encontrada.</CommandEmpty>
                       <CommandGroup>
-                        {disciplinasDisponiveis.map((d) => (
+                        {subjects.map((d) => (
                           <CommandItem
-                            key={d}
-                            value={d}
-                            onSelect={() => toggleDisciplina(d)}
+                            key={d.id}
+                            value={d.name}
+                            onSelect={() => toggleDisciplina(d.id)}
                           >
                             <Check
                               className={cn(
                                 "mr-2 h-4 w-4",
-                                disciplinasSelecionadas.includes(d) ? "opacity-100" : "opacity-0"
+                                disciplinasSelecionadas.includes(d.id) ? "opacity-100" : "opacity-0"
                               )}
                             />
-                            {d}
+                            {d.name}
                           </CommandItem>
                         ))}
                       </CommandGroup>

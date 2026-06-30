@@ -19,7 +19,7 @@ export default function PresencaOnlinePage() {
           Valide sua presença online no dia e horário semanal definidos pela secretaria.
         </p>
       </div>
-      <ValidacaoOnline aluno={alunoProfileMock} disciplinaAtiva="Biologia" />
+      <ValidacaoOnline aluno={alunoProfileMock} disciplinaAtivaNome="Biologia" />
     </div>
   );
 }

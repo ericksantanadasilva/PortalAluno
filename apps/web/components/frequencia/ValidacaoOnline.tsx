@@ -6,7 +6,6 @@ import {
   getStatusJanelaValidacao,
   isDiaJanelaAtiva,
   type AlunoProfile,
-  type JanelaValidacao,
 } from "@repo/database-mocks";
 import { useFrequencia } from "@/contexts/FrequenciaContext";
 import { Card, CardContent } from "@/components/ui/card";
@@ -24,14 +23,16 @@ import {
 
 interface ValidacaoOnlineProps {
   aluno: AlunoProfile;
-  disciplinaAtiva?: JanelaValidacao["disciplina"];
+  disciplinaAtivaId?: string;
+  disciplinaAtivaNome?: string;
 }
 
 const ALUNO_ONLINE_ID = "al-1";
 
 export function ValidacaoOnline({
   aluno,
-  disciplinaAtiva = "Matemática",
+  disciplinaAtivaId = "id-da-disciplina",
+  disciplinaAtivaNome = "Matemática",
 }: ValidacaoOnlineProps) {
   const { alunos, janelas, confirmarPresencaOnline } = useFrequencia();
   const [agora, setAgora] = useState<Date | null>(null);
@@ -51,13 +52,13 @@ export function ValidacaoOnline({
 
   const janela = useMemo(() => {
     if (!agora) return undefined;
-    const janelasDaTurma = janelas.filter((j) => j.turma === aluno.turma);
+    const janelasDaTurma = janelas.filter((j) => j.classId === aluno.turma); // Aqui aluno.turma deve ser o ID da turma
     if (janelasDaTurma.length === 0) return undefined;
 
     const hoje = agora.getDay();
     const agoraMinutos = agora.getHours() * 60 + agora.getMinutes();
 
-    const getMinutosAteJanela = (j: JanelaValidacao) => {
+    const getMinutosAteJanela = (j: any) => {
       const [abH, abM] = j.horaAbertura.split(":").map(Number);
       const [feH, feM] = j.horaFechamento.split(":").map(Number);
       const horaAb = abH! * 60 + abM!;
@@ -66,12 +67,10 @@ export function ValidacaoOnline({
       let diasDiferenca = j.diaSemana - hoje;
       if (diasDiferenca < 0) diasDiferenca += 7;
 
-      // Se é hoje, mas a janela já fechou, joga pra próxima semana
       if (diasDiferenca === 0 && agoraMinutos > horaFe) {
         diasDiferenca += 7;
       }
 
-      // Se é hoje, e a janela está aberta AGORA, prioriza como imediata
       if (diasDiferenca === 0 && agoraMinutos >= horaAb && agoraMinutos <= horaFe) {
         return -1;
       }
@@ -79,7 +78,6 @@ export function ValidacaoOnline({
       return diasDiferenca * 24 * 60 + horaAb - agoraMinutos;
     };
 
-    // Ordena para pegar a janela atual ou a próxima mais próxima no tempo
     const janelasOrdenadas = [...janelasDaTurma].sort((a, b) => {
       return getMinutosAteJanela(a) - getMinutosAteJanela(b);
     });
@@ -87,13 +85,13 @@ export function ValidacaoOnline({
     return janelasOrdenadas[0];
   }, [janelas, aluno.turma, agora]);
 
-  const statusJanela = janela && agora ? getStatusJanelaValidacao(janela, agora) : "fechada";
-  const hojeEhDiaDaJanela = janela && agora ? isDiaJanelaAtiva(janela, agora) : false;
+  const statusJanela = janela && agora ? getStatusJanelaValidacao(janela as any, agora) : "fechada";
+  const hojeEhDiaDaJanela = janela && agora ? isDiaJanelaAtiva(janela as any, agora) : false;
 
   const mensagemStatus = useMemo(() => {
     if (!janela) return "A secretaria ainda não configurou a janela para esta matéria.";
     if (!hojeEhDiaDaJanela) {
-      return `Validação disponível ${getLabelDiaSemana(janela.diaSemana)}, das ${janela.horaAbertura} às ${janela.horaFechamento}.`;
+      return `Validação disponível ${getLabelDiaSemana(janela.diaSemana as any)}, das ${janela.horaAbertura} às ${janela.horaFechamento}.`;
     }
     if (statusJanela === "aguardando") {
       return `A validação abre hoje às ${janela.horaAbertura}.`;
@@ -126,15 +124,15 @@ export function ValidacaoOnline({
         return;
       }
 
-      if (!isDiaJanelaAtiva(janela, new Date())) {
+      if (!isDiaJanelaAtiva(janela as any, new Date())) {
         setFeedback({
           type: "error",
-          text: `Hoje não é dia de validação. Disponível ${getLabelDiaSemana(janela.diaSemana)}.`,
+          text: `Hoje não é dia de validação. Disponível ${getLabelDiaSemana(janela.diaSemana as any)}.`,
         });
         return;
       }
 
-      const status = getStatusJanelaValidacao(janela, new Date());
+      const status = getStatusJanelaValidacao(janela as any, new Date());
 
       if (status === "aguardando") {
         setFeedback({
@@ -152,7 +150,8 @@ export function ValidacaoOnline({
         return;
       }
 
-      confirmarPresencaOnline(ALUNO_ONLINE_ID);
+      const dataHoje = new Date().toLocaleDateString("en-CA");
+      confirmarPresencaOnline(ALUNO_ONLINE_ID, aluno.turma, dataHoje, janela.subjectId);
       setFeedback({
         type: "success",
         text: "Presença confirmada! Seu check-in foi registrado na chamada da secretaria.",
@@ -203,12 +202,12 @@ export function ValidacaoOnline({
           <div className="flex items-center gap-2 text-sm flex-wrap">
             <BookOpen className="w-4 h-4 text-primary shrink-0" />
             <span className="font-semibold text-foreground">
-              {janela ? janela.disciplina : disciplinaAtiva}
+              {janela ? janela.disciplina : disciplinaAtivaNome}
             </span>
             {janela && (
               <Badge variant="outline" className="text-[10px] gap-1 font-medium">
                 <Repeat className="w-3 h-3" />
-                {getLabelDiaSemana(janela.diaSemana)}
+                {getLabelDiaSemana(janela.diaSemana as any)}
               </Badge>
             )}
           </div>
@@ -258,7 +257,7 @@ export function ValidacaoOnline({
                     }`}
                 >
                   {feedback.type === "success" ? (
-                    <CheckCircle className="w-4 h-4 shrink-0" />
+                     <CheckCircle className="w-4 h-4 shrink-0" />
                   ) : (
                     <XCircle className="w-4 h-4 shrink-0" />
                   )}

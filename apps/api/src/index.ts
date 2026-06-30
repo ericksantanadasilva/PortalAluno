@@ -12,6 +12,7 @@ import tenantRoutes from "./routes/tenant.routes";
 import uploadRoutes from "./routes/upload.routes";
 import examRoutes from "./routes/exam.routes";
 import subjectRoutes from "./routes/subject.routes";
+import attendanceRoutes from "./routes/attendance.routes";
 dotenv.config();
 
 const app = express();
@@ -46,6 +47,7 @@ app.use('/api/tenant', tenantRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/exams', examRoutes);
 app.use('/api/subjects', subjectRoutes);
+app.use('/api/attendance', attendanceRoutes);
 app.listen(port, () => {
     console.log(`Api do portal rodando na porta ${port}`)
 });

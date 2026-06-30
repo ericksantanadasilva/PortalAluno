@@ -61,6 +61,7 @@ model Tenant {
     attendanceExcuses AttendanceExcuse[]
     exams             Exam[]
     studentResponses  StudentResponse[]
+    presenceWindows   PresenceWindow[]
 
     @@map("tenants")
 }
@@ -92,16 +93,18 @@ model User {
 }
 
 model Subject {
-    id        String   @id @default(uuid()) @db.Uuid
-    tenantId  String   @map("tenant_id") @db.Uuid
-    name      String
-    createdAt DateTime @default(now()) @map("created_at")
+    id                  String   @id @default(uuid()) @db.Uuid
+    tenantId            String   @map("tenant_id") @db.Uuid
+    name                String
+    isAttendanceSubject Boolean  @default(true) @map("is_attendance_subject")
+    createdAt           DateTime @default(now()) @map("created_at")
 
     tenant            Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
     attendanceRecords AttendanceRecord[]
     excuseSubjects    ExcuseSubject[]
     examQuestions     ExamQuestion[]
     modalitySubjects  ModalitySubject[]
+    presenceWindows   PresenceWindow[]
 
     @@unique([tenantId, name])
     @@map("subjects")
@@ -133,6 +136,7 @@ model Class {
     tenant            Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
     modality          Modality           @relation(fields: [modalityId], references: [id], onDelete: Cascade)
     attendanceRecords AttendanceRecord[]
+    presenceWindows   PresenceWindow[]
     users             User[]
 
     @@unique([tenantId, modalityId, name])
@@ -254,4 +258,21 @@ model StudentResponse {
     @@unique([studentId, examId, questionNumber])
     @@index([studentId, examId])
     @@map("student_responses")
+}
+
+model PresenceWindow {
+    id         String   @id @default(uuid()) @db.Uuid
+    tenantId   String   @map("tenant_id") @db.Uuid
+    classId    String   @map("class_id") @db.Uuid
+    subjectId  String   @map("subject_id") @db.Uuid
+    dayOfWeek  Int      @map("day_of_week") // 0 = Domingo, 1 = Segunda, etc.
+    startTime  String   @map("start_time") // formato HH:mm
+    endTime    String   @map("end_time") // formato HH:mm
+    createdAt  DateTime @default(now()) @map("created_at")
+
+    tenant  Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+    class   Class   @relation(fields: [classId], references: [id], onDelete: Cascade)
+    subject Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+
+    @@map("presence_windows")
 }

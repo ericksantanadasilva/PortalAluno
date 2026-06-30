@@ -2,10 +2,8 @@
 
 import React from "react";
 import {
-  turmasDisponiveis,
   type AlunoChamada,
   type StatusChamada,
-  type TurmaDisponivel,
 } from "@repo/database-mocks";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -22,9 +20,13 @@ import { formatDate } from "@/lib/utils";
 
 interface ChamadaDiariaProps {
   alunos: AlunoChamada[];
+  classes: any[];
+  subjects: any[];
   onUpdateStatus: (id: string, status: StatusChamada) => void;
-  turmaSelecionada: TurmaDisponivel;
-  setTurmaSelecionada: (turma: TurmaDisponivel) => void;
+  turmaSelecionada: string;
+  setTurmaSelecionada: (turma: string) => void;
+  disciplinaSelecionada: string;
+  setDisciplinaSelecionada: (disciplina: string) => void;
   dataSelecionada: string;
   setDataSelecionada: (data: string) => void;
 }
@@ -115,9 +117,13 @@ function OnlineStatusIndicator({ status }: { status: StatusChamada }) {
 
 export function ChamadaDiaria({
   alunos,
+  classes,
+  subjects,
   onUpdateStatus,
   turmaSelecionada,
   setTurmaSelecionada,
+  disciplinaSelecionada,
+  setDisciplinaSelecionada,
   dataSelecionada,
   setDataSelecionada,
 }: ChamadaDiariaProps) {
@@ -145,12 +151,36 @@ export function ChamadaDiaria({
             <select
               id="turma-select"
               value={turmaSelecionada}
-              onChange={(e) => setTurmaSelecionada(e.target.value as TurmaDisponivel)}
+              onChange={(e) => setTurmaSelecionada(e.target.value)}
               className="appearance-none w-full bg-card border border-border rounded-lg px-3 py-2 pr-9 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary"
             >
-              {turmasDisponiveis.map((turma) => (
-                <option key={turma} value={turma}>
-                  {turma}
+              {classes.map((turma) => (
+                <option key={turma.id} value={turma.id}>
+                  {turma.name}
+                </option>
+              ))}
+            </select>
+            <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+          </div>
+        </div>
+
+        <div className="flex-1 min-w-0 space-y-1.5">
+          <label
+            htmlFor="disciplina-select"
+            className="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
+          >
+            Disciplina
+          </label>
+          <div className="relative">
+            <select
+              id="disciplina-select"
+              value={disciplinaSelecionada}
+              onChange={(e) => setDisciplinaSelecionada(e.target.value)}
+              className="appearance-none w-full bg-card border border-border rounded-lg px-3 py-2 pr-9 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary"
+            >
+              {subjects.map((subj) => (
+                <option key={subj.id} value={subj.id}>
+                  {subj.name}
                 </option>
               ))}
             </select>

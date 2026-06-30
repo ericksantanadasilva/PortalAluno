@@ -10,6 +10,7 @@ router.use(requireAuth);
 
 const createSubjectSchema = z.object({
     name: z.string().min(1, 'O nome da disciplina é obrigatório.'),
+    isAttendanceSubject: z.boolean().optional().default(true),
 });
 
 // GET /api/subjects - Lista as disciplinas do tenant atual
@@ -54,6 +55,7 @@ router.post('/', async (req, res) => {
         const subject = await prisma.subject.create({
             data: {
                 name: data.name,
+                isAttendanceSubject: data.isAttendanceSubject,
                 tenantId
             }
         });
@@ -70,6 +72,7 @@ router.post('/', async (req, res) => {
 
 const updateSubjectSchema = z.object({
     name: z.string().min(1, 'O nome da disciplina é obrigatório.'),
+    isAttendanceSubject: z.boolean().optional(),
 });
 
 // PUT /api/subjects/:id - Atualiza uma disciplina
@@ -106,9 +109,14 @@ router.put('/:id', async (req, res) => {
             return res.status(400).json({ error: 'Já existe outra disciplina com este nome.' });
         }
 
+        const updateData: any = { name: data.name };
+        if (data.isAttendanceSubject !== undefined) {
+            updateData.isAttendanceSubject = data.isAttendanceSubject;
+        }
+
         const subject = await prisma.subject.update({
             where: { id },
-            data: { name: data.name }
+            data: updateData
         });
 
         return res.json(subject);

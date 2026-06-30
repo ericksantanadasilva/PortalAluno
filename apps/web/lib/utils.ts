@@ -17,13 +17,13 @@ export function hexToHSL(hex: string | any) {
   if (!hex || typeof hex !== 'string') return '0 0% 0%';
   let r = 0, g = 0, b = 0;
   if (hex.length === 4) {
-    r = parseInt(hex[1] + hex[1], 16);
-    g = parseInt(hex[2] + hex[2], 16);
-    b = parseInt(hex[3] + hex[3], 16);
+    r = parseInt(hex.charAt(1) + hex.charAt(1), 16);
+    g = parseInt(hex.charAt(2) + hex.charAt(2), 16);
+    b = parseInt(hex.charAt(3) + hex.charAt(3), 16);
   } else if (hex.length === 7) {
-    r = parseInt(hex[1] + hex[2], 16);
-    g = parseInt(hex[3] + hex[4], 16);
-    b = parseInt(hex[5] + hex[6], 16);
+    r = parseInt(hex.charAt(1) + hex.charAt(2), 16);
+    g = parseInt(hex.charAt(3) + hex.charAt(4), 16);
+    b = parseInt(hex.charAt(5) + hex.charAt(6), 16);
   } else {
     // If it's already an hsl or invalid format, return something safe or pass it through
     // However, expecting valid hex. 

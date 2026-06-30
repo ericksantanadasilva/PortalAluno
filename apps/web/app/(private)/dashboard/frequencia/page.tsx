@@ -1,28 +1,55 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { tenantConfigMock, type TurmaDisponivel } from "@repo/database-mocks";
+import { tenantConfigMock } from "@repo/database-mocks";
 import { useFrequencia } from "@/contexts/FrequenciaContext";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { ChamadaDiaria } from "@/components/frequencia/ChamadaDiaria";
 import { ControleJanelaValidacao } from "@/components/frequencia/ControleJanelaValidacao";
 import { HistoricoAbonosView } from "@/components/frequencia/HistoricoAbonosView";
-import { formatDate } from "@/lib/utils";
 import { ClipboardList, ShieldAlert, Timer, CheckCircle2 } from "lucide-react";
 
 export default function FrequenciaPage() {
-  const { alunos, abonos, janelas, updateStatus, addAbono, upsertJanela, removerJanela } =
-    useFrequencia();
-  const [turmaSelecionada, setTurmaSelecionada] = useState<TurmaDisponivel>(
-    "Turma Medicina – Manhã"
+  const { 
+    alunos, 
+    abonos, 
+    janelas, 
+    classes, 
+    subjects,
+    loadAlunos,
+    updateStatus, 
+    addAbono, 
+    updateAbono,
+    deleteAbono,
+    upsertJanela, 
+    removerJanela 
+  } = useFrequencia();
+
+  const [turmaSelecionada, setTurmaSelecionada] = useState<string>("");
+  const [disciplinaSelecionada, setDisciplinaSelecionada] = useState<string>("");
+  const [dataSelecionada, setDataSelecionada] = useState(
+    new Date().toLocaleDateString("en-CA")
   );
-  const [dataSelecionada, setDataSelecionada] = useState("2026-06-21");
-  const [dataHoje, setDataHoje] = useState("2026-06-24");
 
   useEffect(() => {
-    setDataHoje(new Date().toLocaleDateString("en-CA"));
-  }, []);
+    if (classes.length > 0 && !turmaSelecionada) {
+      setTurmaSelecionada(classes[0].id);
+    }
+    if (subjects.length > 0 && !disciplinaSelecionada) {
+      setDisciplinaSelecionada(subjects[0].id);
+    }
+  }, [classes, subjects, turmaSelecionada, disciplinaSelecionada]);
+
+  useEffect(() => {
+    if (turmaSelecionada && dataSelecionada && disciplinaSelecionada) {
+      loadAlunos(turmaSelecionada, dataSelecionada, disciplinaSelecionada);
+    }
+  }, [turmaSelecionada, dataSelecionada, disciplinaSelecionada, loadAlunos]);
+
+  const handleUpdateStatus = (alunoId: string, status: any) => {
+    updateStatus(alunoId, turmaSelecionada, dataSelecionada, disciplinaSelecionada, status);
+  };
 
   const primaryHSL = tenantConfigMock.cor_primaria;
 
@@ -93,9 +120,13 @@ export default function FrequenciaPage() {
           <TabsContent value="chamada" className="mt-0 outline-none">
             <ChamadaDiaria
               alunos={alunos}
-              onUpdateStatus={updateStatus}
+              classes={classes}
+              subjects={subjects}
+              onUpdateStatus={handleUpdateStatus}
               turmaSelecionada={turmaSelecionada}
               setTurmaSelecionada={setTurmaSelecionada}
+              disciplinaSelecionada={disciplinaSelecionada}
+              setDisciplinaSelecionada={setDisciplinaSelecionada}
               dataSelecionada={dataSelecionada}
               setDataSelecionada={setDataSelecionada}
             />
@@ -105,8 +136,11 @@ export default function FrequenciaPage() {
             <HistoricoAbonosView
               abonos={abonos}
               alunos={alunos}
-              dataReferencia={dataHoje}
+              subjects={subjects}
+              dataReferencia={dataSelecionada}
               onAddAbono={addAbono}
+              onEditAbono={(abono) => updateAbono(abono.id, abono)}
+              onDeleteAbono={deleteAbono}
             />
           </TabsContent>
 

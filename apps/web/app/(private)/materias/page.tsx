@@ -14,6 +14,7 @@ const API_URL = "http://localhost:3001/api";
 type Subject = {
   id: string;
   name: string;
+  isAttendanceSubject: boolean;
   tenantId: string;
   createdAt: string;
 };
@@ -27,6 +28,7 @@ export default function SubjectsPage() {
   const [saving, setSaving] = useState(false);
   const [editingSubject, setEditingSubject] = useState<Subject | null>(null);
   const [subjectName, setSubjectName] = useState('');
+  const [isAttendanceSubject, setIsAttendanceSubject] = useState(true);
 
   useEffect(() => {
     fetchSubjects();
@@ -56,9 +58,11 @@ export default function SubjectsPage() {
     if (subject) {
       setEditingSubject(subject);
       setSubjectName(subject.name);
+      setIsAttendanceSubject(subject.isAttendanceSubject);
     } else {
       setEditingSubject(null);
       setSubjectName('');
+      setIsAttendanceSubject(true);
     }
     setIsModalOpen(true);
   };
@@ -79,14 +83,14 @@ export default function SubjectsPage() {
         res = await fetch(`${API_URL}/subjects/${editingSubject.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-          body: JSON.stringify({ name: subjectName.trim() })
+          body: JSON.stringify({ name: subjectName.trim(), isAttendanceSubject })
         });
       } else {
         // Criar
         res = await fetch(`${API_URL}/subjects`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-          body: JSON.stringify({ name: subjectName.trim() })
+          body: JSON.stringify({ name: subjectName.trim(), isAttendanceSubject })
         });
       }
 
@@ -172,7 +176,14 @@ export default function SubjectsPage() {
                 ) : (
                   subjects.map((subject) => (
                     <TableRow key={subject.id}>
-                      <TableCell className="font-medium">{subject.name}</TableCell>
+                      <TableCell className="font-medium">
+                        {subject.name}
+                        {!subject.isAttendanceSubject && (
+                          <span className="ml-2 inline-flex items-center rounded-md bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
+                            Não lista na chamada
+                          </span>
+                        )}
+                      </TableCell>
                       <TableCell>{new Date(subject.createdAt).toLocaleDateString('pt-BR')}</TableCell>
                       <TableCell className="text-right">
                         <div className="flex items-center justify-end gap-1">
@@ -212,6 +223,18 @@ export default function SubjectsPage() {
                   }
                 }}
               />
+            </div>
+            <div className="flex items-center space-x-2 pt-2">
+              <input 
+                type="checkbox" 
+                id="isAttendanceSubject" 
+                checked={isAttendanceSubject}
+                onChange={(e) => setIsAttendanceSubject(e.target.checked)}
+                className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary"
+              />
+              <Label htmlFor="isAttendanceSubject" className="font-normal cursor-pointer text-sm text-muted-foreground">
+                Exibir esta disciplina nas telas de chamada e abonos
+              </Label>
             </div>
           </div>
           <DialogFooter>

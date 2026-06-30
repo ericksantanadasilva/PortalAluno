@@ -32,6 +32,8 @@ import {
   Stethoscope,
   ChevronDown,
   Filter,
+  Edit2,
+  Trash2,
 } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import { NovoAbonoDialog } from "./NovoAbonoDialog";
@@ -39,8 +41,11 @@ import { NovoAbonoDialog } from "./NovoAbonoDialog";
 interface HistoricoAbonosViewProps {
   abonos: HistoricoAbono[];
   alunos: AlunoChamada[];
+  subjects: { id: string; name: string }[];
   dataReferencia: string;
   onAddAbono?: (abono: Omit<HistoricoAbono, "id">) => void;
+  onEditAbono?: (abono: HistoricoAbono) => void;
+  onDeleteAbono?: (id: string) => void;
 }
 
 type FiltroStatusAbono = "todos" | "vigentes" | "encerrados" | "agendados";
@@ -74,13 +79,34 @@ function TipoBadge({ tipo }: { tipo: TipoAbonoSaaS }) {
 export function HistoricoAbonosView({
   abonos,
   alunos,
+  subjects,
   dataReferencia,
   onAddAbono,
+  onEditAbono,
+  onDeleteAbono,
 }: HistoricoAbonosViewProps) {
   const [filtroStatus, setFiltroStatus] = useState<FiltroStatusAbono>("todos");
   const [filtroAlunoId, setFiltroAlunoId] = useState<string>("");
   const [filtroTipo, setFiltroTipo] = useState<"todos" | TipoAbonoSaaS>("todos");
   const [isNovoAbonoOpen, setIsNovoAbonoOpen] = useState(false);
+  const [abonoEmEdicao, setAbonoEmEdicao] = useState<HistoricoAbono | null>(null);
+
+  const handleOpenEdit = (abono: HistoricoAbono) => {
+    setAbonoEmEdicao(abono);
+    setIsNovoAbonoOpen(true);
+  };
+
+  const handleOpenNew = () => {
+    setAbonoEmEdicao(null);
+    setIsNovoAbonoOpen(true);
+  };
+
+  const handleCloseModal = (open: boolean) => {
+    setIsNovoAbonoOpen(open);
+    if (!open) {
+      setTimeout(() => setAbonoEmEdicao(null), 300); // clear after animation
+    }
+  };
 
   const matriculaPorAlunoId = useMemo(
     () => Object.fromEntries(alunos.map((a) => [a.id, a.matricula])),
@@ -162,7 +188,7 @@ export function HistoricoAbonosView({
         </div>
         <Button
           className="hidden md:flex font-semibold px-4 py-2 items-center gap-1.5 shadow-sm shrink-0 bg-[#0B5C43] hover:bg-[#084834] text-white"
-          onClick={() => setIsNovoAbonoOpen(true)}
+          onClick={handleOpenNew}
         >
           <Plus className="w-4 h-4" />
           Cadastrar Novo Abono
@@ -172,12 +198,17 @@ export function HistoricoAbonosView({
       {isNovoAbonoOpen && (
         <NovoAbonoDialog
           open={isNovoAbonoOpen}
-          onOpenChange={setIsNovoAbonoOpen}
+          onOpenChange={handleCloseModal}
           alunos={alunos}
+          subjects={subjects}
+          abonoEmEdicao={abonoEmEdicao}
           onSalvar={(novoAbono) => {
-            if (onAddAbono) {
-              onAddAbono(novoAbono);
+            if (abonoEmEdicao) {
+              if (onEditAbono) onEditAbono({ ...novoAbono, id: abonoEmEdicao.id });
+            } else {
+              if (onAddAbono) onAddAbono(novoAbono);
             }
+            handleCloseModal(false);
           }}
         />
       )}
@@ -216,7 +247,7 @@ export function HistoricoAbonosView({
           <span className="text-xs font-bold tracking-wider text-muted-foreground uppercase block">
             STATUS
           </span>
-          <div className="flex bg-muted/40 p-1 rounded-lg">
+          <div className="flex flex-wrap gap-1 bg-muted/40 p-1 rounded-lg w-full">
             {(
               [
                 { id: "todos", label: "Todos" },
@@ -255,7 +286,8 @@ export function HistoricoAbonosView({
                 <TableHead className="text-xs font-semibold uppercase tracking-wide text-slate-500">Motivo</TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wide text-slate-500 w-[160px]">Período</TableHead>
                 <TableHead className="text-xs font-semibold uppercase tracking-wide text-slate-500 w-[160px]">Abrangência</TableHead>
-                <TableHead className="text-xs font-semibold uppercase tracking-wide text-slate-500 w-[120px]">Status</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wide text-slate-500 w-[100px]">Status</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wide text-slate-500 w-[100px] text-right">Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -310,16 +342,16 @@ export function HistoricoAbonosView({
                             (() => {
                               const disciplinas = abono.disciplina.split(",").map((d) => d.trim()).filter(Boolean);
                               return (
-                                <>
+                                <div className="flex flex-wrap items-center gap-1.5" title={abono.disciplina}>
                                   <Badge variant="outline" className="rounded-full bg-slate-50 text-slate-600 border border-slate-200/60 font-semibold normal-case text-xs">
                                     {disciplinas[0]}
                                   </Badge>
                                   {disciplinas.length > 1 && (
-                                    <Badge variant="secondary" className="rounded-full bg-slate-100 text-slate-500 border-none font-semibold normal-case text-[10px]">
+                                    <Badge variant="secondary" className="rounded-full bg-slate-100 text-slate-500 border-none font-semibold normal-case text-[10px] cursor-help">
                                       +{disciplinas.length - 1} matérias
                                     </Badge>
                                   )}
-                                </>
+                                </div>
                               );
                             })()
                           ) : (
@@ -343,6 +375,20 @@ export function HistoricoAbonosView({
                           >
                             {status === "vigente" ? "Vigente" : status === "agendado" ? "Agendado" : "Encerrado"}
                           </Badge>
+                        </div>
+                      </TableCell>
+                      <TableCell className="py-4 align-top text-right">
+                        <div className="flex justify-end gap-1">
+                          <Button variant="ghost" size="icon" onClick={() => handleOpenEdit(abono)} className="h-8 w-8 text-slate-500 hover:text-primary">
+                            <Edit2 className="w-4 h-4" />
+                          </Button>
+                          <Button variant="ghost" size="icon" onClick={() => {
+                            if (window.confirm("Deseja realmente remover este abono?")) {
+                              onDeleteAbono && onDeleteAbono(abono.id);
+                            }
+                          }} className="h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive">
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
                         </div>
                       </TableCell>
                     </TableRow>
@@ -411,24 +457,34 @@ export function HistoricoAbonosView({
                     {status === "vigente" ? `Até ${formatDate(abono.dataFim)}` : status === "agendado" ? `Inicia em ${formatDate(abono.dataInicio)}` : `Encerrado em ${formatDate(abono.dataFim)}`}
                   </div>
                   {abono.escopo !== "Todas as Disciplinas" && abono.disciplina && (
-                    <div className="flex flex-wrap gap-1.5 justify-end">
+                    <div className="flex flex-wrap gap-1.5 justify-end mt-2 w-full">
                       {(() => {
                         const disciplinas = abono.disciplina.split(",").map((d) => d.trim()).filter(Boolean);
                         return (
                           <>
-                            <Badge variant="outline" className="rounded-full bg-slate-50 text-slate-600 border border-slate-200/60 font-semibold normal-case text-xs">
-                              {disciplinas[0]}
-                            </Badge>
-                            {disciplinas.length > 1 && (
-                              <Badge variant="secondary" className="rounded-full bg-slate-100 text-slate-500 border-none font-semibold normal-case text-[10px]">
-                                +{disciplinas.length - 1} matérias
+                            {disciplinas.map((d, idx) => (
+                              <Badge key={idx} variant="outline" className="rounded-full bg-slate-50 text-slate-600 border border-slate-200/60 font-semibold normal-case text-xs">
+                                {d}
                               </Badge>
-                            )}
+                            ))}
                           </>
                         );
                       })()}
                     </div>
                   )}
+                </div>
+                
+                <div className="flex items-center gap-2 pt-2 border-t border-border mt-2 justify-end">
+                  <Button variant="ghost" size="sm" onClick={() => handleOpenEdit(abono)} className="text-slate-500 hover:text-primary gap-1">
+                    <Edit2 className="w-3.5 h-3.5" /> Editar
+                  </Button>
+                  <Button variant="ghost" size="sm" onClick={() => {
+                    if (window.confirm("Deseja realmente remover este abono?")) {
+                      onDeleteAbono && onDeleteAbono(abono.id);
+                    }
+                  }} className="text-destructive hover:bg-destructive/10 hover:text-destructive gap-1">
+                    <Trash2 className="w-3.5 h-3.5" /> Remover
+                  </Button>
                 </div>
               </div>
             );
@@ -437,7 +493,7 @@ export function HistoricoAbonosView({
       </div>
 
       {/* FAB (Mobile) */}
-      <button className="md:hidden fixed bottom-6 right-6 w-14 h-14 bg-[#0B5C43] hover:bg-[#084834] text-white rounded-full shadow-lg flex items-center justify-center transition-transform active:scale-95 z-50">
+      <button onClick={handleOpenNew} className="md:hidden fixed bottom-6 right-6 w-14 h-14 bg-[#0B5C43] hover:bg-[#084834] text-white rounded-full shadow-lg flex items-center justify-center transition-transform active:scale-95 z-50">
         <Plus className="w-7 h-7" />
       </button>
 

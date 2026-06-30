@@ -2,15 +2,9 @@
 
 import React, { useMemo, useState } from "react";
 import {
-  disciplinasDisponiveis,
   diasSemanaOrdem,
   getLabelDiaSemana,
   getStatusJanelaValidacao,
-  type DiaSemana,
-  type DisciplinaDisponivel,
-  type JanelaValidacao,
-  type TurmaDisponivel,
-  turmasDisponiveis,
 } from "@repo/database-mocks";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -26,19 +20,17 @@ import {
   Plus,
   X,
 } from "lucide-react";
+import { useFrequencia } from "@/contexts/FrequenciaContext";
 
 interface ControleJanelaValidacaoProps {
-  janelas: JanelaValidacao[];
-  turmaSelecionada: TurmaDisponivel;
-  setTurmaSelecionada: (turma: TurmaDisponivel) => void;
-  onSalvarJanela: (janela: Omit<JanelaValidacao, "id"> & { id?: string }) => boolean;
+  janelas: any[];
+  turmaSelecionada: string;
+  setTurmaSelecionada: (turma: string) => void;
+  onSalvarJanela: (janela: any) => Promise<boolean>;
   onRemoverJanela: (id: string) => void;
 }
 
-const STATUS_LABEL: Record<
-  ReturnType<typeof getStatusJanelaValidacao>,
-  { label: string; className: string }
-> = {
+const STATUS_LABEL: Record<string, { label: string; className: string }> = {
   aguardando: {
     label: "Aguardando abertura",
     className: "bg-amber-500/10 text-amber-700 border-amber-500/25 dark:text-amber-400",
@@ -62,22 +54,29 @@ export function ControleJanelaValidacao({
   onSalvarJanela,
   onRemoverJanela,
 }: ControleJanelaValidacaoProps) {
+  const { classes, subjects } = useFrequencia();
   const [editandoId, setEditandoId] = useState<string | null>(null);
-  const [disciplina, setDisciplina] = useState<DisciplinaDisponivel>("Biologia");
-  const [diaSemana, setDiaSemana] = useState<DiaSemana>(0);
+  const [disciplina, setDisciplina] = useState<string>("");
+  const [diaSemana, setDiaSemana] = useState<number>(0);
   const [horaAbertura, setHoraAbertura] = useState(HORARIO_PADRAO.abertura);
   const [horaFechamento, setHoraFechamento] = useState(HORARIO_PADRAO.fechamento);
   const [erroForm, setErroForm] = useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (subjects.length > 0 && !disciplina) {
+      setDisciplina(subjects[0].id);
+    }
+  }, [subjects, disciplina]);
 
   const modoEdicao = editandoId !== null;
 
   const janelasDaTurma = useMemo(
     () =>
       janelas
-        .filter((j) => j.turma === turmaSelecionada)
+        .filter((j) => j.classId === turmaSelecionada)
         .sort((a, b) => {
-          const ordemA = diasSemanaOrdem.indexOf(a.diaSemana);
-          const ordemB = diasSemanaOrdem.indexOf(b.diaSemana);
+          const ordemA = diasSemanaOrdem.indexOf(a.diaSemana as any);
+          const ordemB = diasSemanaOrdem.indexOf(b.diaSemana as any);
           if (ordemA !== ordemB) return ordemA - ordemB;
           return a.horaAbertura.localeCompare(b.horaAbertura);
         }),
@@ -86,23 +85,23 @@ export function ControleJanelaValidacao({
 
   const limparFormulario = () => {
     setEditandoId(null);
-    setDisciplina("Biologia");
+    if (subjects.length > 0) setDisciplina(subjects[0].id);
     setDiaSemana(0);
     setHoraAbertura(HORARIO_PADRAO.abertura);
     setHoraFechamento(HORARIO_PADRAO.fechamento);
     setErroForm(null);
   };
 
-  const iniciarEdicao = (janela: JanelaValidacao) => {
+  const iniciarEdicao = (janela: any) => {
     setEditandoId(janela.id);
-    setDisciplina(janela.disciplina);
+    setDisciplina(janela.subjectId);
     setDiaSemana(janela.diaSemana);
     setHoraAbertura(janela.horaAbertura);
     setHoraFechamento(janela.horaFechamento);
     setErroForm(null);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErroForm(null);
 
@@ -111,18 +110,18 @@ export function ControleJanelaValidacao({
       return;
     }
 
-    const sucesso = onSalvarJanela({
+    const sucesso = await onSalvarJanela({
       id: editandoId ?? undefined,
-      disciplina,
+      subjectId: disciplina,
       diaSemana,
       horaAbertura,
       horaFechamento,
-      turma: turmaSelecionada,
+      classId: turmaSelecionada,
     });
 
     if (!sucesso) {
       setErroForm(
-        `Já existe uma janela para ${disciplina} toda ${getLabelDiaSemana(diaSemana)} nesta turma.`
+        `Erro ao salvar ou já existe uma janela no mesmo horário.`
       );
       return;
     }
@@ -130,8 +129,8 @@ export function ControleJanelaValidacao({
     limparFormulario();
   };
 
-  const handleExcluir = (janela: JanelaValidacao) => {
-    if (!window.confirm(`Remover a janela de ${janela.disciplina} (${getLabelDiaSemana(janela.diaSemana)})?`)) {
+  const handleExcluir = (janela: any) => {
+    if (!window.confirm(`Remover a janela de ${janela.disciplina} (${getLabelDiaSemana(janela.diaSemana as any)})?`)) {
       return;
     }
     onRemoverJanela(janela.id);
@@ -166,12 +165,12 @@ export function ControleJanelaValidacao({
             <div className="relative">
               <select
                 value={turmaSelecionada}
-                onChange={(e) => setTurmaSelecionada(e.target.value as TurmaDisponivel)}
+                onChange={(e) => setTurmaSelecionada(e.target.value)}
                 className="appearance-none w-full sm:w-[220px] bg-background border border-border rounded-lg px-3 py-2 pr-9 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary"
               >
-                {turmasDisponiveis.map((turma) => (
-                  <option key={turma} value={turma}>
-                    {turma}
+                {classes.map((turma) => (
+                  <option key={turma.id} value={turma.id}>
+                    {turma.name}
                   </option>
                 ))}
               </select>
@@ -199,14 +198,14 @@ export function ControleJanelaValidacao({
               <select
                 value={disciplina}
                 onChange={(e) => {
-                  setDisciplina(e.target.value as DisciplinaDisponivel);
+                  setDisciplina(e.target.value);
                   setErroForm(null);
                 }}
                 className="appearance-none w-full bg-background border border-border rounded-lg px-3 py-2 pr-9 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary"
               >
-                {disciplinasDisponiveis.map((d) => (
-                  <option key={d} value={d}>
-                    {d}
+                {subjects.map((d) => (
+                  <option key={d.id} value={d.id}>
+                    {d.name}
                   </option>
                 ))}
               </select>
@@ -223,14 +222,14 @@ export function ControleJanelaValidacao({
               <select
                 value={diaSemana}
                 onChange={(e) => {
-                  setDiaSemana(Number(e.target.value) as DiaSemana);
+                  setDiaSemana(Number(e.target.value));
                   setErroForm(null);
                 }}
                 className="appearance-none w-full bg-background border border-border rounded-lg px-3 py-2 pr-9 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary"
               >
                 {diasSemanaOrdem.map((dia) => (
                   <option key={dia} value={dia}>
-                    {getLabelDiaSemana(dia)}
+                    {getLabelDiaSemana(dia as any)}
                   </option>
                 ))}
               </select>
@@ -299,7 +298,7 @@ export function ControleJanelaValidacao({
       <div className="px-4 md:px-8">
         <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-1.5">
           <CalendarDays className="w-4 h-4" />
-          Grade semanal — {turmaSelecionada}
+          Grade semanal — Turma Selecionada
         </h4>
 
         {janelasDaTurma.length === 0 ? (
@@ -309,7 +308,7 @@ export function ControleJanelaValidacao({
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
             {janelasDaTurma.map((janela) => {
-              const status = getStatusJanelaValidacao(janela);
+              const status = getStatusJanelaValidacao(janela as any);
               const cfg = STATUS_LABEL[status];
               const selecionada = editandoId === janela.id;
 
@@ -326,11 +325,11 @@ export function ControleJanelaValidacao({
                     <div>
                       <p className="font-bold text-foreground">{janela.disciplina}</p>
                       <p className="text-xs text-muted-foreground mt-0.5">
-                        Toda {getLabelDiaSemana(janela.diaSemana)}
+                        Toda {getLabelDiaSemana(janela.diaSemana as any)}
                       </p>
                     </div>
-                    <Badge variant="outline" className={`text-xs shrink-0 ${cfg.className}`}>
-                      {cfg.label}
+                    <Badge variant="outline" className={`text-xs shrink-0 ${cfg?.className || ''}`}>
+                      {cfg?.label || status}
                     </Badge>
                   </div>
 
