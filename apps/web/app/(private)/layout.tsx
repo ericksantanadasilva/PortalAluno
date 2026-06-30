@@ -127,6 +127,19 @@ export default function DashboardLayout({
               Confirmar Presença
             </Button>
           </Link>
+          <Link href="/dashboard/simulados" passHref>
+            <Button
+              variant={pathname.startsWith("/dashboard/simulados") ? "secondary" : "ghost"}
+              onClick={() => setIsMobileMenuOpen(false)}
+              className={`w-full justify-start font-medium ${pathname.startsWith("/dashboard/simulados")
+                ? "bg-primary/10 text-primary hover:bg-primary/20"
+                : "text-muted-foreground hover:text-foreground"
+                }`}
+            >
+              <FileSignature className="mr-3 h-5 w-5" />
+              Meus Simulados
+            </Button>
+          </Link>
 
           {userRole !== 'aluno' && (
             <>
@@ -250,6 +263,18 @@ export default function DashboardLayout({
             >
               <Laptop className="mr-3 h-5 w-5" />
               Confirmar Presença
+            </Button>
+          </Link>
+          <Link href="/dashboard/simulados" passHref>
+            <Button
+              variant={pathname.startsWith("/dashboard/simulados") ? "secondary" : "ghost"}
+              className={`w-full justify-start font-medium ${pathname.startsWith("/dashboard/simulados")
+                ? "bg-primary/10 text-primary hover:bg-primary/20"
+                : "text-muted-foreground hover:text-foreground"
+                }`}
+            >
+              <FileSignature className="mr-3 h-5 w-5" />
+              Meus Simulados
             </Button>
           </Link>
 

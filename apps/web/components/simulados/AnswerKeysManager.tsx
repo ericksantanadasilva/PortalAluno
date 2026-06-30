@@ -12,6 +12,7 @@ type Exam = {
   id: string;
   title: string;
   date: string;
+  type: string;
   totalQuestions: number;
 };
 
@@ -231,7 +232,11 @@ export function AnswerKeysManager({ updateTrigger }: { onUpdate?: () => void, up
                         </span>
                         <div className="flex bg-slate-100/50 rounded-lg p-1.5 border border-slate-200/50 shadow-inner items-center gap-1 justify-between">
                           <div className="flex gap-1">
-                            {ALTERNATIVAS.map((alt) => {
+                            {['A', 'B', 'C', 'D', 'E'].map((alt) => {
+                              // Se for UERJ, só vai até a letra D
+                              const currentExam = exams.find(e => e.id === selectedExamId);
+                              if (currentExam?.type === 'uerj' && alt === 'E') return null;
+
                               const isSelected = selected === alt;
                               return (
                                 <button

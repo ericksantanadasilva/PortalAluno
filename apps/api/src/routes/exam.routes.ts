@@ -200,4 +200,117 @@ router.put('/:id/questions', requireAuth, requireStaff, async (req, res) => {
     }
 });
 
+// GET /api/exams/available - List published exams for students
+router.get('/available', requireAuth, async (req, res) => {
+    try {
+        const tenantId = req.user!.tenantId;
+        const exams = await prisma.exam.findMany({
+            where: { tenantId, isPublished: true },
+            orderBy: { date: 'desc' },
+            select: {
+                id: true,
+                title: true,
+                date: true,
+                type: true,
+                totalQuestions: true
+            }
+        });
+        res.json(exams);
+    } catch (error) {
+        console.error("Erro ao listar simulados disponíveis:", error);
+        res.status(500).json({ error: 'Erro interno ao listar simulados.' });
+    }
+});
+
+// GET /api/exams/:id/responses - Get student's responses for a specific exam
+router.get('/:id/responses', requireAuth, async (req, res) => {
+    try {
+        const tenantId = req.user!.tenantId;
+        const studentId = req.user!.userId;
+        const examId = req.params.id;
+
+        const exam = await prisma.exam.findFirst({
+            where: { id: examId, tenantId, isPublished: true },
+            select: { id: true, title: true, totalQuestions: true, type: true }
+        });
+
+        if (!exam) {
+            return res.status(404).json({ error: 'Simulado não encontrado ou indisponível.' });
+        }
+
+        // Fetch exam questions to know which ones require language selection
+        const questions = await prisma.examQuestion.findMany({
+            where: { examId },
+            select: { questionNumber: true, language: true, isAnnulled: true }
+        });
+
+        const responses = await prisma.studentResponse.findMany({
+            where: { examId, studentId }
+        });
+
+        res.json({ exam, questions, responses });
+    } catch (error) {
+        console.error("Erro ao buscar respostas do aluno:", error);
+        res.status(500).json({ error: 'Erro interno ao buscar respostas.' });
+    }
+});
+
+// PUT /api/exams/:id/responses - Upsert student's responses
+router.put('/:id/responses', requireAuth, async (req, res) => {
+    try {
+        const tenantId = req.user!.tenantId;
+        const studentId = req.user!.userId;
+        const examId = req.params.id;
+        const { answers } = req.body; // Array of { questionNumber, chosenAlternative, language }
+
+        if (!Array.isArray(answers)) {
+            return res.status(400).json({ error: 'Formato inválido. Esperado array de respostas.' });
+        }
+
+        const exam = await prisma.exam.findFirst({
+            where: { id: examId, tenantId, isPublished: true }
+        });
+
+        if (!exam) {
+            return res.status(404).json({ error: 'Simulado não encontrado ou indisponível.' });
+        }
+
+        // To save responses, we upsert based on [studentId_examId_questionNumber]
+        const upsertPromises = answers.map((ans: any) => {
+            const lang = ans.language || 'none';
+            return prisma.studentResponse.upsert({
+                where: {
+                    studentId_examId_questionNumber: {
+                        studentId: studentId,
+                        examId: examId,
+                        questionNumber: ans.questionNumber
+                    }
+                },
+                update: {
+                    chosenAlternative: ans.chosenAlternative,
+                    language: lang,
+                    tenantId: tenantId
+                },
+                create: {
+                    tenantId: tenantId,
+                    studentId: studentId,
+                    examId: examId,
+                    questionNumber: ans.questionNumber,
+                    chosenAlternative: ans.chosenAlternative,
+                    language: lang,
+                    isCorrect: false, // will be evaluated later on correction process
+                    importedViaRemark: false
+                }
+            });
+        });
+
+        await prisma.$transaction(upsertPromises);
+
+        res.status(200).json({ message: 'Respostas salvas com sucesso.' });
+    } catch (error) {
+        console.error("Erro ao salvar respostas do aluno:", error);
+        res.status(500).json({ error: 'Erro interno ao salvar respostas.' });
+    }
+});
+
 export default router;
