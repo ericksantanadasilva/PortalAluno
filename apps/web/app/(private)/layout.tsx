@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { alunoProfileMock } from "@repo/database-mocks";
 import { useTenant } from "@/components/TenantProvider";
 import { FrequenciaProvider } from "@/contexts/FrequenciaContext";
-import { BookOpen, User, Calendar, LogOut, Menu, X, Laptop, Settings, FileSignature, Library } from "lucide-react";
+import { BookOpen, User, Calendar, LogOut, Menu, X, Laptop, Settings, FileSignature, Library, Database } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
@@ -48,6 +48,9 @@ export default function DashboardLayout({
 
     // Se o usuário for aluno e tentar acessar páginas restritas, redireciona para o boletim
     if (role === 'aluno' && (pathname.includes('/dashboard/frequencia') || pathname.includes('/admin/settings'))) {
+      router.replace('/dashboard/boletim');
+    } else if (role !== 'admin' && pathname.includes('/admin/tri')) {
+      // Bloqueia qualquer não-admin de acessar o Mapeador TRI
       router.replace('/dashboard/boletim');
     } else {
       setIsCheckingRole(false);
@@ -182,6 +185,21 @@ export default function DashboardLayout({
                   Simulados
                 </Button>
               </Link>
+              {userRole === 'admin' && (
+                <Link href="/admin/tri" passHref>
+                  <Button
+                    variant={pathname === "/admin/tri" ? "secondary" : "ghost"}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`w-full justify-start font-medium ${pathname === "/admin/tri"
+                      ? "bg-primary/10 text-primary hover:bg-primary/20"
+                      : "text-muted-foreground hover:text-foreground"
+                      }`}
+                  >
+                    <Database className="mr-3 h-5 w-5" />
+                    Mapeador TRI
+                  </Button>
+                </Link>
+              )}
               <Link href="/admin/settings" passHref>
                 <Button
                   variant={pathname === "/admin/settings" ? "secondary" : "ghost"}
@@ -316,6 +334,20 @@ export default function DashboardLayout({
                   Simulados
                 </Button>
               </Link>
+              {userRole === 'admin' && (
+                <Link href="/admin/tri" passHref>
+                  <Button
+                    variant={pathname === "/admin/tri" ? "secondary" : "ghost"}
+                    className={`w-full justify-start font-medium ${pathname === "/admin/tri"
+                      ? "bg-primary/10 text-primary hover:bg-primary/20"
+                      : "text-muted-foreground hover:text-foreground"
+                      }`}
+                  >
+                    <Database className="mr-3 h-5 w-5" />
+                    Mapeador TRI
+                  </Button>
+                </Link>
+              )}
               <Link href="/admin/settings" passHref>
                 <Button
                   variant={pathname === "/admin/settings" ? "secondary" : "ghost"}
