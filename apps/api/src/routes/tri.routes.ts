@@ -45,9 +45,17 @@ router.post('/upload-preview', requireAuth, requireAdmin, upload.single('file'),
                     if (row && row.length > maxCols) maxCols = row.length;
                 }
 
-                // Cria headers como "Coluna A (0)", "Coluna B (1)"
+                // Cria headers tentando achar o nome da coluna nas primeiras linhas
                 const headers = Array.from({ length: maxCols }, (_, i) => {
-                    return `Coluna ${getExcelColumnName(i)}`;
+                    let colName = `Coluna ${getExcelColumnName(i)}`;
+                    // Varre as linhas de preview pra achar o primeiro texto dessa coluna
+                    for (const row of previewRows) {
+                        if (row && row[i] !== undefined && row[i] !== null && String(row[i]).trim() !== '') {
+                            colName = `${getExcelColumnName(i)} - ${String(row[i]).trim()}`;
+                            break;
+                        }
+                    }
+                    return colName;
                 });
 
                 // Padroniza o tamanho das linhas do preview para não quebrar a tabela do front
@@ -106,10 +114,10 @@ router.post('/process-mapped', requireAuth, requireAdmin, upload.single('file'),
                 const row = rows[i];
                 if (!row) continue;
 
-                const idxAcertos = parseInt(map.colAcertos);
-                const idxLinInf = parseInt(map.colLinInf);
-                const idxMaxima = parseInt(map.colMaxima);
-                const idxMinima = parseInt(map.colMinima);
+                const idxAcertos = parseInt((map.colAcertos || "").split("_")[0]);
+                const idxLinInf = parseInt((map.colLinInf || "").split("_")[0]);
+                const idxMaxima = parseInt((map.colMaxima || "").split("_")[0]);
+                const idxMinima = parseInt((map.colMinima || "").split("_")[0]);
 
                 if (isNaN(idxAcertos)) continue;
 
@@ -142,10 +150,19 @@ router.post('/process-mapped', requireAuth, requireAdmin, upload.single('file'),
             return res.status(400).json({ error: 'Nenhum dado válido encontrado para inserir após o mapeamento.' });
         }
 
+        // Obter todas as combinações (subject, tier) que estão sendo salvas agora
+        const subjectsAndTiersToClear = [...new Set(dataToInsert.map(d => JSON.stringify({ subject: d.subject, tier: d.tier })))]
+            .map(str => JSON.parse(str));
+
         // Transação
         await prisma.$transaction([
+            // Deleta APENAS as matérias e tiers que o usuário mapeou nessa requisição
             prisma.triReference.deleteMany({
-                where: { year: String(year), tenantId }
+                where: { 
+                    year: String(year), 
+                    tenantId,
+                    OR: subjectsAndTiersToClear
+                }
             }),
             prisma.triReference.createMany({
                 data: dataToInsert,

@@ -50,7 +50,10 @@ router.get('/', requireAuth, async (req, res) => {
                 },
                 studentResponses: {
                     where: { tenantId }
-                } // fetch ALL responses for these exams to calculate class averages
+                }, // fetch ALL responses for these exams to calculate class averages
+                examGrades: {
+                    where: { tenantId }
+                }
             }
         });
 
@@ -117,7 +120,8 @@ router.get('/', requireAuth, async (req, res) => {
                 
                 if (q.isAnnulled) {
                     acertou = true;
-                } else if (resp && resp.chosenAlternative === q.correctAlternative) {
+                } else if (resp && resp.isCorrect) {
+                    // Usa a flag isCorrect já processada pelo motor de fechamento
                     acertou = true;
                 }
                 
@@ -175,7 +179,7 @@ router.get('/', requireAuth, async (req, res) => {
                         questionHitCounts[q.id].total++;
                     }
 
-                    if (q.isAnnulled || r.chosenAlternative === q.correctAlternative) {
+                    if (q.isAnnulled || r.isCorrect) {
                         studentScoresMap[r.studentId]++;
                         if (questionHitCounts[q.id]) {
                             questionHitCounts[q.id].acertos++;
@@ -185,10 +189,32 @@ router.get('/', requireAuth, async (req, res) => {
             });
 
             const scores = Object.values(studentScoresMap);
-            const mediaTurmaDec = scores.length > 0 ? scores.reduce((a, b) => a + b, 0) / scores.length : 0;
-            const maiorNota = scores.length > 0 ? Math.max(...scores) : 0;
-            const menorNota = scores.length > 0 ? Math.min(...scores) : 0;
+            
+            // Default raw acertos calculations
+            let mediaTurmaDec = scores.length > 0 ? scores.reduce((a, b) => a + b, 0) / scores.length : 0;
+            let maiorNota = scores.length > 0 ? Math.max(...scores) : 0;
+            let menorNota = scores.length > 0 ? Math.min(...scores) : 0;
             const pctMediaTurma = activeQuestionsCount > 0 ? mediaTurmaDec / activeQuestionsCount : 0;
+
+            // Se for ENEM, substituímos a média da turma pela média TRI
+            if ((exam.type === 'enem' || exam.type === 'enem_parcial') && exam.examGrades.length > 0) {
+                const finalScoresByStudent: Record<string, { sum: number, count: number }> = {};
+                
+                exam.examGrades.forEach(g => {
+                    if (!finalScoresByStudent[g.studentId]) {
+                        finalScoresByStudent[g.studentId] = { sum: 0, count: 0 };
+                    }
+                    finalScoresByStudent[g.studentId].sum += g.scoreTri;
+                    finalScoresByStudent[g.studentId].count++;
+                });
+
+                const finalScores = Object.values(finalScoresByStudent).map(s => s.sum / s.count);
+                if (finalScores.length > 0) {
+                    const media = finalScores.reduce((a, b) => a + b, 0) / finalScores.length;
+                    mediaTurmaDec = Math.round(media * 100) / 100;
+                    // maiorNota e menorNota permanecem como acertos
+                }
+            }
             
             let conceitoMedioTurma = 'E';
             if (pctMediaTurma >= 0.75) conceitoMedioTurma = 'A';
@@ -235,6 +261,38 @@ router.get('/', requireAuth, async (req, res) => {
             else if (pct >= 50) conceitoUerj = 'C';
             else if (pct >= 40) conceitoUerj = 'D';
 
+            const triGrades = {
+                linguagens: 0,
+                humanas: 0,
+                naturezas: 0,
+                matematica: 0,
+                redacao: 0
+            };
+            
+            let sumTri = 0;
+            let countTri = 0;
+            
+            const myGrades = exam.examGrades.filter(g => g.studentId === targetStudentId);
+            
+            myGrades.forEach(g => {
+                const subj = g.subject.toLowerCase();
+                if (triGrades[subj as keyof typeof triGrades] !== undefined) {
+                    triGrades[subj as keyof typeof triGrades] = g.scoreTri;
+                    sumTri += g.scoreTri;
+                    countTri++;
+                }
+            });
+
+            let notaTotalDecimal = "0.0";
+            if (exam.type === 'uerj' || exam.type === 'UERJ_EQ') {
+                const eqGrade = myGrades.find(g => g.subject === 'UERJ_EQ');
+                notaTotalDecimal = eqGrade ? eqGrade.scoreTri.toFixed(1) : "0.0";
+            } else {
+                if (countTri > 0) {
+                    notaTotalDecimal = (sumTri / countTri).toFixed(1);
+                }
+            }
+
             return {
                 id: exam.id,
                 tenantColor: student.tenant.primaryColor,
@@ -260,14 +318,8 @@ router.get('/', requireAuth, async (req, res) => {
                     total: activeQuestionsCount,
                     percentual: Math.round(pct),
                     conceitoUerj: exam.type === 'uerj' ? conceitoUerj : undefined,
-                    notaTotalDecimal: "0.0",
-                    tri: {
-                        linguagens: 0,
-                        humanas: 0,
-                        naturezas: 0,
-                        matematica: 0,
-                        redacao: 0
-                    }
+                    notaTotalDecimal,
+                    tri: triGrades
                 },
                 desempenhoPorDisciplina,
                 temasParaRevisar,

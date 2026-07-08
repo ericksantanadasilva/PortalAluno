@@ -1,13 +1,14 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Loader2, Save, ArrowLeft, CheckCircle2, Languages } from 'lucide-react';
 import Link from 'next/link';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 const API_URL = "http://localhost:3001/api";
 
@@ -33,7 +34,10 @@ type StudentAnswer = {
 export default function SimuladoAnswerPage() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const examId = params.id as string;
+  const dayParam = searchParams.get('day');
+  const dayNumber = dayParam ? parseInt(dayParam) : 1;
 
   const [exam, setExam] = useState<ExamData | null>(null);
   const [questionsRef, setQuestionsRef] = useState<QuestionRef[]>([]);
@@ -42,6 +46,26 @@ export default function SimuladoAnswerPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState<string>('');
+
+  const [modalState, setModalState] = useState<{
+    isOpen: boolean;
+    title: string;
+    description: string;
+    onClose?: () => void;
+  }>({
+    isOpen: false,
+    title: '',
+    description: '',
+  });
+
+  const showAlert = (title: string, description: string, onClose?: () => void) => {
+    setModalState({ isOpen: true, title, description, onClose });
+  };
+
+  const closeModal = () => {
+    setModalState(prev => ({ ...prev, isOpen: false }));
+    if (modalState.onClose) modalState.onClose();
+  };
 
   useEffect(() => {
     fetchData();
@@ -87,7 +111,7 @@ export default function SimuladoAnswerPage() {
 
   const handleAlternativaSelect = (numero: number, alternativa: string, isForeignLangQ: boolean) => {
     if (isForeignLangQ && !selectedLanguage) {
-      alert("Por favor, selecione primeiro o Idioma Estrangeiro no topo da página.");
+      showAlert("Idioma não selecionado", "Por favor, selecione primeiro o Idioma Estrangeiro no topo da página.");
       return;
     }
 
@@ -113,18 +137,19 @@ export default function SimuladoAnswerPage() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ answers })
+        body: JSON.stringify({ answers, dayNumber })
       });
       
       if (res.ok) {
-        alert("Respostas salvas com sucesso!");
-        router.push('/dashboard/simulados');
+        showAlert("Sucesso!", "Suas respostas foram salvas com sucesso no nosso banco de dados.", () => {
+          router.push('/dashboard/simulados');
+        });
       } else {
-        alert("Erro ao salvar respostas.");
+        showAlert("Erro", "Falha ao salvar respostas. Tente novamente.");
       }
     } catch (error) {
       console.error(error);
-      alert("Erro interno ao salvar.");
+      showAlert("Erro Interno", "Houve um problema de conexão. Tente novamente mais tarde.");
     } finally {
       setSaving(false);
     }
@@ -255,6 +280,20 @@ export default function SimuladoAnswerPage() {
           </Button>
         </CardFooter>
       </Card>
+
+      <Dialog open={modalState.isOpen} onOpenChange={(open) => !open && closeModal()}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>{modalState.title}</DialogTitle>
+            <DialogDescription className="mt-2 text-slate-600 leading-relaxed">
+              {modalState.description}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="mt-2">
+            <Button onClick={closeModal} className="font-semibold">OK</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

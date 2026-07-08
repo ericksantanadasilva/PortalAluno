@@ -37,16 +37,16 @@ export function TriMappingPanel() {
     const [previewData, setPreviewData] = useState<PreviewData | null>(null);
     const [isUploading, setIsUploading] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
-    
+
     // Tab states for visual focus
     const [activeSubjectTab, setActiveSubjectTab] = useState(SUBJECTS[0]);
     const [activePreviewTab, setActivePreviewTab] = useState("");
-    
+
     // Saved data states
     const [viewerYear, setViewerYear] = useState(new Date().getFullYear().toString());
     const [savedData, setSavedData] = useState<{ subject: string, tier: string, acertos: number, linInf: number, maxima: number, minima: number }[]>([]);
     const [isLoadingSaved, setIsLoadingSaved] = useState(false);
-    
+
     const [viewerSubjectTab, setViewerSubjectTab] = useState(SUBJECTS[0]);
     const [viewerTierTab, setViewerTierTab] = useState(TIERS[0]);
 
@@ -248,8 +248,8 @@ export function TriMappingPanel() {
                         <Tabs value={activeSubjectTab} onValueChange={setActiveSubjectTab} className="w-full flex-col">
                             <TabsList className="w-full justify-start overflow-x-auto flex-nowrap bg-slate-100 p-1 rounded-md">
                                 {SUBJECTS.map((sub) => (
-                                    <TabsTrigger 
-                                        key={sub} 
+                                    <TabsTrigger
+                                        key={sub}
                                         value={sub}
                                         className={`flex-1 py-2 px-4 text-center rounded-md transition-all ${activeSubjectTab === sub ? 'bg-white text-primary shadow border-b-2 border-primary font-bold' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-200'}`}
                                     >
@@ -265,7 +265,7 @@ export function TriMappingPanel() {
                                             const mapData = mappings.find(
                                                 (m) => m.subject === sub && m.tier === tier
                                             )!;
-                                            
+
                                             // As colunas disponíveis dependem da aba selecionada para este tier específico
                                             const availableHeaders = mapData.sheetName
                                                 ? previewData?.[mapData.sheetName]?.headers || []
@@ -277,7 +277,7 @@ export function TriMappingPanel() {
                                                         Tier: {tier}
                                                     </h3>
                                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
-                                                        <div className="space-y-2">
+                                                        <div className="space-y-2 min-w-0">
                                                             <Label>Linha de Início</Label>
                                                             <Input
                                                                 type="number"
@@ -288,13 +288,13 @@ export function TriMappingPanel() {
                                                                 disabled={!mapData.sheetName}
                                                             />
                                                         </div>
-                                                        <div className="space-y-2">
+                                                        <div className="space-y-2 min-w-0">
                                                             <Label>Aba da Planilha</Label>
                                                             <Select
                                                                 value={mapData.sheetName}
                                                                 onValueChange={(val: string | null) => updateMapping(sub, tier, "sheetName", val || "")}
                                                             >
-                                                                <SelectTrigger>
+                                                                <SelectTrigger className="w-full truncate [&>span]:truncate">
                                                                     <SelectValue placeholder="Selecione..." />
                                                                 </SelectTrigger>
                                                                 <SelectContent>
@@ -305,62 +305,62 @@ export function TriMappingPanel() {
                                                                 </SelectContent>
                                                             </Select>
                                                         </div>
-                                                        <div className="space-y-2">
+                                                        <div className="space-y-2 min-w-0">
                                                             <Label>Col. Acertos</Label>
                                                             <Select
                                                                 value={mapData.colAcertos}
                                                                 onValueChange={(val: string | null) => updateMapping(sub, tier, "colAcertos", val || "")}
                                                                 disabled={!mapData.sheetName}
                                                             >
-                                                                <SelectTrigger><SelectValue placeholder="-" /></SelectTrigger>
+                                                                <SelectTrigger className="w-full truncate [&>span]:truncate"><SelectValue placeholder="-" /></SelectTrigger>
                                                                 <SelectContent>
                                                                     {availableHeaders.map((h, i) => (
-                                                                        <SelectItem key={i} value={String(i)}>{h || `Col ${i}`}</SelectItem>
+                                                                        <SelectItem key={i} value={`${i}___${h || `Col ${i}`}`}>{h || `Col ${i}`}</SelectItem>
                                                                     ))}
                                                                 </SelectContent>
                                                             </Select>
                                                         </div>
-                                                        <div className="space-y-2">
+                                                        <div className="space-y-2 min-w-0">
                                                             <Label>Col. Linha Inf.</Label>
                                                             <Select
                                                                 value={mapData.colLinInf}
                                                                 onValueChange={(val: string | null) => updateMapping(sub, tier, "colLinInf", val || "")}
                                                                 disabled={!mapData.sheetName}
                                                             >
-                                                                <SelectTrigger><SelectValue placeholder="-" /></SelectTrigger>
+                                                                <SelectTrigger className="w-full truncate [&>span]:truncate"><SelectValue placeholder="-" /></SelectTrigger>
                                                                 <SelectContent>
                                                                     {availableHeaders.map((h, i) => (
-                                                                        <SelectItem key={i} value={String(i)}>{h || `Col ${i}`}</SelectItem>
+                                                                        <SelectItem key={i} value={`${i}_${h || `Col ${i}`}`}>{h || `Col ${i}`}</SelectItem>
                                                                     ))}
                                                                 </SelectContent>
                                                             </Select>
                                                         </div>
-                                                        <div className="space-y-2">
+                                                        <div className="space-y-2 min-w-0">
                                                             <Label>Col. Máxima</Label>
                                                             <Select
                                                                 value={mapData.colMaxima}
                                                                 onValueChange={(val: string | null) => updateMapping(sub, tier, "colMaxima", val || "")}
                                                                 disabled={!mapData.sheetName}
                                                             >
-                                                                <SelectTrigger><SelectValue placeholder="-" /></SelectTrigger>
+                                                                <SelectTrigger className="w-full truncate [&>span]:truncate"><SelectValue placeholder="-" /></SelectTrigger>
                                                                 <SelectContent>
                                                                     {availableHeaders.map((h, i) => (
-                                                                        <SelectItem key={i} value={String(i)}>{h || `Col ${i}`}</SelectItem>
+                                                                        <SelectItem key={i} value={`${i}_${h || `Col ${i}`}`}>{h || `Col ${i}`}</SelectItem>
                                                                     ))}
                                                                 </SelectContent>
                                                             </Select>
                                                         </div>
-                                                        <div className="space-y-2">
+                                                        <div className="space-y-2 min-w-0">
                                                             <Label>Col. Mínima</Label>
                                                             <Select
                                                                 value={mapData.colMinima}
                                                                 onValueChange={(val: string | null) => updateMapping(sub, tier, "colMinima", val || "")}
                                                                 disabled={!mapData.sheetName}
                                                             >
-                                                                <SelectTrigger><SelectValue placeholder="-" /></SelectTrigger>
+                                                                <SelectTrigger className="w-full truncate [&>span]:truncate"><SelectValue placeholder="-" /></SelectTrigger>
                                                                 <SelectContent>
                                                                     {availableHeaders.map((h, i) => (
-                                                                        <SelectItem key={i} value={String(i)}>{h || `Col ${i}`}</SelectItem>
+                                                                        <SelectItem key={i} value={`${i}_${h || `Col ${i}`}`}>{h || `Col ${i}`}</SelectItem>
                                                                     ))}
                                                                 </SelectContent>
                                                             </Select>
@@ -383,8 +383,8 @@ export function TriMappingPanel() {
                             <Tabs value={activePreviewTab || sheetNames[0]} onValueChange={setActivePreviewTab} className="w-full flex-col">
                                 <TabsList className="w-full justify-start overflow-x-auto flex-nowrap bg-slate-100 p-1 rounded-md">
                                     {sheetNames.map((sn) => (
-                                        <TabsTrigger 
-                                            key={`preview-${sn}`} 
+                                        <TabsTrigger
+                                            key={`preview-${sn}`}
                                             value={sn}
                                             className={`py-2 px-4 rounded-md transition-all ${(activePreviewTab || sheetNames[0]) === sn ? 'bg-white text-primary shadow border-b-2 border-primary font-bold' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-200'}`}
                                         >
@@ -477,8 +477,8 @@ export function TriMappingPanel() {
                             <Tabs value={viewerSubjectTab} onValueChange={setViewerSubjectTab} className="w-full flex-col">
                                 <TabsList className="w-full justify-start overflow-x-auto flex-nowrap bg-slate-100 p-1 rounded-md">
                                     {SUBJECTS.map((sub) => (
-                                        <TabsTrigger 
-                                            key={`viewer-sub-${sub}`} 
+                                        <TabsTrigger
+                                            key={`viewer-sub-${sub}`}
                                             value={sub}
                                             className={`flex-1 py-2 px-4 text-center rounded-md transition-all ${viewerSubjectTab === sub ? 'bg-white text-primary shadow border-b-2 border-primary font-bold' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-200'}`}
                                         >
@@ -491,8 +491,8 @@ export function TriMappingPanel() {
                             <Tabs value={viewerTierTab} onValueChange={setViewerTierTab} className="w-full flex-col">
                                 <TabsList className="w-full justify-start overflow-x-auto flex-nowrap bg-slate-50 p-1 rounded-md border">
                                     {TIERS.map((tier) => (
-                                        <TabsTrigger 
-                                            key={`viewer-tier-${tier}`} 
+                                        <TabsTrigger
+                                            key={`viewer-tier-${tier}`}
                                             value={tier}
                                             className={`flex-1 py-1.5 px-4 text-center rounded-md transition-all capitalize ${viewerTierTab === tier ? 'bg-primary text-primary-foreground shadow font-medium' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-200'}`}
                                         >
@@ -516,13 +516,13 @@ export function TriMappingPanel() {
                                         {savedData
                                             .filter(d => d.subject === viewerSubjectTab && d.tier === viewerTierTab)
                                             .map((d, i) => (
-                                            <tr key={i} className="hover:bg-slate-50 transition-colors">
-                                                <td className="p-3 px-4 font-medium">{d.acertos}</td>
-                                                <td className="p-3 px-4">{d.linInf}</td>
-                                                <td className="p-3 px-4">{d.maxima}</td>
-                                                <td className="p-3 px-4">{d.minima}</td>
-                                            </tr>
-                                        ))}
+                                                <tr key={i} className="hover:bg-slate-50 transition-colors">
+                                                    <td className="p-3 px-4 font-medium">{d.acertos}</td>
+                                                    <td className="p-3 px-4">{d.linInf}</td>
+                                                    <td className="p-3 px-4">{d.maxima}</td>
+                                                    <td className="p-3 px-4">{d.minima}</td>
+                                                </tr>
+                                            ))}
                                         {savedData.filter(d => d.subject === viewerSubjectTab && d.tier === viewerTierTab).length === 0 && (
                                             <tr>
                                                 <td colSpan={4} className="text-center text-muted-foreground p-8">

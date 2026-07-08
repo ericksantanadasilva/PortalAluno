@@ -8,7 +8,8 @@ import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Trash2, Loader2, Edit2, X, Save } from 'lucide-react';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Plus, Trash2, Loader2, Edit2, X, Save, Calculator, UserX } from 'lucide-react';
 
 const API_URL = "http://localhost:3001/api";
 
@@ -19,6 +20,9 @@ type Exam = {
   type: string;
   totalQuestions: number;
   isPublished: boolean;
+  isEnemFull?: boolean;
+  windowStart?: string;
+  windowEnd?: string;
 };
 
 type FormQuestion = {
@@ -32,6 +36,7 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
   const [exams, setExams] = useState<Exam[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [closingId, setClosingId] = useState<string | null>(null);
   const [editingExamId, setEditingExamId] = useState<string | null>(null);
   const [subjects, setSubjects] = useState<{ id: string, name: string }[]>([]);
   
@@ -41,8 +46,43 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
     type: 'enem',
     totalQuestions: 60,
     isPublished: false,
+    isEnemFull: false,
+    windowStart: '',
+    windowEnd: '',
+    windowStart2: '',
+    windowEnd2: '',
     questions: [] as FormQuestion[]
   });
+
+  const [modalState, setModalState] = useState<{
+    isOpen: boolean;
+    type: 'alert' | 'confirm' | 'prompt';
+    title: string;
+    description: string;
+    inputValue?: string;
+    inputPlaceholder?: string;
+    onConfirm?: (value?: string) => void;
+    onCancel?: () => void;
+  }>({
+    isOpen: false,
+    type: 'alert',
+    title: '',
+    description: '',
+  });
+
+  const showAlert = (title: string, description: string) => {
+    setModalState({ isOpen: true, type: 'alert', title, description });
+  };
+
+  const showConfirm = (title: string, description: string, onConfirm: () => void) => {
+    setModalState({ isOpen: true, type: 'confirm', title, description, onConfirm });
+  };
+
+  const showPrompt = (title: string, description: string, inputPlaceholder: string, onConfirm: (val: string) => void) => {
+    setModalState({ isOpen: true, type: 'prompt', title, description, inputPlaceholder, inputValue: '', onConfirm });
+  };
+
+  const closeModal = () => setModalState(prev => ({ ...prev, isOpen: false }));
 
   useEffect(() => {
     fetchExams();
@@ -81,6 +121,68 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleCloseExam = (examId: string) => {
+    showConfirm(
+      "Processar Simulado", 
+      "Tem certeza que deseja processar as notas e fechar o simulado? Isso pode levar alguns segundos dependendo da quantidade de respostas.", 
+      async () => {
+        try {
+          setClosingId(examId);
+          const token = localStorage.getItem('token');
+          const res = await fetch(`${API_URL}/exams/close`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ examId })
+          });
+          const data = await res.json();
+          if (res.ok) {
+            showAlert("Sucesso", `Simulado processado com sucesso! ${data.count} notas calculadas e geradas.`);
+          } else {
+            showAlert("Erro", data.error || 'Erro ao processar e fechar simulado.');
+          }
+        } catch (e) {
+          showAlert("Erro", 'Ocorreu um erro na requisição.');
+        } finally {
+          setClosingId(null);
+        }
+      }
+    );
+  };
+
+  const handleResetStudent = (examId: string) => {
+    showPrompt(
+      "Liberar Repreenchimento",
+      "Digite a MATRÍCULA do aluno para apagar a submissão dele e liberar o cartão novamente:",
+      "Ex: 2023001",
+      async (studentRegistration) => {
+        if (!studentRegistration) return;
+
+        try {
+          const token = localStorage.getItem('token');
+          const res = await fetch(`${API_URL}/exams/admin/reset-session`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ examId, studentRegistration })
+          });
+          const data = await res.json();
+          if (res.ok) {
+            showAlert("Sucesso", data.message);
+          } else {
+            showAlert("Erro", data.error || 'Erro ao resetar submissão.');
+          }
+        } catch (e) {
+          showAlert("Erro", 'Ocorreu um erro na requisição.');
+        }
+      }
+    );
   };
 
   const handleTotalQuestionsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -151,10 +253,17 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
     }));
   };
 
+  const toLocalDatetime = (dateStr: string) => {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    const pad = (n: number) => n.toString().padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  };
+
   const loadExamForEdit = async (exam: Exam) => {
     setEditingExamId(exam.id);
     
-    // Formata a data para yyyy-mm-dd
+    // Formata a data para yyyy-mm-dd (data do evento)
     const dateStr = new Date(exam.date).toISOString().split('T')[0];
     
     setForm({
@@ -163,6 +272,11 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
       type: exam.type,
       totalQuestions: exam.totalQuestions,
       isPublished: exam.isPublished,
+      isEnemFull: exam.isEnemFull || false,
+      windowStart: toLocalDatetime(exam.windowStart || ''),
+      windowEnd: toLocalDatetime(exam.windowEnd || ''),
+      windowStart2: exam.windowStart2 ? toLocalDatetime(exam.windowStart2) : '',
+      windowEnd2: exam.windowEnd2 ? toLocalDatetime(exam.windowEnd2) : '',
       questions: []
     });
 
@@ -199,12 +313,12 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
 
   const cancelEdit = () => {
     setEditingExamId(null);
-    setForm({ title: '', date: '', type: 'enem', totalQuestions: 60, isPublished: false, questions: [] });
+    setForm({ title: '', date: '', type: 'enem', totalQuestions: 60, isPublished: false, isEnemFull: false, windowStart: '', windowEnd: '', windowStart2: '', windowEnd2: '', questions: [] });
   };
 
   const handleSaveExam = async () => {
     if (!form.title || !form.date) {
-      alert('Preencha título e data.');
+      showAlert("Atenção", 'Preencha título e data.');
       return;
     }
     
@@ -213,18 +327,25 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
       const token = localStorage.getItem('token');
       let targetExamId = editingExamId;
       
+      const bodyData = {
+        title: form.title,
+        date: form.date,
+        totalQuestions: form.totalQuestions,
+        type: form.type,
+        isPublished: form.isPublished,
+        isEnemFull: form.isEnemFull,
+        windowStart: form.windowStart ? new Date(form.windowStart).toISOString() : undefined,
+        windowEnd: form.windowEnd ? new Date(form.windowEnd).toISOString() : undefined,
+        windowStart2: form.isEnemFull && form.windowStart2 ? new Date(form.windowStart2).toISOString() : null,
+        windowEnd2: form.isEnemFull && form.windowEnd2 ? new Date(form.windowEnd2).toISOString() : null
+      };
+
       if (editingExamId) {
         // UPDATE EXAM
         const resExam = await fetch(`${API_URL}/exams/${editingExamId}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-          body: JSON.stringify({
-            title: form.title,
-            date: form.date,
-            totalQuestions: form.totalQuestions,
-            type: form.type,
-            isPublished: form.isPublished
-          })
+          body: JSON.stringify(bodyData)
         });
         if (!resExam.ok) throw new Error('Erro ao atualizar simulado');
       } else {
@@ -232,13 +353,7 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
         const resExam = await fetch(`${API_URL}/exams`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-          body: JSON.stringify({
-            title: form.title,
-            date: form.date,
-            totalQuestions: form.totalQuestions,
-            type: form.type,
-            isPublished: form.isPublished
-          })
+          body: JSON.stringify(bodyData)
         });
         if (!resExam.ok) throw new Error('Erro ao criar simulado');
         const newExam = await resExam.json();
@@ -266,32 +381,41 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
         }
       }
 
-      alert(editingExamId ? 'Simulado atualizado com sucesso!' : 'Simulado criado com sucesso!');
+      showAlert("Sucesso", editingExamId ? 'Simulado atualizado com sucesso!' : 'Simulado criado com sucesso!');
       if (onUpdate) onUpdate();
       cancelEdit();
       fetchExams();
     } catch (error) {
       console.error(error);
-      alert('Erro interno.');
+      showAlert("Erro", 'Ocorreu um erro interno ao salvar o simulado.');
     } finally {
       setSaving(false);
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Deseja realmente excluir este simulado?')) return;
-    try {
-      const token = localStorage.getItem('token');
-      const res = await fetch(`${API_URL}/exams/${id}`, {
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      if (res.ok) {
-        setExams(exams.filter(e => e.id !== id));
+  const handleDelete = (id: string) => {
+    showConfirm(
+      "Excluir Simulado",
+      "Deseja realmente excluir este simulado? Esta ação não pode ser desfeita e removerá todas as notas associadas.",
+      async () => {
+        try {
+          const token = localStorage.getItem('token');
+          const res = await fetch(`${API_URL}/exams/${id}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          if (res.ok) {
+            setExams(exams.filter(e => e.id !== id));
+            showAlert("Sucesso", "Simulado removido com sucesso.");
+          } else {
+            showAlert("Erro", "Falha ao remover simulado.");
+          }
+        } catch (error) {
+          console.error('Erro ao excluir', error);
+          showAlert("Erro", "Erro ao comunicar com o servidor.");
+        }
       }
-    } catch (error) {
-      console.error('Erro ao excluir', error);
-    }
+    );
   };
 
   // Agrupa questoes para renderizar
@@ -321,18 +445,33 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
         <CardContent className="space-y-6">
           <div className="flex items-center justify-between pb-4 border-b">
             <h3 className="font-semibold text-lg">Detalhes do Simulado</h3>
-            <div className="flex items-center gap-3">
-              <Label htmlFor="publicado">Liberar Boletim para Alunos</Label>
-              <label htmlFor="publicado" className="relative inline-flex items-center cursor-pointer">
-                <input 
-                  type="checkbox" 
-                  id="publicado" 
-                  className="sr-only peer" 
-                  checked={form.isPublished}
-                  onChange={(e) => setForm({ ...form, isPublished: e.target.checked })}
-                />
-                <div className="w-11 h-6 bg-muted peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-background after:border-border after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-              </label>
+            <div className="flex gap-6">
+              <div className="flex items-center gap-3">
+                <Label htmlFor="enemFull">ENEM 2 Dias (180Q)</Label>
+                <label htmlFor="enemFull" className="relative inline-flex items-center cursor-pointer">
+                  <input 
+                    type="checkbox" 
+                    id="enemFull" 
+                    className="sr-only peer" 
+                    checked={form.isEnemFull}
+                    onChange={(e) => setForm({ ...form, isEnemFull: e.target.checked })}
+                  />
+                  <div className="w-11 h-6 bg-muted peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-background after:border-border after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                </label>
+              </div>
+              <div className="flex items-center gap-3">
+                <Label htmlFor="publicado">Liberar Boletim para Alunos</Label>
+                <label htmlFor="publicado" className="relative inline-flex items-center cursor-pointer">
+                  <input 
+                    type="checkbox" 
+                    id="publicado" 
+                    className="sr-only peer" 
+                    checked={form.isPublished}
+                    onChange={(e) => setForm({ ...form, isPublished: e.target.checked })}
+                  />
+                  <div className="w-11 h-6 bg-muted peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-background after:border-border after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                </label>
+              </div>
             </div>
           </div>
 
@@ -374,6 +513,50 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
                 </SelectContent>
               </Select>
             </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="windowStart">Início do Prazo de Resposta</Label>
+              <Input 
+                id="windowStart" 
+                type="datetime-local" 
+                value={form.windowStart}
+                onChange={(e) => setForm({ ...form, windowStart: e.target.value })}
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="windowEnd">Fim do Prazo de Resposta (Dia 1)</Label>
+              <Input 
+                id="windowEnd" 
+                type="datetime-local" 
+                value={form.windowEnd}
+                onChange={(e) => setForm({ ...form, windowEnd: e.target.value })}
+              />
+            </div>
+            
+            {form.isEnemFull && (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="windowStart2">Início do Prazo de Resposta (Dia 2)</Label>
+                  <Input 
+                    id="windowStart2" 
+                    type="datetime-local" 
+                    value={form.windowStart2}
+                    onChange={(e) => setForm({ ...form, windowStart2: e.target.value })}
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="windowEnd2">Fim do Prazo de Resposta (Dia 2)</Label>
+                  <Input 
+                    id="windowEnd2" 
+                    type="datetime-local" 
+                    value={form.windowEnd2}
+                    onChange={(e) => setForm({ ...form, windowEnd2: e.target.value })}
+                  />
+                </div>
+              </>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -585,6 +768,25 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center justify-end gap-1">
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="text-orange-500 hover:bg-orange-50 hover:text-orange-600" 
+                            onClick={() => handleResetStudent(simulado.id)}
+                            title="Liberar Repreenchimento para Aluno"
+                          >
+                            <UserX className="w-4 h-4" />
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700" 
+                            onClick={() => handleCloseExam(simulado.id)}
+                            disabled={closingId === simulado.id}
+                            title="Processar Notas / Fechar Simulado"
+                          >
+                            {closingId === simulado.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Calculator className="w-4 h-4" />}
+                          </Button>
                           <Button variant="ghost" size="icon" onClick={() => loadExamForEdit(simulado)} className="text-slate-500 hover:text-primary">
                             <Edit2 className="w-4 h-4" />
                           </Button>
@@ -601,6 +803,45 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
           </div>
         </CardContent>
       </Card>
+
+      <Dialog open={modalState.isOpen} onOpenChange={(open) => !open && closeModal()}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-bold">{modalState.title}</DialogTitle>
+            <DialogDescription className="text-slate-600 mt-2 leading-relaxed">
+              {modalState.description}
+            </DialogDescription>
+          </DialogHeader>
+          {modalState.type === 'prompt' && (
+            <div className="py-4">
+              <Input 
+                placeholder={modalState.inputPlaceholder} 
+                value={modalState.inputValue || ''} 
+                onChange={(e) => setModalState(prev => ({ ...prev, inputValue: e.target.value }))}
+                className="text-base"
+                autoFocus
+              />
+            </div>
+          )}
+          <DialogFooter className="mt-4 gap-2 sm:justify-end">
+            {modalState.type !== 'alert' && (
+              <Button variant="outline" onClick={closeModal} className="font-semibold">
+                Cancelar
+              </Button>
+            )}
+            <Button 
+              variant={modalState.type === 'confirm' ? "destructive" : "default"}
+              onClick={() => {
+                closeModal();
+                if (modalState.onConfirm) modalState.onConfirm(modalState.inputValue);
+              }}
+              className="font-semibold"
+            >
+              {modalState.type === 'alert' ? 'OK' : 'Confirmar'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

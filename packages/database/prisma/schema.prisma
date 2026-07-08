@@ -63,6 +63,7 @@ model Tenant {
     studentResponses  StudentResponse[]
     presenceWindows   PresenceWindow[]
     triReferences     TriReference[]
+    examGrades        ExamGrade[]
 
     @@map("tenants")
 }
@@ -86,6 +87,8 @@ model User {
     attendanceRecords AttendanceRecord[]
     attendanceExcuses AttendanceExcuse[]
     studentResponses  StudentResponse[]
+    examGrades        ExamGrade[]
+    examSessions      ExamSession[]
 
     @@unique([tenantId, email])
     @@unique([tenantId, registrationNumber])
@@ -213,13 +216,36 @@ model Exam {
     totalQuestions Int      @default(60) @map("total_questions")
     type           String   @default("enem")
     isPublished    Boolean  @default(false) @map("is_published")
+    isEnemFull     Boolean  @default(false) @map("is_enem_full")
+    windowStart    DateTime @default(now()) @map("window_start")
+    windowEnd      DateTime @default(now()) @map("window_end")
+    windowStart2   DateTime? @map("window_start_2")
+    windowEnd2     DateTime? @map("window_end_2")
     createdAt      DateTime @default(now()) @map("created_at")
 
     tenant           Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
     examQuestions    ExamQuestion[]
     studentResponses StudentResponse[]
+    examGrades       ExamGrade[]
+    examSessions     ExamSession[]
 
     @@map("exams")
+}
+
+model ExamSession {
+    id        String   @id @default(uuid()) @db.Uuid
+    tenantId  String   @map("tenant_id") @db.Uuid
+    examId    String   @map("exam_id") @db.Uuid
+    studentId String   @map("student_id") @db.Uuid
+    dayNumber Int      @map("day_number") @default(1)
+    submitted Boolean  @default(false)
+    createdAt DateTime @default(now()) @map("created_at")
+
+    exam    Exam @relation(fields: [examId], references: [id], onDelete: Cascade)
+    student User @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+    @@unique([examId, studentId, dayNumber])
+    @@map("exam_sessions")
 }
 
 model ExamQuestion {
@@ -295,4 +321,23 @@ model TriReference {
   @@unique([tenantId, year, subject, tier, acertos])
   @@index([tenantId, year, subject, tier])
   @@map("tri_references")
+}
+
+model ExamGrade {
+  id        String   @id @default(uuid()) @db.Uuid
+  tenantId  String   @map("tenant_id") @db.Uuid
+  examId    String   @map("exam_id") @db.Uuid
+  studentId String   @map("student_id") @db.Uuid
+  subject   String   // Ex: "MATEMATICA", "NATUREZAS", "HUMANAS", "LINGUAGENS" ou "UERJ_EQ"
+  acertos   Int
+  scoreTri  Float    @map("score_tri")  // Nota final calculada
+  tierUsed  String   @map("tier_used")  // "facil", "principal", "dificil" ou "regular"
+  createdAt DateTime @default(now()) @map("created_at")
+
+  tenant  Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  exam    Exam   @relation(fields: [examId], references: [id], onDelete: Cascade)
+  student User   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([examId, studentId, subject])
+  @@map("exam_grades")
 }
