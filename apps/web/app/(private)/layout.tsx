@@ -36,7 +36,7 @@ export default function DashboardLayout({
 
     // Carrega o perfil logado
     if (token) {
-      fetch('http://localhost:3001/api/auth/me', {
+      fetch('/api/auth/me', {
         headers: { Authorization: `Bearer ${token}` }
       })
       .then(res => res.json())

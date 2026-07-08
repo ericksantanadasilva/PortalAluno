@@ -102,7 +102,8 @@ router.post('/', upload.single('file'), async (req, res) => {
             });
 
             // Gerar link do nosso próprio proxy para não ser bloqueado pelo Google
-            const url = `http://localhost:3001/api/upload/image/${fileId}`;
+            const baseUrl = process.env.API_BASE_URL || 'http://localhost:3001';
+            const url = `${baseUrl}/api/upload/image/${fileId}`;
             return res.json({
                 success: true,
                 fileId: fileId,

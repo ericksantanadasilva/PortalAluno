@@ -15,7 +15,7 @@ interface Tenant {
   primaryColor: string; // CamelCase do Prisma
 }
 
-const API_URL = "http://localhost:3001/api/god"; // URL centralizada do seu Express
+const API_URL = "/api/god"; // URL centralizada do seu Express
 
 export default function GodModePage() {
   const [tenants, setTenants] = useState<Tenant[]>([]);

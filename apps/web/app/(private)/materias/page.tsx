@@ -9,7 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Loader2, Trash2, Edit2, Plus, X, Save } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 
-const API_URL = "http://localhost:3001/api";
+const API_URL = "/api";
 
 type Subject = {
   id: string;

@@ -73,7 +73,7 @@ export function TriMappingPanel() {
         setIsLoadingSaved(true);
         try {
             const token = localStorage.getItem("token");
-            const res = await fetch(`http://localhost:3001/api/tri/${targetYear}`, {
+            const res = await fetch(`/api/tri/${targetYear}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (res.ok) {
@@ -107,7 +107,7 @@ export function TriMappingPanel() {
 
         try {
             const token = localStorage.getItem("token");
-            const res = await fetch("http://localhost:3001/api/tri/upload-preview", {
+            const res = await fetch("/api/tri/upload-preview", {
                 method: "POST",
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -154,7 +154,7 @@ export function TriMappingPanel() {
 
         try {
             const token = localStorage.getItem("token");
-            const res = await fetch("http://localhost:3001/api/tri/process-mapped", {
+            const res = await fetch("/api/tri/process-mapped", {
                 method: "POST",
                 headers: {
                     Authorization: `Bearer ${token}`,

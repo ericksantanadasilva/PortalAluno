@@ -30,8 +30,9 @@ export default async function RootLayout({
 
   // Busca a configuração do Tenant da API pública (para Single-tenant, pega o primeiro)
   let tenantConfig = tenantConfigMock;
+  const backendUrl = process.env.API_BASE_URL || 'http://localhost:3001';
   try {
-    const res = await fetch('http://localhost:3001/api/tenant/public-config', { cache: 'no-store' });
+    const res = await fetch(`${backendUrl}/api/tenant/public-config`, { cache: 'no-store' });
     if (res.ok) {
       const data = await res.json();
       // Mapeia do backend pro formato esperado pelo frontend
@@ -39,8 +40,8 @@ export default async function RootLayout({
         ...tenantConfigMock,
         cor_primaria: data.primaryColor || tenantConfigMock.cor_primaria,
         cor_secundaria: data.secondaryColor || tenantConfigMock.cor_secundaria,
-        logo_url: data.logoUrl || tenantConfigMock.logo_url,
-        background_login: data.loginUrl || tenantConfigMock.background_login,
+        logo_url: data.logoUrl ? data.logoUrl.replace(backendUrl, '') : tenantConfigMock.logo_url,
+        background_login: data.loginUrl ? data.loginUrl.replace(backendUrl, '') : tenantConfigMock.background_login,
         nome: data.name || tenantConfigMock.nome
       };
     }

@@ -45,7 +45,7 @@ const ICON_SIMULADO: Record<string, React.ReactNode> = {
   DISCURSIVO: <PenLine className="w-4 h-4" />,
 };
 
-const API_URL = "http://localhost:3001/api";
+const API_URL = "/api";
 
 export default function BoletimDetalhado() {
   const [role, setRole] = useState<string | null>(null);

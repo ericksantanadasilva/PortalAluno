@@ -31,7 +31,7 @@ export default function PresencaOnlinePage() {
         setRole(userRole);
 
         // Busca o usuario atual
-        const meRes = await fetch("http://localhost:3001/api/auth/me", {
+        const meRes = await fetch("/api/auth/me", {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (meRes.ok) {
@@ -44,7 +44,7 @@ export default function PresencaOnlinePage() {
 
         // Se for admin/secretaria, carrega todos os alunos pra simular
         if (userRole === "admin" || userRole === "secretaria") {
-          const studentsRes = await fetch("http://localhost:3001/api/students", {
+          const studentsRes = await fetch("/api/students", {
             headers: { Authorization: `Bearer ${token}` }
           });
           if (studentsRes.ok) {

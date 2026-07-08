@@ -10,7 +10,7 @@ import { UploadCloud, Image as ImageIcon, PaintBucket, Loader2 } from 'lucide-re
 import Image from 'next/image';
 import { hexToHSL } from '@/lib/utils';
 
-const API_URL = "http://localhost:3001/api";
+const API_URL = "/api";
 
 export function WhiteLabelTab() {
   const [config, setConfig] = useState<TenantStyleConfig>({

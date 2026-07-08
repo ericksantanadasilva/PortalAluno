@@ -22,7 +22,7 @@ import { AlunoForm } from '../types/workspace-settings.types';
 
 
 // URL base do seu servidor Express no Monorepo
-const API_URL = "http://localhost:3001/api";
+const API_URL = "/api";
 
 interface Modality {
   id: string;

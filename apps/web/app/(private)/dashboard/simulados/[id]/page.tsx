@@ -10,7 +10,7 @@ import Link from 'next/link';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
-const API_URL = "http://localhost:3001/api";
+const API_URL = "/api";
 
 type ExamData = {
   id: string;

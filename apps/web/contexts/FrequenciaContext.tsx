@@ -50,8 +50,8 @@ export function FrequenciaProvider({ children }: { children: React.ReactNode }) 
     if (!token) return;
     try {
       const [resClasses, resSubjects] = await Promise.all([
-        fetch('http://localhost:3001/api/classes', { headers: { Authorization: `Bearer ${token}` } }),
-        fetch('http://localhost:3001/api/subjects', { headers: { Authorization: `Bearer ${token}` } })
+        fetch('/api/classes', { headers: { Authorization: `Bearer ${token}` } }),
+        fetch('/api/subjects', { headers: { Authorization: `Bearer ${token}` } })
       ]);
       if (resClasses.ok) setClasses(await resClasses.json());
       if (resSubjects.ok) {
@@ -71,7 +71,7 @@ export function FrequenciaProvider({ children }: { children: React.ReactNode }) 
       const query = new URLSearchParams({ date });
       if (subjectId) query.append('subjectId', subjectId);
 
-      const res = await fetch(`http://localhost:3001/api/attendance/classes/${classId}/students?${query.toString()}`, {
+      const res = await fetch(`/api/attendance/classes/${classId}/students?${query.toString()}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
@@ -89,7 +89,7 @@ export function FrequenciaProvider({ children }: { children: React.ReactNode }) 
     const token = getToken();
     if (!token) return;
     try {
-      const res = await fetch(`http://localhost:3001/api/attendance/excuses`, {
+      const res = await fetch(`/api/attendance/excuses`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
@@ -105,7 +105,7 @@ export function FrequenciaProvider({ children }: { children: React.ReactNode }) 
     const token = getToken();
     if (!token) return;
     try {
-      const res = await fetch(`http://localhost:3001/api/attendance/windows`, {
+      const res = await fetch(`/api/attendance/windows`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
@@ -125,7 +125,7 @@ export function FrequenciaProvider({ children }: { children: React.ReactNode }) 
     setAlunos(prev => prev.map(a => a.id === studentId ? { ...a, status_atual: status } : a));
 
     try {
-      await fetch(`http://localhost:3001/api/attendance/record`, {
+      await fetch(`/api/attendance/record`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -166,7 +166,7 @@ export function FrequenciaProvider({ children }: { children: React.ReactNode }) 
         payload.subjectIds = abono.subjectIds;
       }
       
-      const res = await fetch(`http://localhost:3001/api/attendance/excuses`, {
+      const res = await fetch(`/api/attendance/excuses`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -206,7 +206,7 @@ export function FrequenciaProvider({ children }: { children: React.ReactNode }) 
         payload.subjectIds = []; // limpa matérias
       }
       
-      const res = await fetch(`http://localhost:3001/api/attendance/excuses/${id}`, {
+      const res = await fetch(`/api/attendance/excuses/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -229,7 +229,7 @@ export function FrequenciaProvider({ children }: { children: React.ReactNode }) 
     const token = getToken();
     if (!token) return;
     try {
-      const res = await fetch(`http://localhost:3001/api/attendance/excuses/${id}`, {
+      const res = await fetch(`/api/attendance/excuses/${id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -256,7 +256,7 @@ export function FrequenciaProvider({ children }: { children: React.ReactNode }) 
         endTime: janela.horaFechamento
       };
 
-      const res = await fetch(`http://localhost:3001/api/attendance/windows`, {
+      const res = await fetch(`/api/attendance/windows`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -281,7 +281,7 @@ export function FrequenciaProvider({ children }: { children: React.ReactNode }) 
     const token = getToken();
     if (!token) return;
     try {
-      const res = await fetch(`http://localhost:3001/api/attendance/windows/${id}`, {
+      const res = await fetch(`/api/attendance/windows/${id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` }
       });

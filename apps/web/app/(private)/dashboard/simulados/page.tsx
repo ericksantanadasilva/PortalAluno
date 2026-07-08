@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { FileSignature, Loader2, Calendar, LayoutList } from 'lucide-react';
 import Link from 'next/link';
 
-const API_URL = "http://localhost:3001/api";
+const API_URL = "/api";
 
 type ExamSession = {
   dayNumber: number;

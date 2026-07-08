@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { AlertTriangle, CheckCircle2, Save, Loader2 } from 'lucide-react';
 
-const API_URL = "http://localhost:3001/api";
+const API_URL = "/api";
 
 type Exam = {
   id: string;

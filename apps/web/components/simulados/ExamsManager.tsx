@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Plus, Trash2, Loader2, Edit2, X, Save, Calculator, UserX } from 'lucide-react';
 
-const API_URL = "http://localhost:3001/api";
+const API_URL = "/api";
 
 type Exam = {
   id: string;
