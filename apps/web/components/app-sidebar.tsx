@@ -146,6 +146,11 @@ export function AppSidebar({ userRole, userProfile, tenantConfig, onLogout }: Ap
                           <span>Simulados Banco</span>
                         </SidebarMenuSubButton>
                       </SidebarMenuSubItem>
+                      <SidebarMenuSubItem>
+                        <SidebarMenuSubButton render={<Link href="/admin/settings?tab=omr" />} isActive={pathname === "/admin/settings" && tab === "omr"}>
+                          <span>Importação OMR</span>
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
                       {userRole === 'admin' && (
                         <SidebarMenuSubItem>
                           <SidebarMenuSubButton render={<Link href="/admin/tri" />} isActive={pathname === "/admin/tri"}>
