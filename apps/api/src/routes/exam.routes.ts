@@ -2,8 +2,11 @@ import { Router } from 'express';
 import { prisma } from '@repo/database';
 import { requireAuth, requireStaff } from '../middlewares/auth.middleware';
 import { closeExam } from '../controllers/examClosing.controller';
+import { importOmr } from '../controllers/importOmr.controller';
+import multer from 'multer';
 
 const router = Router();
+const upload = multer({ storage: multer.memoryStorage() });
 
 // GET /api/exams - List all exams
 router.get('/', requireAuth, requireStaff, async (req, res) => {
@@ -22,6 +25,9 @@ router.get('/', requireAuth, requireStaff, async (req, res) => {
 
 // POST /api/exams/close - Fechar o simulado e calcular TRI/UERJ
 router.post('/close', requireAuth, requireStaff, closeExam);
+
+// POST /api/exams/import-omr - Importar Cartões OMR via CSV/XLSX
+router.post('/import-omr', requireAuth, requireStaff, upload.single('file'), importOmr);
 
 // POST /api/exams - Create a new exam
 router.post('/', requireAuth, requireStaff, async (req, res) => {

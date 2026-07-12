@@ -7,12 +7,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { WhiteLabelTab } from './WhiteLabelTab';
 import { StudentsTab } from './StudentsTab';
 import { EmployeesTab } from './EmployeesTab';
-import { Palette, Users, Briefcase } from 'lucide-react';
+import { OmrImportTab } from './OmrImportTab';
+import { Palette, Users, Briefcase, FileSignature } from 'lucide-react';
 
 const TABS = [
   { id: 'whitelabel', label: 'Personalização', icon: Palette, component: WhiteLabelTab },
   { id: 'students', label: 'Alunos e Matrículas', icon: Users, component: StudentsTab },
   { id: 'employees', label: 'Equipe e Funcionários', icon: Briefcase, component: EmployeesTab },
+  { id: 'omr', label: 'Importação OMR', icon: FileSignature, component: OmrImportTab },
 ];
 
 export function WorkspaceSettings() {
