@@ -125,12 +125,7 @@ router.get('/', requireAuth, async (req, res) => {
                     acertou = true;
                 }
                 
-                if (q.theme) {
-                    if (!themePerformance[q.theme]) {
-                        themePerformance[q.theme] = { acertos: 0, total: 0, subject: subjName };
-                    }
-                    themePerformance[q.theme].total += 1;
-                }
+
 
                 if (acertou) {
                     correctCount++;
@@ -147,8 +142,7 @@ router.get('/', requireAuth, async (req, res) => {
                     });
                 }
                 
-                if (!subjectPerformance[subjName]) subjectPerformance[subjName] = { acertos: 0, total: 0 };
-                subjectPerformance[subjName].total += 1;
+
 
                 raioX.push({
                     numero: q.questionNumber,
