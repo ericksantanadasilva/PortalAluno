@@ -6,7 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Loader2, Plus, Building2, User, CheckCircle2, LayoutDashboard, Copy } from "lucide-react";
+import { Loader2, Plus, Building2, User, CheckCircle2, LayoutDashboard, Copy, LogOut } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { godLogoutAction } from "./login/actions";
 
 interface Tenant {
   id: string;
@@ -18,6 +20,7 @@ interface Tenant {
 const API_URL = "/api/god"; // URL centralizada do seu Express
 
 export default function GodModePage() {
+  const router = useRouter();
   const [tenants, setTenants] = useState<Tenant[]>([]);
   const [loadingTenants, setLoadingTenants] = useState(true);
   const [impersonating, setImpersonating] = useState<Tenant | null>(null);
@@ -139,11 +142,25 @@ export default function GodModePage() {
       )}
 
       <div className="max-w-6xl mx-auto p-6 lg:p-8 mt-4 lg:mt-8">
-        <header className="mb-10">
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
-            SuperUser <span className="text-slate-300 font-normal mx-1">/</span> God Mode
-          </h1>
-          <p className="text-slate-500 mt-2">Painel de controle mestre para gestão de instâncias (Tenants) e acesso isolado.</p>
+        <header className="mb-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
+              SuperUser <span className="text-slate-300 font-normal mx-1">/</span> God Mode
+            </h1>
+            <p className="text-slate-500 mt-2">Painel de controle mestre para gestão de instâncias (Tenants) e acesso isolado.</p>
+          </div>
+          
+          <Button 
+            variant="outline" 
+            className="text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700 w-fit shadow-sm"
+            onClick={async () => {
+              await godLogoutAction();
+              router.push('/god/login');
+            }}
+          >
+            <LogOut className="w-4 h-4 mr-2" />
+            Sair do Painel
+          </Button>
         </header>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
