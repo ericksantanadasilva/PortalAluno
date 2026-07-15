@@ -8,14 +8,16 @@ const router = Router();
 // GET /api/tenant/public-config - Rota pública para carregar a logo/fundo no login
 router.get('/public-config', async (req, res) => {
     try {
-        // Como o sistema ainda é single-tenant, pegamos o primeiro
+        // Como o sistema ainda é single-tenant (sem host routing completo), pegamos o primeiro pela data de criação
         const tenant = await prisma.tenant.findFirst({
+            orderBy: { createdAt: 'asc' },
             select: {
                 primaryColor: true,
                 secondaryColor: true,
                 logoUrl: true,
                 loginUrl: true,
-                name: true
+                name: true,
+                allowedReportTemplates: true
             }
         });
         
@@ -43,7 +45,8 @@ router.get('/config', async (req, res) => {
                 secondaryColor: true,
                 logoUrl: true,
                 loginUrl: true,
-                name: true
+                name: true,
+                allowedReportTemplates: true
             }
         });
 

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useTenant } from '@/components/TenantProvider';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -33,6 +34,7 @@ type FormQuestion = {
 };
 
 export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigger?: number }) {
+  const tenantConfig = useTenant();
   const [exams, setExams] = useState<Exam[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -506,10 +508,15 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
                   <SelectValue placeholder="Selecione..." />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="enem">ENEM</SelectItem>
-                  <SelectItem value="enem_parcial">ENEM Parcial</SelectItem>
-                  <SelectItem value="uerj">UERJ</SelectItem>
-                  <SelectItem value="discursivo">Discursivo</SelectItem>
+                  {/* Filtramos os templates pelo que é permitido para o Tenant */}
+                  {[{ value: "enem", label: "ENEM", key: "ENEM" },
+                    { value: "enem_parcial", label: "ENEM Parcial", key: "ENEM_PARCIAL" },
+                    { value: "uerj", label: "UERJ", key: "UERJ" },
+                    { value: "discursivo", label: "Discursivo", key: "DISCURSIVO" }
+                  ].filter(opt => (tenantConfig?.allowedReportTemplates || ["ENEM", "UERJ", "ENEM_PARCIAL", "DISCURSIVO"]).includes(opt.key))
+                   .map(opt => (
+                    <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>

@@ -65,6 +65,7 @@ model Tenant {
     presenceWindows   PresenceWindow[]
     triReferences     TriReference[]
     examGrades        ExamGrade[]
+    allowedReportTemplates String[] @default(["ENEM", "UERJ", "ENEM_PARCIAL", "DISCURSIVO"]) @map("allowed_report_templates")
 
     @@map("tenants")
 }

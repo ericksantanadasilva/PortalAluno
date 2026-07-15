@@ -7,7 +7,7 @@ const router = Router();
 
 // POST /api/god/tenants -> Cria Escola + Usuário Admin
 router.post('/tenants', async (req, res) => {
-    const { name, slug, primaryColor, adminName, adminEmail, registrationNumber } = req.body;
+    const { name, slug, primaryColor, adminName, adminEmail, registrationNumber, allowedReportTemplates } = req.body;
 
     try {
         //validar se o slug já existe
@@ -23,7 +23,7 @@ router.post('/tenants', async (req, res) => {
         //3 Transação no banco: garante que só cria a empresa se o usuário tambem for criado
         const result = await prisma.$transaction(async (tx) => {
             const tenant = await tx.tenant.create({
-                data: { name, slug, primaryColor }
+                data: { name, slug, primaryColor, allowedReportTemplates }
             });
 
             const adminUser = await tx.user.create({
@@ -66,6 +66,23 @@ router.get('/tenants', async (req, res) => {
         return res.json(tenants);
     } catch (error) {
         return res.status(500).json({ error: 'Erro ao buscar empresas.' });
+    }
+});
+
+
+// PATCH /api/god/tenants/:id -> Atualiza configurações da Tenant (ex: allowedReportTemplates)
+router.patch('/tenants/:id', async (req, res) => {
+    const { id } = req.params;
+    const { allowedReportTemplates } = req.body;
+
+    try {
+        const tenant = await prisma.tenant.update({
+            where: { id },
+            data: { allowedReportTemplates }
+        });
+        return res.json({ message: 'Instância atualizada com sucesso!', tenant });
+    } catch (error) {
+        return res.status(500).json({ error: 'Erro ao atualizar a instância.', details: (error as Error).message });
     }
 });
 

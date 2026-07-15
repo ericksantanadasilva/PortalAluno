@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Loader2, Plus, Building2, User, CheckCircle2, LayoutDashboard, Copy, LogOut } from "lucide-react";
+import { Loader2, Plus, Building2, User, CheckCircle2, LayoutDashboard, Copy, LogOut, Settings } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { godLogoutAction } from "./login/actions";
 
@@ -15,6 +15,7 @@ interface Tenant {
   name: string;      // Alinhado com o schema do banco
   slug: string;
   primaryColor: string; // CamelCase do Prisma
+  allowedReportTemplates?: string[];
 }
 
 const API_URL = "/api/god"; // URL centralizada do seu Express
@@ -36,11 +37,61 @@ export default function GodModePage() {
     primaryColor: "#10b981",
     adminName: "",
     adminEmail: "",
+    allowedReportTemplates: ["ENEM", "UERJ", "ENEM_PARCIAL", "DISCURSIVO"],
   });
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(""), 3000);
+  };
+
+  const TEMPLATE_OPTIONS = [
+    { value: "ENEM", label: "ENEM Completo" },
+    { value: "ENEM_PARCIAL", label: "ENEM Parcial (1 dia)" },
+    { value: "UERJ", label: "UERJ" },
+    { value: "DISCURSIVO", label: "Discursivo" },
+  ];
+
+  const handleTemplateToggle = (value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      allowedReportTemplates: prev.allowedReportTemplates.includes(value)
+        ? prev.allowedReportTemplates.filter(t => t !== value)
+        : [...prev.allowedReportTemplates, value]
+    }));
+  };
+
+  const [editingTenant, setEditingTenant] = useState<Tenant | null>(null);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editTemplates, setEditTemplates] = useState<string[]>([]);
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  const handleEditTenant = (tenant: Tenant) => {
+    setEditingTenant(tenant);
+    setEditTemplates(tenant.allowedReportTemplates || ["ENEM", "UERJ", "ENEM_PARCIAL", "DISCURSIVO"]);
+    setShowEditModal(true);
+  };
+
+  const handleUpdateTenant = async () => {
+    if (!editingTenant) return;
+    setIsUpdating(true);
+    try {
+      const res = await fetch(`${API_URL}/tenants/${editingTenant.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ allowedReportTemplates: editTemplates })
+      });
+      if (!res.ok) throw new Error("Erro ao atualizar a instituição");
+      
+      showToast("Configurações atualizadas com sucesso!");
+      setShowEditModal(false);
+      fetchTenants();
+    } catch (err) {
+      console.error(err);
+      showToast("Erro ao atualizar instituição.");
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
   // Carrega os tenants reais vindos do Express
@@ -97,6 +148,7 @@ export default function GodModePage() {
         primaryColor: "#10b981",
         adminName: "",
         adminEmail: "",
+        allowedReportTemplates: ["ENEM", "UERJ", "ENEM_PARCIAL", "DISCURSIVO"],
       });
       fetchTenants();
 
@@ -205,6 +257,25 @@ export default function GodModePage() {
                   <div className="w-full h-px bg-slate-100" />
 
                   <div className="space-y-4">
+                    <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Templates de Boletim</h3>
+                    <div className="grid grid-cols-2 gap-3">
+                      {TEMPLATE_OPTIONS.map((opt) => (
+                        <label key={opt.value} className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={formData.allowedReportTemplates.includes(opt.value)}
+                            onChange={() => handleTemplateToggle(opt.value)}
+                            className="rounded border-slate-300 text-indigo-500 focus:ring-indigo-500"
+                          />
+                          {opt.label}
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="w-full h-px bg-slate-100" />
+
+                  <div className="space-y-4">
                     <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Admin Master</h3>
 
                     <div className="grid gap-2">
@@ -265,15 +336,25 @@ export default function GodModePage() {
                         <p className="text-xs text-slate-400 font-mono mt-0.5">/{tenant.slug}</p>
                       </div>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleImpersonate(tenant)}
-                      className="opacity-0 group-hover:opacity-100 transition-opacity bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-lg text-xs font-medium border border-slate-200/50"
-                    >
-                      <LayoutDashboard className="w-4 h-4 mr-2 text-indigo-500" />
-                      Simular Acesso
-                    </Button>
+                    <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleEditTenant(tenant)}
+                        className="bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-lg text-xs font-medium border border-slate-200/50"
+                      >
+                        <Settings className="w-4 h-4 text-slate-500" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleImpersonate(tenant)}
+                        className="bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-lg text-xs font-medium border border-slate-200/50"
+                      >
+                        <LayoutDashboard className="w-4 h-4 mr-2 text-indigo-500" />
+                        Simular Acesso
+                      </Button>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -318,6 +399,52 @@ export default function GodModePage() {
           <DialogFooter className="bg-slate-50 border-t border-slate-100 px-6 py-4 sm:justify-center">
             <Button onClick={() => setShowSuccessModal(false)} className="w-full rounded-xl bg-slate-900 text-white hover:bg-slate-800 h-11 text-base font-medium shadow-sm">
               Concluir Onboarding
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
+        <DialogContent className="sm:max-w-md rounded-2xl border-0 shadow-2xl p-6">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold text-slate-900 flex items-center gap-2">
+              <Settings className="w-5 h-5 text-indigo-500" />
+              Configurar {editingTenant?.name}
+            </DialogTitle>
+            <DialogDescription>
+              Defina quais templates de boletim estarão disponíveis para esta instituição.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="py-4">
+            <div className="space-y-3">
+              {TEMPLATE_OPTIONS.map((opt) => (
+                <label key={opt.value} className="flex items-center gap-3 p-3 rounded-xl border border-slate-100 bg-slate-50/50 cursor-pointer hover:bg-slate-50 transition-colors">
+                  <input
+                    type="checkbox"
+                    checked={editTemplates.includes(opt.value)}
+                    onChange={() => {
+                      setEditTemplates(prev => prev.includes(opt.value) 
+                        ? prev.filter(t => t !== opt.value)
+                        : [...prev, opt.value]
+                      );
+                    }}
+                    className="rounded border-slate-300 text-indigo-500 focus:ring-indigo-500 w-5 h-5"
+                  />
+                  <span className="text-sm font-medium text-slate-700">{opt.label}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setShowEditModal(false)} className="rounded-xl">Cancelar</Button>
+            <Button 
+              onClick={handleUpdateTenant} 
+              disabled={isUpdating}
+              className="rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white"
+            >
+              {isUpdating ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+              Salvar Configurações
             </Button>
           </DialogFooter>
         </DialogContent>

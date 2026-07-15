@@ -42,7 +42,8 @@ export default async function RootLayout({
         cor_secundaria: data.secondaryColor || tenantConfigMock.cor_secundaria,
         logo_url: data.logoUrl ? data.logoUrl.replace(backendUrl, '') : tenantConfigMock.logo_url,
         background_login: data.loginUrl ? data.loginUrl.replace(backendUrl, '') : tenantConfigMock.background_login,
-        nome: data.name || tenantConfigMock.nome
+        nome: data.name || tenantConfigMock.nome,
+        allowedReportTemplates: data.allowedReportTemplates || tenantConfigMock.allowedReportTemplates || ["ENEM", "UERJ", "ENEM_PARCIAL", "DISCURSIVO"]
       };
     }
   } catch (error) {
