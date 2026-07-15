@@ -6,9 +6,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { TenantStyleConfig } from '../types/workspace-settings.types';
-import { UploadCloud, Image as ImageIcon, PaintBucket, Loader2 } from 'lucide-react';
+import { UploadCloud, Image as ImageIcon, PaintBucket, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 import Image from 'next/image';
 import { hexToHSL } from '@/lib/utils';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogTitle } from '@/components/ui/dialog';
 
 const API_URL = "/api";
 
@@ -24,6 +25,9 @@ export function WhiteLabelTab() {
 
   const logoInputRef = useRef<HTMLInputElement>(null);
   const loginInputRef = useRef<HTMLInputElement>(null);
+
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [dialogMessage, setDialogMessage] = useState({ title: '', description: '', isError: false });
 
   useEffect(() => {
     fetchConfig();
@@ -55,8 +59,6 @@ export function WhiteLabelTab() {
     }
   };
 
-
-
   const applyCssVariables = (primary: string, secondary: string) => {
     document.documentElement.style.setProperty('--primary', hexToHSL(primary));
     document.documentElement.style.setProperty('--secondary', hexToHSL(secondary));
@@ -82,13 +84,16 @@ export function WhiteLabelTab() {
         body: JSON.stringify(config)
       });
       if (res.ok) {
-        alert('Configurações salvas com sucesso!');
+        setDialogMessage({ title: 'Configurações Salvas!', description: 'As novas cores e preferências da marca foram atualizadas.', isError: false });
+        setShowSuccessModal(true);
       } else {
-        alert('Erro ao salvar as configurações.');
+        setDialogMessage({ title: 'Erro ao Salvar', description: 'Não foi possível atualizar as configurações da marca.', isError: true });
+        setShowSuccessModal(true);
       }
     } catch (error) {
       console.error(error);
-      alert('Erro ao salvar as configurações.');
+      setDialogMessage({ title: 'Erro ao Salvar', description: 'Erro de comunicação ao salvar configurações.', isError: true });
+      setShowSuccessModal(true);
     } finally {
       setSaving(false);
     }
@@ -123,11 +128,13 @@ export function WhiteLabelTab() {
           }));
         }
       } else {
-        alert('Erro ao fazer o upload para o Google Drive.');
+        setDialogMessage({ title: 'Erro de Upload', description: 'Não foi possível fazer o upload para o Google Drive.', isError: true });
+        setShowSuccessModal(true);
       }
     } catch (error) {
       console.error('Upload falhou', error);
-      alert('Erro ao fazer o upload para o Google Drive.');
+      setDialogMessage({ title: 'Erro de Upload', description: 'Falha na comunicação durante o upload.', isError: true });
+      setShowSuccessModal(true);
     } finally {
       if (type === 'logo') setUploadingLogo(false);
       else setUploadingLogin(false);
@@ -345,6 +352,31 @@ export function WhiteLabelTab() {
           </CardContent>
         </Card>
       </div>
+      {/* Modal de Sucesso / Erro */}
+      <Dialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
+        <DialogContent className="sm:max-w-md rounded-2xl border-0 shadow-2xl p-0 overflow-hidden" showCloseButton={false}>
+          <div className="bg-white px-6 py-8">
+            <div className="flex flex-col items-center justify-center text-center">
+              <div className={`w-16 h-16 rounded-full flex items-center justify-center mb-5 ring-8 ${dialogMessage.isError ? 'bg-red-50 ring-red-50/50' : 'bg-emerald-50 ring-emerald-50/50'}`}>
+                {dialogMessage.isError ? (
+                  <AlertCircle className="w-8 h-8 text-red-500" />
+                ) : (
+                  <CheckCircle2 className="w-8 h-8 text-emerald-500" />
+                )}
+              </div>
+              <DialogTitle className="text-2xl font-bold mb-2 text-slate-900">{dialogMessage.title}</DialogTitle>
+              <DialogDescription className="text-base text-slate-500 px-4">
+                {dialogMessage.description}
+              </DialogDescription>
+            </div>
+          </div>
+          <div className="bg-slate-50 border-t border-slate-100 px-6 py-4 flex sm:justify-center">
+            <Button onClick={() => setShowSuccessModal(false)} className={`w-full rounded-xl text-white h-11 text-base font-medium shadow-sm ${dialogMessage.isError ? 'bg-red-600 hover:bg-red-700' : 'bg-slate-900 hover:bg-slate-800'}`}>
+              Fechar
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

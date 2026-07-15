@@ -27,26 +27,30 @@ export default function DashboardLayout({
   };
 
   useEffect(() => {
-    const role = localStorage.getItem('user_role');
     const token = localStorage.getItem('token');
+    
+    if (!token) {
+      router.replace('/login');
+      return;
+    }
+
+    const role = localStorage.getItem('user_role');
     setUserRole(role);
 
     // Carrega o perfil logado
-    if (token) {
-      fetch('/api/auth/me', {
-        headers: { Authorization: `Bearer ${token}` }
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (!data.error) setUserProfile(data);
-      })
-      .catch(err => console.error(err));
-    }
+    fetch('/api/auth/me', {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (!data.error) setUserProfile(data);
+    })
+    .catch(err => console.error(err));
 
     // Se o usuário for aluno e tentar acessar páginas restritas, redireciona para o boletim
     if (role === 'aluno' && (pathname.includes('/dashboard/frequencia') || pathname.includes('/admin/settings'))) {
       router.replace('/dashboard/boletim');
-    } else if (role !== 'admin' && pathname.includes('/admin/tri')) {
+    } else if (!['admin', 'super_admin'].includes(role || '') && pathname.includes('/admin/tri')) {
       // Bloqueia qualquer não-admin de acessar o Mapeador TRI
       router.replace('/dashboard/boletim');
     } else {
@@ -70,7 +74,7 @@ export default function DashboardLayout({
       
       <SidebarInset>
         {/* Header Responsivo */}
-        <header className="h-16 shrink-0 border-b border-slate-100 flex items-center justify-between px-4 md:px-8 z-30 bg-background shadow-sm">
+        <header className="sticky top-0 h-16 shrink-0 border-b border-slate-100 flex items-center justify-between px-4 md:px-8 z-30 bg-background shadow-sm">
           <div className="flex items-center gap-2">
             <SidebarTrigger className="-ml-1" />
             <h1 className="text-xl md:text-2xl font-bold tracking-tight text-foreground ml-2">Dashboard</h1>

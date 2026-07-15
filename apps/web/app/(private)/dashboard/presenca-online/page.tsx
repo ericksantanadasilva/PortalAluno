@@ -43,7 +43,7 @@ export default function PresencaOnlinePage() {
         }
 
         // Se for admin/secretaria, carrega todos os alunos pra simular
-        if (userRole === "admin" || userRole === "secretaria") {
+        if (["admin", "super_admin", "secretaria"].includes(userRole || '')) {
           const studentsRes = await fetch("/api/students", {
             headers: { Authorization: `Bearer ${token}` }
           });
@@ -102,7 +102,7 @@ export default function PresencaOnlinePage() {
         </p>
       </div>
 
-      {(role === "admin" || role === "secretaria") && (
+      {["admin", "super_admin", "secretaria"].includes(role || '') && (
         <div className="mb-8 p-5 bg-amber-500/10 border border-amber-500/30 rounded-xl space-y-3 max-w-xl mx-auto">
           <div>
             <Label className="text-amber-800 font-bold mb-1 flex items-center gap-1.5">

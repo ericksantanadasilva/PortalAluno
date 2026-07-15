@@ -8,18 +8,38 @@ const router = Router();
 // GET /api/tenant/public-config - Rota pública para carregar a logo/fundo no login
 router.get('/public-config', async (req, res) => {
     try {
-        // Como o sistema ainda é single-tenant (sem host routing completo), pegamos o primeiro pela data de criação
-        const tenant = await prisma.tenant.findFirst({
-            orderBy: { createdAt: 'asc' },
-            select: {
-                primaryColor: true,
-                secondaryColor: true,
-                logoUrl: true,
-                loginUrl: true,
-                name: true,
-                allowedReportTemplates: true
-            }
-        });
+        const slug = req.query.slug as string;
+        
+        let tenant = null;
+
+        if (slug) {
+            tenant = await prisma.tenant.findUnique({
+                where: { slug },
+                select: {
+                    primaryColor: true,
+                    secondaryColor: true,
+                    logoUrl: true,
+                    loginUrl: true,
+                    name: true,
+                    allowedReportTemplates: true
+                }
+            });
+        }
+
+        // Fallback para o primeiro criado se não encontrar pelo slug ou se não foi enviado slug
+        if (!tenant) {
+            tenant = await prisma.tenant.findFirst({
+                orderBy: { createdAt: 'asc' },
+                select: {
+                    primaryColor: true,
+                    secondaryColor: true,
+                    logoUrl: true,
+                    loginUrl: true,
+                    name: true,
+                    allowedReportTemplates: true
+                }
+            });
+        }
         
         if (!tenant) return res.status(404).json({ error: 'Nenhum tenant encontrado' });
         
@@ -74,7 +94,7 @@ router.put('/config', async (req, res) => {
         const tenantId = req.user!.tenantId;
 
         // Opcional: validar se o usuário é admin
-        if (req.user!.role !== 'admin') {
+        if (!['admin', 'super_admin'].includes(req.user!.role)) {
             return res.status(403).json({ error: 'Apenas administradores podem alterar as configurações.' });
         }
 

@@ -396,11 +396,11 @@ export default function GodModePage() {
               </div>
             </div>
           </div>
-          <DialogFooter className="bg-slate-50 border-t border-slate-100 px-6 py-4 sm:justify-center">
+          <div className="bg-slate-50 border-t border-slate-100 px-6 py-4 flex sm:justify-center">
             <Button onClick={() => setShowSuccessModal(false)} className="w-full rounded-xl bg-slate-900 text-white hover:bg-slate-800 h-11 text-base font-medium shadow-sm">
               Concluir Onboarding
             </Button>
-          </DialogFooter>
+          </div>
         </DialogContent>
       </Dialog>
       <Dialog open={showEditModal} onOpenChange={setShowEditModal}>

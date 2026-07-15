@@ -28,7 +28,7 @@ export function WorkspaceSettings() {
   React.useEffect(() => {
     const role = localStorage.getItem('user_role');
     setUserRole(role);
-    if (!searchParams.has('tab') && role === 'admin') {
+    if (!searchParams.has('tab') && ['admin', 'super_admin'].includes(role || '')) {
       setActiveTab('whitelabel');
     } else if (searchParams.has('tab')) {
       setActiveTab(searchParams.get('tab') as string);

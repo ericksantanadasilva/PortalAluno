@@ -61,7 +61,7 @@ router.use(requireAuth);
 
 router.post('/', upload.single('file'), async (req, res) => {
     try {
-        if (req.user!.role !== 'admin') {
+        if (!['admin', 'super_admin'].includes(req.user!.role)) {
             return res.status(403).json({ error: 'Acesso negado' });
         }
 

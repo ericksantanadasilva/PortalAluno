@@ -9,16 +9,19 @@ const JWT_SECRET = process.env.JWT_SECRET || 'seu_secret_super_seguro_aqui';
 
 //1 endpoint de login
 router.post('/login', async (req, res) => {
-    const { email, password } = req.body;
+    const { email, password, tenantSlug } = req.body;
 
     try {
-        // Busca o usuário pelo e-mail globalmente (ou refinado por tenant se passar o subdomínio/slug dps)
+        const tenantCondition = tenantSlug ? { tenant: { slug: tenantSlug } } : {};
+        
+        // Busca o usuário pelo e-mail ou matrícula, restringindo à Tenant caso seja enviado o subdomínio
         const user = await prisma.user.findFirst({
             where: {
                 OR: [
                     { email: email },
                     { registrationNumber: email }
-                ]
+                ],
+                ...tenantCondition
             },
             include: { tenant: true } //Traz junto os dados do White-Label
         });
@@ -63,10 +66,17 @@ router.post('/login', async (req, res) => {
 
 // 2. endpoint de primeira troca de senha
 router.post('/reset-password', async (req, res) => {
-    const { email, currentPassword, newPassword } = req.body;
+    const { email, currentPassword, newPassword, tenantSlug } = req.body;
 
     try {
-        const user = await prisma.user.findFirst({ where: { email } });
+        const tenantCondition = tenantSlug ? { tenant: { slug: tenantSlug } } : {};
+        
+        const user = await prisma.user.findFirst({ 
+            where: { 
+                email,
+                ...tenantCondition
+            } 
+        });
 
         if (!user) {
             return res.status(404).json({ error: 'Usuário não enconntrado. ' });

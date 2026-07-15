@@ -82,7 +82,7 @@ export default function BoletimDetalhado() {
         }
 
         // Se for admin/secretaria, carrega todos os alunos pra simular
-        if (userRole === "admin" || userRole === "secretaria") {
+        if (["admin", "super_admin", "secretaria"].includes(userRole || '')) {
           const studentsRes = await fetch(`${API_URL}/students`, {
             headers: { Authorization: `Bearer ${token}` }
           });
@@ -125,7 +125,7 @@ export default function BoletimDetalhado() {
 
   // Quando o admin escolhe um aluno, busca os boletins dele
   useEffect(() => {
-    if ((role === 'admin' || role === 'secretaria') && selectedAlunoId) {
+    if (['admin', 'super_admin', 'secretaria'].includes(role || '') && selectedAlunoId) {
       fetchBoletins(selectedAlunoId);
     }
   }, [selectedAlunoId, role]);
@@ -149,7 +149,7 @@ export default function BoletimDetalhado() {
       className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 bg-[#F8FAFC] p-4 sm:p-8 rounded-3xl"
       style={{ "--primary": primaryHSL } as React.CSSProperties}
     >
-      {(role === "admin" || role === "secretaria") && (
+      {["admin", "super_admin", "secretaria"].includes(role || '') && (
         <div className="mb-4 p-5 bg-amber-500/10 border border-amber-500/30 rounded-xl space-y-3">
           <div>
             <Label className="text-amber-800 font-bold mb-1 flex items-center gap-1.5">

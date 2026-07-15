@@ -43,7 +43,8 @@ export default function LoginPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email: loginForm.identifier,
-          password: loginForm.password
+          password: loginForm.password,
+          tenantSlug: tenantConfig?.slug
         })
       });
 
@@ -90,7 +91,8 @@ export default function LoginPage() {
         body: JSON.stringify({
           email: savedCredentials.identifier,
           currentPassword: savedCredentials.password,
-          newPassword: newPassword
+          newPassword: newPassword,
+          tenantSlug: tenantConfig?.slug
         })
       });
 

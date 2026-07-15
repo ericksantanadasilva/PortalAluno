@@ -151,7 +151,7 @@ export function AppSidebar({ userRole, userProfile, tenantConfig, onLogout }: Ap
                           <span>Importação OMR</span>
                         </SidebarMenuSubButton>
                       </SidebarMenuSubItem>
-                      {userRole === 'admin' && (
+                      {['admin', 'super_admin'].includes(userRole || '') && (
                         <SidebarMenuSubItem>
                           <SidebarMenuSubButton render={<Link href="/admin/tri" />} isActive={pathname === "/admin/tri"}>
                             <span>Mapeador TRI</span>
@@ -183,7 +183,7 @@ export function AppSidebar({ userRole, userProfile, tenantConfig, onLogout }: Ap
                           <span>Gestão de Equipe</span>
                         </SidebarMenuSubButton>
                       </SidebarMenuSubItem>
-                      {userRole === 'admin' && (
+                      {['admin', 'super_admin'].includes(userRole || '') && (
                         <SidebarMenuSubItem>
                           <SidebarMenuSubButton render={<Link href="/admin/settings?tab=whitelabel" />} isActive={pathname === "/admin/settings" && tab === "whitelabel"}>
                             <span>Personalização (Tema)</span>

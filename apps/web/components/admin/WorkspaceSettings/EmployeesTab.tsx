@@ -149,7 +149,7 @@ export function EmployeesTab() {
   return (
     <div className="space-y-6">
       <Tabs defaultValue="lista" className="w-full flex flex-col space-y-6">
-        {userRole === 'admin' && (
+        {['admin', 'super_admin'].includes(userRole || '') && (
           <TabsList className="w-full justify-start h-auto p-1 bg-muted/50 border rounded-lg flex-col sm:flex-row">
             <TabsTrigger value="lista" className="py-2.5 px-4">Lista de Funcionários</TabsTrigger>
             <TabsTrigger value="convidar" className="py-2.5 px-4">Convidar Funcionário</TabsTrigger>
@@ -194,7 +194,7 @@ export function EmployeesTab() {
                       <TableHead>E-mail</TableHead>
                       <TableHead>Setor</TableHead>
                       <TableHead>Tem acesso?</TableHead>
-                      {userRole === 'admin' && <TableHead className="text-right">Ações</TableHead>}
+                      {['admin', 'super_admin'].includes(userRole || '') && <TableHead className="text-right">Ações</TableHead>}
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -218,7 +218,7 @@ export function EmployeesTab() {
                             </Badge>
                           )}
                         </TableCell>
-                        {userRole === 'admin' && (
+                        {['admin', 'super_admin'].includes(userRole || '') && (
                           <TableCell className="text-right">
                             <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => handleRemover(emp.id)}>
                               <Trash2 className="w-4 h-4" />
