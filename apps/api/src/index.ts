@@ -15,6 +15,9 @@ import subjectRoutes from "./routes/subject.routes";
 import attendanceRoutes from "./routes/attendance.routes";
 import boletimRoutes from "./routes/boletim.routes";
 import triRoutes from "./routes/tri.routes";
+import scheduledClassRoutes from "./routes/scheduledClass.routes";
+import { startCronJobs } from "./services/cron.service";
+
 dotenv.config();
 
 const app = express();
@@ -50,8 +53,12 @@ app.use('/api/upload', uploadRoutes);
 app.use('/api/exams', examRoutes);
 app.use('/api/subjects', subjectRoutes);
 app.use('/api/attendance', attendanceRoutes);
+app.use('/api/scheduled-classes', scheduledClassRoutes);
 app.use('/api/boletins', boletimRoutes);
 app.use('/api/tri', triRoutes);
+
+startCronJobs();
+
 app.listen(port, () => {
     console.log(`Api do portal rodando na porta ${port}`)
 });

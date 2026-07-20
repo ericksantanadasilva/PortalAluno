@@ -15,6 +15,7 @@ export default function FrequenciaPage() {
     alunos,
     abonos,
     janelas,
+    scheduledClasses,
     classes,
     subjects,
     loadAlunos,
@@ -27,28 +28,39 @@ export default function FrequenciaPage() {
   } = useFrequencia();
 
   const [turmaSelecionada, setTurmaSelecionada] = useState<string>("");
-  const [disciplinaSelecionada, setDisciplinaSelecionada] = useState<string>("");
+  const [aulaSelecionada, setAulaSelecionada] = useState<string>("");
   const [dataSelecionada, setDataSelecionada] = useState(
     new Date().toLocaleDateString("en-CA")
+  );
+
+  const aulasDoDia = scheduledClasses.filter(c => 
+    c.classId === turmaSelecionada && 
+    c.date.startsWith(dataSelecionada) && 
+    !c.isCanceled
   );
 
   useEffect(() => {
     if (classes.length > 0 && !turmaSelecionada) {
       setTurmaSelecionada(classes[0].id);
     }
-    if (subjects.length > 0 && !disciplinaSelecionada) {
-      setDisciplinaSelecionada(subjects[0].id);
-    }
-  }, [classes, subjects, turmaSelecionada, disciplinaSelecionada]);
+  }, [classes, turmaSelecionada]);
 
   useEffect(() => {
-    if (turmaSelecionada && dataSelecionada && disciplinaSelecionada) {
-      loadAlunos(turmaSelecionada, dataSelecionada, disciplinaSelecionada);
+    if (aulasDoDia.length > 0 && !aulasDoDia.some(a => a.id === aulaSelecionada)) {
+      setAulaSelecionada(aulasDoDia[0].id);
+    } else if (aulasDoDia.length === 0 && aulaSelecionada !== "") {
+      setAulaSelecionada("");
     }
-  }, [turmaSelecionada, dataSelecionada, disciplinaSelecionada, loadAlunos]);
+  }, [aulasDoDia, aulaSelecionada]);
+
+  useEffect(() => {
+    if (turmaSelecionada && aulaSelecionada) {
+      loadAlunos(turmaSelecionada, aulaSelecionada);
+    }
+  }, [turmaSelecionada, aulaSelecionada, loadAlunos]);
 
   const handleUpdateStatus = (alunoId: string, status: any) => {
-    updateStatus(alunoId, turmaSelecionada, dataSelecionada, disciplinaSelecionada, status);
+    updateStatus(alunoId, aulaSelecionada, status);
   };
 
   const primaryHSL = tenantConfigMock.cor_primaria;
@@ -121,12 +133,12 @@ export default function FrequenciaPage() {
             <ChamadaDiaria
               alunos={alunos}
               classes={classes}
-              subjects={subjects}
+              aulas={aulasDoDia}
               onUpdateStatus={handleUpdateStatus}
               turmaSelecionada={turmaSelecionada}
               setTurmaSelecionada={setTurmaSelecionada}
-              disciplinaSelecionada={disciplinaSelecionada}
-              setDisciplinaSelecionada={setDisciplinaSelecionada}
+              aulaSelecionada={aulaSelecionada}
+              setAulaSelecionada={setAulaSelecionada}
               dataSelecionada={dataSelecionada}
               setDataSelecionada={setDataSelecionada}
             />
@@ -147,6 +159,7 @@ export default function FrequenciaPage() {
           <TabsContent value="janela" className="mt-0 outline-none">
             <ControleJanelaValidacao
               janelas={janelas}
+              scheduledClasses={scheduledClasses}
               turmaSelecionada={turmaSelecionada}
               setTurmaSelecionada={setTurmaSelecionada}
               onSalvarJanela={upsertJanela}

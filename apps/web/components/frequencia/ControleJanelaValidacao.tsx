@@ -19,11 +19,17 @@ import {
   Trash2,
   Plus,
   X,
+  RefreshCw,
+  Eye,
+  EyeOff,
+  Ban
 } from "lucide-react";
-import { useFrequencia } from "@/contexts/FrequenciaContext";
+import { useFrequencia, ScheduledClass } from "@/contexts/FrequenciaContext";
+import { formatDate } from "@/lib/utils";
 
 interface ControleJanelaValidacaoProps {
   janelas: any[];
+  scheduledClasses?: ScheduledClass[];
   turmaSelecionada: string;
   setTurmaSelecionada: (turma: string) => void;
   onSalvarJanela: (janela: any) => Promise<boolean>;
@@ -49,18 +55,21 @@ const HORARIO_PADRAO = { abertura: "08:00", fechamento: "12:00" };
 
 export function ControleJanelaValidacao({
   janelas,
+  scheduledClasses = [],
   turmaSelecionada,
   setTurmaSelecionada,
   onSalvarJanela,
   onRemoverJanela,
 }: ControleJanelaValidacaoProps) {
-  const { classes, subjects } = useFrequencia();
+  const { classes, subjects, generateScheduledClasses, updateScheduledClass } = useFrequencia();
   const [editandoId, setEditandoId] = useState<string | null>(null);
   const [disciplina, setDisciplina] = useState<string>("");
   const [diaSemana, setDiaSemana] = useState<number>(0);
   const [horaAbertura, setHoraAbertura] = useState(HORARIO_PADRAO.abertura);
   const [horaFechamento, setHoraFechamento] = useState(HORARIO_PADRAO.fechamento);
   const [erroForm, setErroForm] = useState<string | null>(null);
+  const [gerando, setGerando] = useState(false);
+  const [showCard, setShowCard] = useState(false);
 
   React.useEffect(() => {
     if (subjects.length > 0 && !disciplina) {
@@ -83,12 +92,19 @@ export function ControleJanelaValidacao({
     [janelas, turmaSelecionada]
   );
 
+  const aulasDaTurma = useMemo(() => {
+    return scheduledClasses
+      .filter(c => c.classId === turmaSelecionada)
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  }, [scheduledClasses, turmaSelecionada]);
+
   const limparFormulario = () => {
     setEditandoId(null);
     if (subjects.length > 0) setDisciplina(subjects[0].id);
     setDiaSemana(0);
     setHoraAbertura(HORARIO_PADRAO.abertura);
     setHoraFechamento(HORARIO_PADRAO.fechamento);
+    setShowCard(false);
     setErroForm(null);
   };
 
@@ -98,6 +114,7 @@ export function ControleJanelaValidacao({
     setDiaSemana(janela.diaSemana);
     setHoraAbertura(janela.horaAbertura);
     setHoraFechamento(janela.horaFechamento);
+    setShowCard(janela.showCard ?? false);
     setErroForm(null);
   };
 
@@ -117,6 +134,7 @@ export function ControleJanelaValidacao({
       horaAbertura,
       horaFechamento,
       classId: turmaSelecionada,
+      showCard
     });
 
     if (!sucesso) {
@@ -137,14 +155,22 @@ export function ControleJanelaValidacao({
     if (editandoId === janela.id) limparFormulario();
   };
 
+  const handleGenerate = async () => {
+    setGerando(true);
+    await generateScheduledClasses();
+    setGerando(false);
+  };
+
   return (
-    <div className="w-full space-y-5">
+    <div className="w-full space-y-8">
+
+      {/* SEÇÃO 1: Grade Padrão (Templates) */}
       <div className="rounded-none border-y border-border bg-card p-4 md:px-8 md:py-6">
         <div className="mb-5 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
           <div>
             <h3 className="text-lg font-bold text-foreground flex items-center gap-2 flex-wrap">
-              Grade Semanal de Validação
-              <Badge variant="outline" className="text-[10px] font-semibold gap-1">
+              Grade Padrão (Templates)
+              <Badge variant="outline" className="text-[10px] font-semibold gap-1 rounded-full">
                 <Repeat className="w-3 h-3" />
                 Repete toda semana
               </Badge>
@@ -158,7 +184,7 @@ export function ControleJanelaValidacao({
             <p className="text-sm text-muted-foreground mt-1">
               {modoEdicao
                 ? "Altere os campos abaixo e clique em Salvar alterações, ou cancele para criar uma nova janela."
-                : "Configure o dia da semana e o horário de validação por matéria, ou clique em Editar em um card da grade."}
+                : "Configure o dia da semana e o horário padrão. Ao gerar as aulas automáticas, o sistema usará esta grade."}
             </p>
           </div>
           <div className="flex flex-col sm:flex-row items-end gap-3">
@@ -182,6 +208,10 @@ export function ControleJanelaValidacao({
                 Nova janela
               </Button>
             )}
+            <Button type="button" onClick={handleGenerate} disabled={gerando} className="shrink-0 gap-1.5 h-9 bg-primary text-primary-foreground hover:bg-primary/90">
+              <RefreshCw className={`w-3.5 h-3.5 ${gerando ? "animate-spin" : ""}`} />
+              <span className="hidden sm:inline">{gerando ? "Gerando..." : "Gerar Aulas"}</span>
+            </Button>
           </div>
         </div>
 
@@ -298,7 +328,7 @@ export function ControleJanelaValidacao({
       <div className="px-4 md:px-8">
         <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-1.5">
           <CalendarDays className="w-4 h-4" />
-          Grade semanal — Turma Selecionada
+          Grade padrão — Turma Selecionada
         </h4>
 
         {janelasDaTurma.length === 0 ? (
@@ -311,6 +341,9 @@ export function ControleJanelaValidacao({
               const status = getStatusJanelaValidacao(janela as any);
               const cfg = STATUS_LABEL[status];
               const selecionada = editandoId === janela.id;
+
+              const aulaDaSemana = aulasDaTurma.find(a => a.presenceWindowId === janela.id);
+              const showCardAtual = aulaDaSemana ? aulaDaSemana.showCard : false;
 
               return (
                 <div
@@ -336,26 +369,40 @@ export function ControleJanelaValidacao({
                     {janela.horaAbertura} — {janela.horaFechamento}
                   </p>
 
-                  <div className="flex items-center gap-2 pt-1 border-t border-border">
+                  <div className="flex items-center gap-2 pt-2 border-t border-border mt-3">
+                    <Button
+                      type="button"
+                      variant={showCardAtual ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => {
+                        if (aulaDaSemana) {
+                          updateScheduledClass(aulaDaSemana.id, { showCard: !aulaDaSemana.showCard });
+                        } else {
+                          alert("Gere as aulas da semana primeiro para poder exibir/ocultar o card.");
+                        }
+                      }}
+                      className={`flex-1 gap-1.5 text-xs font-semibold rounded-md ${showCardAtual ? "bg-blue-600 hover:bg-blue-700 text-white" : ""}`}
+                      title={showCardAtual ? "Ocultar Card no Portal do Aluno" : "Mostrar Card no Portal do Aluno"}
+                    >
+                      {showCardAtual ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
+                    </Button>
                     <Button
                       type="button"
                       variant={selecionada ? "default" : "outline"}
                       size="sm"
                       onClick={() => iniciarEdicao(janela)}
-                      className="flex-1 gap-1.5 text-xs font-semibold rounded-md"
+                      className="gap-1.5 text-xs font-semibold rounded-md flex-1"
                     >
                       <Pencil className="w-3.5 h-3.5" />
-                      Editar
                     </Button>
                     <Button
                       type="button"
                       variant="outline"
                       size="sm"
                       onClick={() => handleExcluir(janela)}
-                      className="gap-1.5 text-xs font-semibold text-rose-600 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/30 border-rose-200 dark:border-rose-900/50 rounded-md"
+                      className="gap-1.5 text-xs font-semibold text-rose-600 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/30 border-rose-200 dark:border-rose-900/50 rounded-md flex-1"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
-                      <span className="sr-only sm:not-sr-only">Excluir</span>
                     </Button>
                   </div>
                 </div>

@@ -15,18 +15,19 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Check, X, Calendar, Shield, Laptop, UserCheck, ChevronDown } from "lucide-react";
+import { Check, X, Calendar, Shield, Laptop, UserCheck, ChevronDown, Ban, Eye, EyeOff } from "lucide-react";
 import { formatDate } from "@/lib/utils";
+import { useFrequencia, ScheduledClass } from "@/contexts/FrequenciaContext";
 
 interface ChamadaDiariaProps {
   alunos: AlunoChamada[];
   classes: any[];
-  subjects: any[];
+  aulas: ScheduledClass[];
   onUpdateStatus: (id: string, status: StatusChamada) => void;
   turmaSelecionada: string;
   setTurmaSelecionada: (turma: string) => void;
-  disciplinaSelecionada: string;
-  setDisciplinaSelecionada: (disciplina: string) => void;
+  aulaSelecionada: string;
+  setAulaSelecionada: (aula: string) => void;
   dataSelecionada: string;
   setDataSelecionada: (data: string) => void;
 }
@@ -118,15 +119,18 @@ function OnlineStatusIndicator({ status }: { status: StatusChamada }) {
 export function ChamadaDiaria({
   alunos,
   classes,
-  subjects,
+  aulas,
   onUpdateStatus,
   turmaSelecionada,
   setTurmaSelecionada,
-  disciplinaSelecionada,
-  setDisciplinaSelecionada,
+  aulaSelecionada,
+  setAulaSelecionada,
   dataSelecionada,
   setDataSelecionada,
 }: ChamadaDiariaProps) {
+  const { updateScheduledClass } = useFrequencia();
+  const aulaAtual = aulas.find((a) => a.id === aulaSelecionada);
+
   return (
     <div className="w-full rounded-2xl border-none shadow-[0_8px_30px_rgb(0,0,0,0.02)] bg-white overflow-hidden">
 
@@ -166,26 +170,59 @@ export function ChamadaDiaria({
 
         <div className="flex-1 min-w-0 space-y-1.5">
           <label
-            htmlFor="disciplina-select"
+            htmlFor="aula-select"
             className="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
           >
-            Disciplina
+            Aula Agendada
           </label>
-          <div className="relative">
-            <select
-              id="disciplina-select"
-              value={disciplinaSelecionada}
-              onChange={(e) => setDisciplinaSelecionada(e.target.value)}
-              className="appearance-none w-full bg-card border border-border rounded-lg px-3 py-2 pr-9 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary"
-            >
-              {subjects.map((subj) => (
-                <option key={subj.id} value={subj.id}>
-                  {subj.name}
-                </option>
-              ))}
-            </select>
-            <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+          <div className="flex gap-2 items-center">
+            <div className="relative flex-1">
+              <select
+                id="aula-select"
+                value={aulaSelecionada}
+                onChange={(e) => setAulaSelecionada(e.target.value)}
+                className="appearance-none w-full bg-card border border-border rounded-lg px-3 py-2 pr-9 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary"
+              >
+                {aulas.length === 0 ? (
+                  <option value="">Nenhuma aula hoje</option>
+                ) : (
+                  aulas.map((aula) => (
+                    <option key={aula.id} value={aula.id}>
+                      {aula.subject?.name || "Sem Matéria"}
+                    </option>
+                  ))
+                )}
+              </select>
+              <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+            </div>
+            {aulaAtual && (
+              <>
+                <Button
+                  type="button"
+                  variant={aulaAtual.showCard ? "default" : "outline"}
+                  size="icon"
+                  className={`shrink-0 w-9 h-9 rounded-lg ${aulaAtual.showCard ? "bg-blue-600 hover:bg-blue-700 text-white" : ""}`}
+                  onClick={() => updateScheduledClass(aulaAtual.id, { showCard: !aulaAtual.showCard })}
+                  title={aulaAtual.showCard ? "Ocultar Card no App" : "Mostrar Card no App"}
+                >
+                  {aulaAtual.showCard ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  className="shrink-0 w-9 h-9 rounded-lg text-rose-600 hover:text-rose-700 hover:bg-rose-50 border-rose-200"
+                  onClick={() => updateScheduledClass(aulaAtual.id, { isCanceled: !aulaAtual.isCanceled })}
+                  title={aulaAtual.isCanceled ? "Restaurar Aula" : "Cancelar Aula"}
+                >
+                  <Ban className="w-4 h-4" />
+                </Button>
+              </>
+            )}
           </div>
+          {aulaAtual?.isCanceled && (
+            <p className="text-xs text-rose-600 font-semibold mt-1">Esta aula está cancelada.</p>
+          )}
         </div>
 
         <div className="space-y-1.5 sm:w-48 shrink-0">
@@ -293,7 +330,7 @@ export function ChamadaDiaria({
                 </div>
                 {isOnline && <OnlineStatusIndicator status={aluno.status_atual} />}
               </div>
-              
+
               <div className="flex flex-wrap items-center gap-2 pt-1 pl-13">
                 <Badge
                   variant="outline"

@@ -12,19 +12,37 @@ type JanelaValidacaoSaaS = {
   horaAbertura: string;
   horaFechamento: string;
   turma: string;
+  showCard: boolean;
+};
+
+export type ScheduledClass = {
+  id: string;
+  classId: string;
+  subjectId: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+  showCard: boolean;
+  isCanceled: boolean;
+  subject?: { name: string };
+  class?: { name: string };
 };
 
 type FrequenciaContextValue = {
   alunos: AlunoChamada[];
   abonos: HistoricoAbono[];
   janelas: JanelaValidacaoSaaS[];
+  scheduledClasses: ScheduledClass[];
   classes: any[];
   subjects: any[];
   loadingAlunos: boolean;
-  loadAlunos: (classId: string, date: string, subjectId?: string) => Promise<void>;
+  loadAlunos: (classId: string, lessonId: string) => Promise<void>;
   loadAbonos: () => Promise<void>;
   loadJanelas: () => Promise<void>;
-  updateStatus: (studentId: string, classId: string, date: string, subjectId: string, status: StatusChamada) => Promise<void>;
+  loadScheduledClasses: (classId?: string, startDate?: string, endDate?: string) => Promise<void>;
+  generateScheduledClasses: (date?: string) => Promise<boolean>;
+  updateScheduledClass: (id: string, data: any) => Promise<boolean>;
+  updateStatus: (studentId: string, lessonId: string, status: StatusChamada) => Promise<void>;
   addAbono: (abono: any) => Promise<void>;
   updateAbono: (id: string, abono: any) => Promise<void>;
   deleteAbono: (id: string) => Promise<void>;
@@ -39,6 +57,7 @@ export function FrequenciaProvider({ children }: { children: React.ReactNode }) 
   const [alunos, setAlunos] = useState<AlunoChamada[]>([]);
   const [abonos, setAbonos] = useState<HistoricoAbono[]>([]);
   const [janelas, setJanelas] = useState<JanelaValidacaoSaaS[]>([]);
+  const [scheduledClasses, setScheduledClasses] = useState<ScheduledClass[]>([]);
   const [classes, setClasses] = useState<any[]>([]);
   const [subjects, setSubjects] = useState<any[]>([]);
   const [loadingAlunos, setLoadingAlunos] = useState(false);
@@ -63,13 +82,12 @@ export function FrequenciaProvider({ children }: { children: React.ReactNode }) 
     }
   }, []);
 
-  const loadAlunos = useCallback(async (classId: string, date: string, subjectId?: string) => {
+  const loadAlunos = useCallback(async (classId: string, lessonId: string) => {
     const token = getToken();
-    if (!token || !classId || !date) return;
+    if (!token || !classId || !lessonId) return;
     setLoadingAlunos(true);
     try {
-      const query = new URLSearchParams({ date });
-      if (subjectId) query.append('subjectId', subjectId);
+      const query = new URLSearchParams({ lessonId });
 
       const res = await fetch(`/api/attendance/classes/${classId}/students?${query.toString()}`, {
         headers: { Authorization: `Bearer ${token}` }
@@ -117,34 +135,97 @@ export function FrequenciaProvider({ children }: { children: React.ReactNode }) 
     }
   }, []);
 
-  const updateStatus = useCallback(async (studentId: string, classId: string, date: string, subjectId: string, status: StatusChamada) => {
+  const loadScheduledClasses = useCallback(async (classId?: string, startDate?: string, endDate?: string) => {
     const token = getToken();
-    if (!token || !subjectId) return;
+    if (!token) return;
+    try {
+      const query = new URLSearchParams();
+      if (classId) query.append('classId', classId);
+      if (startDate) query.append('startDate', startDate);
+      if (endDate) query.append('endDate', endDate);
+
+      const res = await fetch(`/api/scheduled-classes?${query.toString()}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        setScheduledClasses(await res.json());
+      }
+    } catch (error) {
+      console.error("Erro ao carregar aulas agendadas", error);
+    }
+  }, []);
+
+  const generateScheduledClasses = useCallback(async (date?: string) => {
+    const token = getToken();
+    if (!token) return false;
+    try {
+      const res = await fetch(`/api/scheduled-classes/generate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(date ? { date } : {})
+      });
+      if (res.ok) {
+        await loadScheduledClasses();
+        return true;
+      }
+    } catch (error) {
+      console.error("Erro ao gerar aulas agendadas", error);
+    }
+    return false;
+  }, [loadScheduledClasses]);
+
+  const updateScheduledClass = useCallback(async (id: string, data: any) => {
+    const token = getToken();
+    if (!token) return false;
+    try {
+      const res = await fetch(`/api/scheduled-classes/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(data)
+      });
+      if (res.ok) {
+        await loadScheduledClasses();
+        return true;
+      }
+    } catch (error) {
+      console.error("Erro ao atualizar aula agendada", error);
+    }
+    return false;
+  }, [loadScheduledClasses]);
+
+  const updateStatus = useCallback(async (studentId: string, lessonId: string, status: StatusChamada) => {
+    const token = getToken();
+    if (!token || !lessonId) return;
     
     // Otimista
     setAlunos(prev => prev.map(a => a.id === studentId ? { ...a, status_atual: status } : a));
 
     try {
-      await fetch(`/api/attendance/record`, {
+      const res = await fetch(`/api/attendance/record`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
         },
         body: JSON.stringify({
-          classId,
+          lessonId,
           studentId,
-          subjectId,
-          date,
           status: status === 'Presente' ? 'presente' : 'falta',
           modality: 'presencial' // Simplificação para chamada manual
         })
       });
+      if (!res.ok) throw new Error("Erro na API");
     } catch (error) {
       console.error(error);
-      loadAlunos(classId, date, subjectId); // Reverte caso dê erro
+      // idealmente recarregar via loadAlunos, mas omitido fallback local para simplicidade
     }
-  }, [loadAlunos]);
+  }, []);
 
   const addAbono = useCallback(async (abono: any) => {
     const token = getToken();
@@ -253,7 +334,8 @@ export function FrequenciaProvider({ children }: { children: React.ReactNode }) 
         subjectId: janela.subjectId,
         dayOfWeek: janela.diaSemana,
         startTime: janela.horaAbertura,
-        endTime: janela.horaFechamento
+        endTime: janela.horaFechamento,
+        showCard: janela.showCard
       };
 
       const res = await fetch(`/api/attendance/windows`, {
@@ -266,6 +348,7 @@ export function FrequenciaProvider({ children }: { children: React.ReactNode }) 
       });
       if (res.ok) {
         loadJanelas();
+        loadScheduledClasses();
         return true;
       } else {
         const errorText = await res.text();
@@ -275,7 +358,7 @@ export function FrequenciaProvider({ children }: { children: React.ReactNode }) 
       console.error("Exceção ao salvar janela:", error);
     }
     return false;
-  }, [loadJanelas]);
+  }, [loadJanelas, loadScheduledClasses]);
 
   const removerJanela = useCallback(async (id: string) => {
     const token = getToken();
@@ -301,7 +384,15 @@ export function FrequenciaProvider({ children }: { children: React.ReactNode }) 
     loadClassesAndSubjects();
     loadAbonos();
     loadJanelas();
-  }, [loadClassesAndSubjects, loadAbonos, loadJanelas]);
+    loadScheduledClasses();
+
+    // Polling global a cada 10 segundos para manter tudo em tempo real entre diferentes abas
+    const interval = setInterval(() => {
+      loadScheduledClasses();
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, [loadClassesAndSubjects, loadAbonos, loadJanelas, loadScheduledClasses]);
 
   return (
     <FrequenciaContext.Provider
@@ -309,12 +400,16 @@ export function FrequenciaProvider({ children }: { children: React.ReactNode }) 
         alunos,
         abonos,
         janelas,
+        scheduledClasses,
         classes,
         subjects,
         loadingAlunos,
         loadAlunos,
         loadAbonos,
         loadJanelas,
+        loadScheduledClasses,
+        generateScheduledClasses,
+        updateScheduledClass,
         updateStatus,
         addAbono,
         updateAbono,

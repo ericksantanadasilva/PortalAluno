@@ -11,12 +11,23 @@ const router = Router();
 router.get('/classes/:classId/students', requireAuth, async (req, res) => {
     try {
         const { classId } = req.params;
-        const { date, subjectId } = req.query; // date (YYYY-MM-DD), subjectId (uuid)
+        const { lessonId } = req.query; // lessonId (ScheduledClass ID)
         const tenantId = req.user!.tenantId;
 
-        if (!date || typeof date !== 'string') {
-            return res.status(400).json({ error: 'Data é obrigatória no formato YYYY-MM-DD' });
+        if (!lessonId || typeof lessonId !== 'string') {
+            return res.status(400).json({ error: 'lessonId é obrigatório' });
         }
+
+        const scheduledClass = await prisma.scheduledClass.findUnique({
+            where: { id: lessonId }
+        });
+
+        if (!scheduledClass) {
+            return res.status(404).json({ error: 'Aula não encontrada' });
+        }
+
+        const targetDate = scheduledClass.date;
+        const subjectId = scheduledClass.subjectId;
 
         // Busca alunos da turma
         const usersInClass = await prisma.user.findMany({
@@ -24,13 +35,11 @@ router.get('/classes/:classId/students', requireAuth, async (req, res) => {
             select: { id: true, name: true, registrationNumber: true }
         });
 
-        // Busca registros de presença existentes para a data e disciplina
+        // Busca registros de presença existentes para a aula
         const attendanceRecords = await prisma.attendanceRecord.findMany({
             where: {
                 tenantId,
-                classId,
-                ...(subjectId && typeof subjectId === 'string' ? { subjectId } : {}),
-                date: new Date(date)
+                scheduledClassId: lessonId
             }
         });
 
@@ -40,8 +49,8 @@ router.get('/classes/:classId/students', requireAuth, async (req, res) => {
                 tenantId,
                 studentId: { in: usersInClass.map(u => u.id) },
                 status: 'vigente',
-                startDate: { lte: new Date(date) },
-                endDate: { gte: new Date(date) }
+                startDate: { lte: targetDate },
+                endDate: { gte: targetDate }
             },
             include: { excuseSubjects: true }
         });
@@ -79,16 +88,13 @@ router.post('/record', requireAuth, async (req, res) => {
     try {
         const tenantId = req.user!.tenantId;
         const schema = z.object({
-            classId: z.string().uuid(),
+            lessonId: z.string().uuid(),
             studentId: z.string().uuid(),
-            subjectId: z.string().uuid(),
-            date: z.string(),
             status: z.enum(['presente', 'falta']),
             modality: z.enum(['presencial', 'online'])
         });
 
         const data = schema.parse(req.body);
-        const dateObj = new Date(data.date);
 
         // Segurança: Alunos só podem registrar a própria presença
         if (req.user!.role === 'aluno' && req.user!.userId !== data.studentId) {
@@ -96,7 +102,7 @@ router.post('/record', requireAuth, async (req, res) => {
         }
 
         const existing = await prisma.attendanceRecord.findFirst({
-            where: { tenantId, classId: data.classId, subjectId: data.subjectId, studentId: data.studentId, date: dateObj }
+            where: { tenantId, scheduledClassId: data.lessonId, studentId: data.studentId }
         });
 
         if (existing) {
@@ -109,10 +115,8 @@ router.post('/record', requireAuth, async (req, res) => {
             const created = await prisma.attendanceRecord.create({
                 data: {
                     tenantId,
-                    classId: data.classId,
-                    subjectId: data.subjectId,
+                    scheduledClassId: data.lessonId,
                     studentId: data.studentId,
-                    date: dateObj,
                     status: data.status,
                     modality: data.modality
                 }
@@ -278,6 +282,7 @@ router.get('/windows', requireAuth, async (req, res) => {
             diaSemana: w.dayOfWeek,
             horaAbertura: w.startTime,
             horaFechamento: w.endTime,
+            showCard: w.showCard,
             turma: w.class.name 
         }));
 
@@ -297,7 +302,8 @@ router.post('/windows', requireAuth, requireStaff, async (req, res) => {
             subjectId: z.string().uuid(),
             dayOfWeek: z.number().min(0).max(6),
             startTime: z.string(),
-            endTime: z.string()
+            endTime: z.string(),
+            showCard: z.boolean().optional()
         });
 
         const data = schema.parse(req.body);
@@ -310,9 +316,26 @@ router.post('/windows', requireAuth, requireStaff, async (req, res) => {
                     subjectId: data.subjectId,
                     dayOfWeek: data.dayOfWeek,
                     startTime: data.startTime,
-                    endTime: data.endTime
+                    endTime: data.endTime,
+                    showCard: data.showCard ?? false
                 }
             });
+
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            await prisma.scheduledClass.updateMany({
+                where: {
+                    presenceWindowId: updated.id,
+                    date: { gte: today }
+                },
+                data: {
+                    subjectId: updated.subjectId,
+                    startTime: updated.startTime,
+                    endTime: updated.endTime
+                }
+            });
+
             return res.json(updated);
         } else {
             const created = await prisma.presenceWindow.create({
@@ -322,7 +345,8 @@ router.post('/windows', requireAuth, requireStaff, async (req, res) => {
                     subjectId: data.subjectId,
                     dayOfWeek: data.dayOfWeek,
                     startTime: data.startTime,
-                    endTime: data.endTime
+                    endTime: data.endTime,
+                    showCard: data.showCard ?? false
                 }
             });
             return res.json(created);

@@ -63,6 +63,7 @@ model Tenant {
     exams             Exam[]
     studentResponses  StudentResponse[]
     presenceWindows   PresenceWindow[]
+    scheduledClasses  ScheduledClass[]
     triReferences     TriReference[]
     examGrades        ExamGrade[]
     allowedReportTemplates String[] @default(["ENEM", "UERJ", "ENEM_PARCIAL", "DISCURSIVO"]) @map("allowed_report_templates")
@@ -106,11 +107,11 @@ model Subject {
     createdAt           DateTime @default(now()) @map("created_at")
 
     tenant            Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-    attendanceRecords AttendanceRecord[]
     excuseSubjects    ExcuseSubject[]
     examQuestions     ExamQuestion[]
     modalitySubjects  ModalitySubject[]
     presenceWindows   PresenceWindow[]
+    scheduledClasses  ScheduledClass[]
 
     @@unique([tenantId, name])
     @@map("subjects")
@@ -141,8 +142,8 @@ model Class {
 
     tenant            Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
     modality          Modality           @relation(fields: [modalityId], references: [id], onDelete: Cascade)
-    attendanceRecords AttendanceRecord[]
     presenceWindows   PresenceWindow[]
+    scheduledClasses  ScheduledClass[]
     users             User[]
 
     @@unique([tenantId, modalityId, name])
@@ -162,22 +163,20 @@ model ModalitySubject {
 }
 
 model AttendanceRecord {
-    id        String           @id @default(uuid()) @db.Uuid
-    tenantId  String           @map("tenant_id") @db.Uuid
-    classId   String           @map("class_id") @db.Uuid
-    subjectId String           @map("subject_id") @db.Uuid
-    studentId String           @map("student_id") @db.Uuid
-    date      DateTime         @db.Date
-    status    AttendanceStatus
-    modality  ModalityType // Se o aluno assistiu no formato presencial ou online/EAD
-    createdAt DateTime         @default(now()) @map("created_at")
+    id               String           @id @default(uuid()) @db.Uuid
+    tenantId         String           @map("tenant_id") @db.Uuid
+    scheduledClassId String           @map("scheduled_class_id") @db.Uuid
+    studentId        String           @map("student_id") @db.Uuid
+    status           AttendanceStatus
+    modality         ModalityType
+    createdAt        DateTime         @default(now()) @map("created_at")
 
-    tenant  Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-    class   Class   @relation(fields: [classId], references: [id], onDelete: Cascade)
-    subject Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
-    student User    @relation(fields: [studentId], references: [id], onDelete: Cascade)
+    tenant         Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+    scheduledClass ScheduledClass @relation(fields: [scheduledClassId], references: [id], onDelete: Cascade)
+    student        User           @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
-    @@index([tenantId, classId, date])
+    @@index([tenantId, scheduledClassId])
+    @@unique([studentId, scheduledClassId])
     @@map("attendance_records")
 }
 
@@ -297,13 +296,38 @@ model PresenceWindow {
     dayOfWeek  Int      @map("day_of_week") // 0 = Domingo, 1 = Segunda, etc.
     startTime  String   @map("start_time") // formato HH:mm
     endTime    String   @map("end_time") // formato HH:mm
+    showCard   Boolean  @default(false) @map("show_card")
     createdAt  DateTime @default(now()) @map("created_at")
 
     tenant  Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
     class   Class   @relation(fields: [classId], references: [id], onDelete: Cascade)
     subject Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+    scheduledClasses ScheduledClass[]
 
     @@map("presence_windows")
+}
+
+model ScheduledClass {
+    id               String          @id @default(uuid()) @db.Uuid
+    tenantId         String          @map("tenant_id") @db.Uuid
+    classId          String          @map("class_id") @db.Uuid
+    subjectId        String          @map("subject_id") @db.Uuid
+    presenceWindowId String?         @map("presence_window_id") @db.Uuid
+    date             DateTime        @db.Date
+    startTime        String          @map("start_time")
+    endTime          String          @map("end_time")
+    showCard         Boolean         @default(false) @map("show_card")
+    isCanceled       Boolean         @default(false) @map("is_canceled")
+    createdAt        DateTime        @default(now()) @map("created_at")
+
+    tenant           Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+    class            Class           @relation(fields: [classId], references: [id], onDelete: Cascade)
+    subject          Subject         @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+    presenceWindow   PresenceWindow? @relation(fields: [presenceWindowId], references: [id], onDelete: SetNull)
+    attendanceRecords AttendanceRecord[]
+
+    @@index([tenantId, classId, date])
+    @@map("scheduled_classes")
 }
 
 model TriReference {
