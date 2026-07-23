@@ -43,13 +43,10 @@ router.post('/generate', requireAuth, requireStaff, async (req, res) => {
             // dia da semana da janela (0 = Domingo, 1 = Segunda, etc.)
             const dateOfWindow = addDays(start, window.dayOfWeek);
 
-            // Verifica se já existe para essa janela nessa data exata (ou melhor, verifica turma/disciplina/data/horário)
+            // Verifica se já existe uma aula gerada por essa janela neste dia específico
             const exists = existingClasses.some(c => 
-                c.classId === window.classId && 
-                c.subjectId === window.subjectId && 
-                c.date.toISOString().split('T')[0] === dateOfWindow.toISOString().split('T')[0] &&
-                c.startTime === window.startTime &&
-                c.endTime === window.endTime
+                c.presenceWindowId === window.id && 
+                c.date.toISOString().split('T')[0] === dateOfWindow.toISOString().split('T')[0]
             );
 
             if (!exists) {

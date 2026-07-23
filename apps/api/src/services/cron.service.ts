@@ -31,11 +31,8 @@ export function startCronJobs() {
                     const dateOfWindow = addDays(start, window.dayOfWeek);
 
                     const exists = existingClasses.some(c => 
-                        c.classId === window.classId && 
-                        c.subjectId === window.subjectId && 
-                        c.date.toISOString().split('T')[0] === dateOfWindow.toISOString().split('T')[0] &&
-                        c.startTime === window.startTime &&
-                        c.endTime === window.endTime
+                        c.presenceWindowId === window.id && 
+                        c.date.toISOString().split('T')[0] === dateOfWindow.toISOString().split('T')[0]
                     );
 
                     if (!exists) {
