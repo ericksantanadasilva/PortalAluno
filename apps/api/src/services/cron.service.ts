@@ -62,4 +62,79 @@ export function startCronJobs() {
             console.error('[CRON] Erro ao gerar aulas semanais:', error);
         }
     });
+
+    // Roda todo dia às 23:55 para consolidar presenças
+    cron.schedule('55 23 * * *', async () => {
+        console.log('[CRON] Iniciando consolidação diária de chamadas...');
+        try {
+            const today = new Date();
+            const startOfToday = new Date(today);
+            startOfToday.setHours(0, 0, 0, 0);
+            const endOfToday = new Date(today);
+            endOfToday.setHours(23, 59, 59, 999);
+
+            const classesToConsolidate = await prisma.scheduledClass.findMany({
+                where: {
+                    date: {
+                        gte: startOfToday,
+                        lte: endOfToday
+                    },
+                    isCanceled: false
+                }
+            });
+
+            for (const scheduledClass of classesToConsolidate) {
+                const students = await prisma.user.findMany({
+                    where: { tenantId: scheduledClass.tenantId, classId: scheduledClass.classId, role: 'aluno' },
+                    select: { id: true }
+                });
+
+                const existingRecords = await prisma.attendanceRecord.findMany({
+                    where: { tenantId: scheduledClass.tenantId, scheduledClassId: scheduledClass.id },
+                    select: { studentId: true }
+                });
+                
+                const existingStudentIds = new Set(existingRecords.map(r => r.studentId));
+                
+                const missingStudents = students.filter(s => !existingStudentIds.has(s.id));
+
+                if (missingStudents.length === 0) continue;
+
+                // Buscar abonos vigentes
+                const activeExcuses = await prisma.attendanceExcuse.findMany({
+                    where: {
+                        tenantId: scheduledClass.tenantId,
+                        studentId: { in: missingStudents.map(s => s.id) },
+                        status: 'vigente',
+                        startDate: { lte: scheduledClass.date },
+                        endDate: { gte: scheduledClass.date },
+                        OR: [
+                            { excuseSubjects: { none: {} } },
+                            { excuseSubjects: { some: { subjectId: scheduledClass.subjectId } } }
+                        ]
+                    },
+                    select: { studentId: true }
+                });
+
+                const excusedStudentIds = new Set(activeExcuses.map(e => e.studentId));
+
+                const newRecords = missingStudents.map(student => ({
+                    tenantId: scheduledClass.tenantId,
+                    scheduledClassId: scheduledClass.id,
+                    studentId: student.id,
+                    status: (excusedStudentIds.has(student.id) ? 'abono' : 'falta') as any,
+                    modality: 'presencial' as any
+                }));
+
+                if (newRecords.length > 0) {
+                    await prisma.attendanceRecord.createMany({
+                        data: newRecords
+                    });
+                }
+            }
+            console.log(`[CRON] Consolidação diária finalizada: ${classesToConsolidate.length} aulas checadas.`);
+        } catch (error) {
+            console.error('[CRON] Erro ao consolidar chamadas diárias:', error);
+        }
+    });
 }

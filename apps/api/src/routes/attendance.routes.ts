@@ -83,14 +83,14 @@ router.get('/classes/:classId/students', requireAuth, async (req, res) => {
     }
 });
 
-// Registrar presença/falta
+// Registrar presença/falta/abono
 router.post('/record', requireAuth, async (req, res) => {
     try {
         const tenantId = req.user!.tenantId;
         const schema = z.object({
             lessonId: z.string().uuid(),
             studentId: z.string().uuid(),
-            status: z.enum(['presente', 'falta']),
+            status: z.enum(['presente', 'falta', 'abono']),
             modality: z.enum(['presencial', 'online'])
         });
 
@@ -101,6 +101,36 @@ router.post('/record', requireAuth, async (req, res) => {
             return res.status(403).json({ error: 'Você só pode registrar sua própria presença.' });
         }
 
+        const scheduledClass = await prisma.scheduledClass.findUnique({
+            where: { id: data.lessonId }
+        });
+
+        if (!scheduledClass) {
+            return res.status(404).json({ error: 'Aula não encontrada' });
+        }
+
+        let finalStatus = data.status;
+
+        // Se for registrar falta (ou já veio abono), verificamos se há abono vigente para garantir
+        if (finalStatus === 'falta' || finalStatus === 'abono') {
+            const hasExcuse = await prisma.attendanceExcuse.findFirst({
+                where: {
+                    tenantId,
+                    studentId: data.studentId,
+                    status: 'vigente',
+                    startDate: { lte: scheduledClass.date },
+                    endDate: { gte: scheduledClass.date },
+                    OR: [
+                        { excuseSubjects: { none: {} } },
+                        { excuseSubjects: { some: { subjectId: scheduledClass.subjectId } } }
+                    ]
+                }
+            });
+            if (hasExcuse) {
+                finalStatus = 'abono';
+            }
+        }
+
         const existing = await prisma.attendanceRecord.findFirst({
             where: { tenantId, scheduledClassId: data.lessonId, studentId: data.studentId }
         });
@@ -108,7 +138,7 @@ router.post('/record', requireAuth, async (req, res) => {
         if (existing) {
             const updated = await prisma.attendanceRecord.update({
                 where: { id: existing.id },
-                data: { status: data.status, modality: data.modality }
+                data: { status: finalStatus, modality: data.modality }
             });
             return res.json(updated);
         } else {
@@ -117,7 +147,7 @@ router.post('/record', requireAuth, async (req, res) => {
                     tenantId,
                     scheduledClassId: data.lessonId,
                     studentId: data.studentId,
-                    status: data.status,
+                    status: finalStatus,
                     modality: data.modality
                 }
             });
@@ -176,6 +206,18 @@ router.post('/excuses', requireAuth, requireStaff, async (req, res) => {
         });
 
         const data = schema.parse(req.body);
+        let finalSubjectIds = data.subjectIds || [];
+
+        // Se "todas as matérias" for selecionado (array vazio)
+        if (finalSubjectIds.length === 0) {
+            const student = await prisma.user.findUnique({
+                where: { id: data.studentId },
+                include: { class: { include: { modality: { include: { modalitySubjects: true } } } } }
+            });
+            if (student?.class?.modality?.modalitySubjects) {
+                finalSubjectIds = student.class.modality.modalitySubjects.map(ms => ms.subjectId);
+            }
+        }
 
         const newExcuse = await prisma.attendanceExcuse.create({
             data: {
@@ -186,13 +228,38 @@ router.post('/excuses', requireAuth, requireStaff, async (req, res) => {
                 startDate: new Date(data.startDate),
                 endDate: new Date(data.endDate),
                 status: 'vigente', // Simplificação
-                ...(data.subjectIds && data.subjectIds.length > 0 ? {
+                ...(finalSubjectIds.length > 0 ? {
                     excuseSubjects: {
-                        create: data.subjectIds.map(id => ({ subjectId: id }))
+                        create: finalSubjectIds.map(id => ({ subjectId: id }))
                     }
                 } : {})
             }
         });
+
+        // Retroatividade: Atualizar faltas existentes no período para 'abono'
+        const affectedClasses = await prisma.scheduledClass.findMany({
+            where: {
+                tenantId,
+                date: {
+                    gte: new Date(data.startDate),
+                    lte: new Date(data.endDate)
+                },
+                ...(finalSubjectIds.length > 0 ? { subjectId: { in: finalSubjectIds } } : {})
+            },
+            select: { id: true }
+        });
+
+        if (affectedClasses.length > 0) {
+            await prisma.attendanceRecord.updateMany({
+                where: {
+                    tenantId,
+                    studentId: data.studentId,
+                    scheduledClassId: { in: affectedClasses.map(c => c.id) },
+                    status: 'falta'
+                },
+                data: { status: 'abono' }
+            });
+        }
 
         res.json(newExcuse);
     } catch (error) {
@@ -216,6 +283,27 @@ router.put('/excuses/:id', requireAuth, requireStaff, async (req, res) => {
 
         const data = schema.parse(req.body);
 
+        const existingExcuse = await prisma.attendanceExcuse.findUnique({
+            where: { id, tenantId }
+        });
+
+        if (!existingExcuse) {
+            return res.status(404).json({ error: 'Abono não encontrado' });
+        }
+
+        let finalSubjectIds = data.subjectIds || [];
+
+        // Se "todas as matérias" for selecionado (array vazio)
+        if (finalSubjectIds.length === 0) {
+            const student = await prisma.user.findUnique({
+                where: { id: existingExcuse.studentId },
+                include: { class: { include: { modality: { include: { modalitySubjects: true } } } } }
+            });
+            if (student?.class?.modality?.modalitySubjects) {
+                finalSubjectIds = student.class.modality.modalitySubjects.map(ms => ms.subjectId);
+            }
+        }
+
         // Primeiro apaga os subjects antigos se existirem
         await prisma.excuseSubject.deleteMany({
             where: { excuseId: id }
@@ -229,13 +317,38 @@ router.put('/excuses/:id', requireAuth, requireStaff, async (req, res) => {
                 reason: data.reason,
                 startDate: new Date(data.startDate),
                 endDate: new Date(data.endDate),
-                ...(data.subjectIds && data.subjectIds.length > 0 ? {
+                ...(finalSubjectIds.length > 0 ? {
                     excuseSubjects: {
-                        create: data.subjectIds.map(subId => ({ subjectId: subId }))
+                        create: finalSubjectIds.map(subId => ({ subjectId: subId }))
                     }
                 } : {})
             }
         });
+
+        // Retroatividade: Atualizar faltas existentes no período para 'abono'
+        const affectedClasses = await prisma.scheduledClass.findMany({
+            where: {
+                tenantId,
+                date: {
+                    gte: new Date(data.startDate),
+                    lte: new Date(data.endDate)
+                },
+                ...(finalSubjectIds.length > 0 ? { subjectId: { in: finalSubjectIds } } : {})
+            },
+            select: { id: true }
+        });
+
+        if (affectedClasses.length > 0) {
+            await prisma.attendanceRecord.updateMany({
+                where: {
+                    tenantId,
+                    studentId: existingExcuse.studentId,
+                    scheduledClassId: { in: affectedClasses.map(c => c.id) },
+                    status: 'falta'
+                },
+                data: { status: 'abono' }
+            });
+        }
 
         res.json(updatedExcuse);
     } catch (error) {
