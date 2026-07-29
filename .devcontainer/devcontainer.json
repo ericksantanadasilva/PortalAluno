@@ -1,0 +1,5 @@
+{
+    "name": "Meu Ambiente Dev",
+    "image": "mcr.microsoft.com/devcontainers/universal:2",
+    "postCreateCommand": "curl -fsSL https://antigravity.google/cli/install.sh | bash"
+}
