@@ -5,11 +5,13 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ExamsManager } from '@/components/simulados/ExamsManager';
 import { AnswerKeysManager } from '@/components/simulados/AnswerKeysManager';
-import { FileSignature, LayoutList } from 'lucide-react';
+import { DiscursiveSubmissionsManager } from '@/components/simulados/DiscursiveSubmissionsManager';
+import { FileSignature, LayoutList, FileText } from 'lucide-react';
 
 const TABS = [
   { id: 'exams', label: 'Gestão de Simulados', icon: FileSignature, component: ExamsManager },
   { id: 'answers', label: 'Gabaritos', icon: LayoutList, component: AnswerKeysManager },
+  { id: 'discursive', label: 'Simulados Discursivos', icon: FileText, component: DiscursiveSubmissionsManager },
 ];
 
 export default function SimuladosPage() {

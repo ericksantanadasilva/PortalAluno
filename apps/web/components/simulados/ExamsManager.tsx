@@ -9,8 +9,10 @@ import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Plus, Trash2, Loader2, Edit2, X, Save, Calculator, UserX } from 'lucide-react';
+import { Plus, Trash2, Loader2, Edit2, X, Save, Calculator, UserX, BookOpen, CheckSquare } from 'lucide-react';
 
 const API_URL = "/api";
 
@@ -24,6 +26,8 @@ type Exam = {
   isEnemFull?: boolean;
   windowStart?: string;
   windowEnd?: string;
+  windowStart2?: string;
+  windowEnd2?: string;
 };
 
 type FormQuestion = {
@@ -42,6 +46,10 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
   const [editingExamId, setEditingExamId] = useState<string | null>(null);
   const [subjects, setSubjects] = useState<{ id: string, name: string }[]>([]);
   
+  // State for Discursive Exams Multi-Subject Selection
+  const [discursiveSubjectIds, setDiscursiveSubjectIds] = useState<string[]>([]);
+  const [selectedDiscursiveTabSubjectId, setSelectedDiscursiveTabSubjectId] = useState<string>('');
+
   const [form, setForm] = useState({
     title: '',
     date: '',
@@ -80,7 +88,7 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
     setModalState({ isOpen: true, type: 'confirm', title, description, onConfirm });
   };
 
-  const showPrompt = (title: string, description: string, inputPlaceholder: string, onConfirm: (val: string) => void) => {
+  const showPrompt = (title: string, description: string, inputPlaceholder: string, onConfirm: (val?: string) => void) => {
     setModalState({ isOpen: true, type: 'prompt', title, description, inputPlaceholder, inputValue: '', onConfirm });
   };
 
@@ -190,11 +198,7 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
   const handleTotalQuestionsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const qtd = parseInt(e.target.value) || 0;
     
-    // Gera as questões dinamicamente (1 a N, language='none')
-    // Se o usuário diminuir, cortamos. Se aumentar, adicionamos no final.
     let novasQuestoes = [...form.questions];
-    
-    // Descobre qual o maximo atual no array
     const maxAtual = novasQuestoes.length > 0 ? Math.max(...novasQuestoes.map(q => q.questionNumber)) : 0;
     
     if (qtd > maxAtual) {
@@ -216,7 +220,6 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
     const semAQuestao = form.questions.filter(q => q.questionNumber !== numero);
     const questaoAntiga = form.questions.find(q => q.questionNumber === numero && q.language === 'none');
     
-    // Auto-preencher as disciplinas de idiomas, se existirem
     const inglesSubject = subjects.find(s => s.name.toLowerCase().includes('inglês') || s.name.toLowerCase().includes('ingles'));
     const espanholSubject = subjects.find(s => s.name.toLowerCase().includes('espanhol'));
 
@@ -264,8 +267,6 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
 
   const loadExamForEdit = async (exam: Exam) => {
     setEditingExamId(exam.id);
-    
-    // Formata a data para yyyy-mm-dd (data do evento)
     const dateStr = new Date(exam.date).toISOString().split('T')[0];
     
     setForm({
@@ -282,6 +283,29 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
       questions: []
     });
 
+    if (exam.type === 'discursivo') {
+      try {
+        const token = localStorage.getItem('token');
+        const res = await fetch(`${API_URL}/discursive/admin/exams`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const discExams = await res.json();
+          const foundDisc = discExams.find((e: any) => e.title.toLowerCase() === exam.title.toLowerCase() || e.id === exam.id);
+          if (foundDisc && foundDisc.subjects) {
+            const mappedIds = foundDisc.subjects.map((sub: any) => {
+              const matchedSubject = subjects.find(s => s.name.toUpperCase() === sub.subjectName.toUpperCase());
+              return matchedSubject ? matchedSubject.id : sub.id;
+            });
+            setDiscursiveSubjectIds(mappedIds);
+            if (mappedIds.length > 0) setSelectedDiscursiveTabSubjectId(mappedIds[0]);
+          }
+        }
+      } catch (e) {
+        console.error('Erro ao buscar dados discursivos:', e);
+      }
+    }
+
     try {
       const token = localStorage.getItem('token');
       const res = await fetch(`${API_URL}/exams/${exam.id}/questions`, {
@@ -289,7 +313,6 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
       });
       if (res.ok) {
         const questions = await res.json();
-        // Mapeia do backend para o formato do form
         const formattedQuestions: FormQuestion[] = questions.map((q: any) => ({
           questionNumber: q.questionNumber,
           language: q.language || 'none',
@@ -297,8 +320,6 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
           theme: q.theme || ''
         }));
         
-        // Se o exam tem totalQuestions mas a api nao retornou nada (ou incompleto)
-        // a gente preenche o resto
         const maxQ = formattedQuestions.length > 0 ? Math.max(...formattedQuestions.map(q => q.questionNumber)) : 0;
         if (maxQ < exam.totalQuestions) {
            for (let i = maxQ + 1; i <= exam.totalQuestions; i++) {
@@ -309,18 +330,24 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
         setForm(prev => ({ ...prev, questions: formattedQuestions.sort((a, b) => a.questionNumber - b.questionNumber) }));
       }
     } catch (e) {
-      console.error('Erro ao buscar questoes do simulado', e);
+      console.error('Erro ao buscar questões do simulado', e);
     }
   };
 
   const cancelEdit = () => {
     setEditingExamId(null);
+    setDiscursiveSubjectIds([]);
     setForm({ title: '', date: '', type: 'enem', totalQuestions: 60, isPublished: false, isEnemFull: false, windowStart: '', windowEnd: '', windowStart2: '', windowEnd2: '', questions: [] });
   };
 
   const handleSaveExam = async () => {
     if (!form.title || !form.date) {
       showAlert("Atenção", 'Preencha título e data.');
+      return;
+    }
+
+    if (form.type === 'discursivo' && discursiveSubjectIds.length === 0) {
+      showAlert("Atenção", 'Selecione ao menos uma matéria da lista para o simulado discursivo.');
       return;
     }
     
@@ -343,7 +370,6 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
       };
 
       if (editingExamId) {
-        // UPDATE EXAM
         const resExam = await fetch(`${API_URL}/exams/${editingExamId}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
@@ -351,7 +377,6 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
         });
         if (!resExam.ok) throw new Error('Erro ao atualizar simulado');
       } else {
-        // CREATE EXAM
         const resExam = await fetch(`${API_URL}/exams`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
@@ -361,10 +386,23 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
         const newExam = await resExam.json();
         targetExamId = newExam.id;
       }
+
+      // Se o tipo for Discursivo, cria/atualiza a entrada no EssayExam para gerar o card e os botões por matéria
+      if (form.type === 'discursivo') {
+        const selectedSubjectNames = discursiveSubjectIds.map(id => subjects.find(s => s.id === id)?.name || id);
+        
+        await fetch(`${API_URL}/discursive/admin/exams`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({
+            title: form.title,
+            subjects: selectedSubjectNames
+          })
+        }).catch((e) => console.error("Erro ao sincronizar EssayExam:", e));
+      }
       
       // UPSERT QUESTIONS
       if (form.questions.length > 0 && targetExamId) {
-        // Formata pro backend (que espera um array com 'subjectId' validos ou fallback, e 'language')
         const payload = form.questions.map(q => ({
           questionNumber: q.questionNumber,
           subjectId: q.subjectId || undefined,
@@ -420,7 +458,6 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
     );
   };
 
-  // Agrupa questoes para renderizar
   const groupedQuestions: Record<number, FormQuestion[]> = {};
   form.questions.forEach(q => {
     if (!groupedQuestions[q.questionNumber]) groupedQuestions[q.questionNumber] = [];
@@ -502,13 +539,14 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
               <Label>Tipo de Prova</Label>
               <Select 
                 value={form.type}
-                onValueChange={(val: string) => setForm({ ...form, type: val })}
+                onValueChange={(val: string) => {
+                  setForm({ ...form, type: val });
+                }}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione..." />
                 </SelectTrigger>
                 <SelectContent>
-                  {/* Filtramos os templates pelo que é permitido para o Tenant */}
                   {[{ value: "enem", label: "ENEM", key: "ENEM" },
                     { value: "enem_parcial", label: "ENEM Parcial", key: "ENEM_PARCIAL" },
                     { value: "uerj", label: "UERJ", key: "UERJ" },
@@ -564,6 +602,8 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
                 </div>
               </>
             )}
+
+            {/* (Removido do grid superior para ficar localizado acima da matriz de questões) */}
           </div>
         </CardContent>
       </Card>
@@ -571,8 +611,14 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
-            <CardTitle>Matriz de Questões</CardTitle>
-            <CardDescription>Defina o tema e a disciplina de cada questão. Transforme em 'Idiomas' para duplicar a questão.</CardDescription>
+            <CardTitle>
+              {form.type === 'discursivo' ? 'Classificação de Questões e Temas por Matéria' : 'Matriz de Questões'}
+            </CardTitle>
+            <CardDescription>
+              {form.type === 'discursivo' 
+                ? 'Selecione abaixo as matérias do simulado discursivo e defina o tema pedagógico de cada questão por matéria.' 
+                : 'Defina o tema e a disciplina de cada questão. Transforme em "Idiomas" para duplicar a questão.'}
+            </CardDescription>
           </div>
           <div className="flex items-center gap-3">
             <Label htmlFor="qtdQuestoes" className="whitespace-nowrap">Nº de Questões:</Label>
@@ -589,108 +635,184 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
           </div>
         </CardHeader>
         
-        {form.questions.length > 0 && (
-          <CardContent>
-            <div className="rounded-md border max-h-[500px] overflow-y-auto">
-              <table className="w-full text-sm text-left">
-                <thead className="text-xs text-muted-foreground uppercase bg-muted sticky top-0 z-10 shadow-sm">
-                  <tr>
-                    <th className="px-4 py-3 w-16 text-center">Nº</th>
-                    <th className="px-4 py-3 w-32 text-center">Idiomas?</th>
-                    <th className="px-4 py-3 w-64">Disciplina (ID Opcional)</th>
-                    <th className="px-4 py-3">Conteúdo / Tema Pedagógico</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {groupedKeys.map((numStr) => {
-                    const qs = groupedQuestions[numStr];
-                    const isForeign = qs.length === 2 && qs.some(q => q.language === 'ingles');
+        <CardContent className="space-y-6">
+          {/* Seleção de Matérias para Simulado Discursivo - Posicionada no Topo (100% Largura) */}
+          {form.type === 'discursivo' && (
+            <div className="bg-emerald-50/60 p-4 rounded-xl border border-emerald-200 space-y-3 mb-4">
+              <div className="flex items-center justify-between flex-wrap gap-2">
+                <div className="flex items-center gap-2">
+                  <BookOpen className="w-5 h-5 text-emerald-700" />
+                  <Label className="text-emerald-900 font-bold text-base">
+                    1. Selecione as Matérias Integrantes do Simulado Discursivo
+                  </Label>
+                </div>
+                <Badge variant="secondary" className="bg-emerald-100 text-emerald-800 font-bold text-xs px-3 py-1">
+                  {discursiveSubjectIds.length} matéria(s) selecionada(s)
+                </Badge>
+              </div>
+              <p className="text-xs text-slate-600">
+                Marque abaixo as matérias que farão parte desta prova discursiva. Na área do aluno, um botão de upload de PDF será exibido para cada matéria marcada.
+              </p>
 
-                    if (!isForeign) {
-                      const q = qs[0];
+              {subjects.length === 0 ? (
+                <div className="text-xs text-amber-700 bg-amber-50 p-3 rounded-md border border-amber-200">
+                  Nenhuma disciplina cadastrada na unidade. Cadastre em "Disciplinas" primeiro.
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2.5 pt-1">
+                  {subjects.map((sub) => {
+                    const isChecked = discursiveSubjectIds.includes(sub.id);
+                    return (
+                      <label
+                        key={sub.id}
+                        className={`flex items-center gap-2.5 p-2.5 rounded-lg border text-xs font-semibold cursor-pointer transition-all ${
+                          isChecked
+                            ? 'bg-emerald-600 border-emerald-600 text-white shadow-sm'
+                            : 'bg-white border-slate-200 text-slate-700 hover:border-emerald-300 hover:bg-emerald-50/40'
+                        }`}
+                      >
+                        <Checkbox
+                          checked={isChecked}
+                          onCheckedChange={(checked) => {
+                            if (checked) {
+                              setDiscursiveSubjectIds(prev => [...prev, sub.id]);
+                              if (!selectedDiscursiveTabSubjectId) setSelectedDiscursiveTabSubjectId(sub.id);
+                            } else {
+                              setDiscursiveSubjectIds(prev => prev.filter(id => id !== sub.id));
+                            }
+                          }}
+                          className={isChecked ? 'border-white text-emerald-600 bg-white' : ''}
+                        />
+                        <span className="truncate">{sub.name}</span>
+                      </label>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
+
+          {form.questions.length > 0 && (
+            <div className="w-full">
+              {form.type === 'discursivo' ? (
+                discursiveSubjectIds.length > 0 ? (
+                  /* Classificação de Questões por Matéria - Menu de Abas Horizontais ACIMA da Tabela */
+                  <div className="w-full space-y-4 pt-2">
+                    <div>
+                      <Label className="text-xs font-bold text-slate-700 uppercase tracking-wider block mb-2">
+                        2. Selecione a Matéria para Preencher os Temas das Questões:
+                      </Label>
+                      
+                      {/* Menu de Botões das Matérias - 100% Horizontal no Topo */}
+                      <div className="flex flex-wrap gap-2 p-1.5 bg-slate-100 rounded-xl border border-slate-200">
+                        {discursiveSubjectIds.map(subId => {
+                          const subName = subjects.find(s => s.id === subId)?.name || subId;
+                          const isActive = (selectedDiscursiveTabSubjectId || discursiveSubjectIds[0]) === subId;
+                          return (
+                            <button
+                              key={subId}
+                              type="button"
+                              onClick={() => setSelectedDiscursiveTabSubjectId(subId)}
+                              className={`px-4 py-2 text-xs font-bold rounded-lg transition-all ${
+                                isActive
+                                  ? 'bg-emerald-600 text-white shadow-sm'
+                                  : 'bg-white text-slate-700 hover:bg-slate-200/80 border border-slate-200'
+                              }`}
+                            >
+                              {subName}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Tabela de Questões da Matéria Selecionada (Ocupa 100% da Largura) */}
+                    {(() => {
+                      const activeSubId = selectedDiscursiveTabSubjectId || discursiveSubjectIds[0];
+                      const activeSubName = subjects.find(s => s.id === activeSubId)?.name || activeSubId;
                       return (
-                        <tr key={`${q.questionNumber}-none`} className="border-b last:border-0 hover:bg-muted/30">
-                          <td className="px-4 py-2 text-center font-medium">{q.questionNumber}</td>
-                          <td className="px-4 py-2 text-center">
-                            <input 
-                              type="checkbox" 
-                              checked={false}
-                              onChange={() => splitQuestion(q.questionNumber)}
-                              className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary"
-                            />
-                          </td>
-                          <td className="px-4 py-2">
-                            <Select value={q.subjectId || undefined} onValueChange={(v) => updateQ(q.questionNumber, 'none', 'subjectId', v)}>
-                              <SelectTrigger className="h-8 w-full border-slate-200">
-                                <SelectValue placeholder={subjects.length === 0 ? "Carregando..." : "Selecione a Disciplina"}>
-                                  {q.subjectId ? subjects.find(s => s.id === q.subjectId)?.name : null}
-                                </SelectValue>
-                              </SelectTrigger>
-                              <SelectContent>
-                                {subjects.map(s => (
-                                  <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </td>
-                          <td className="px-4 py-2">
-                            <Input 
-                              placeholder="Ex: Progressão Aritmética" 
-                              className="h-8"
-                              value={q.theme}
-                              onChange={(e) => updateQ(q.questionNumber, 'none', 'theme', e.target.value)}
-                            />
-                          </td>
-                        </tr>
+                        <div className="rounded-xl border border-slate-200 overflow-hidden shadow-sm bg-white w-full">
+                          <div className="bg-emerald-50/80 px-4 py-2.5 border-b border-emerald-100 flex items-center justify-between">
+                            <span className="font-bold text-emerald-900 text-xs uppercase tracking-wide">
+                              Matriz de Conteúdos: {activeSubName}
+                            </span>
+                            <span className="text-xs text-emerald-700 font-medium">
+                              Preencha o tema pedagógico de cada questão
+                            </span>
+                          </div>
+                          <div className="max-h-[450px] overflow-y-auto">
+                            <table className="w-full text-sm text-left">
+                              <thead className="text-xs text-slate-500 uppercase bg-slate-50 sticky top-0 z-10 shadow-sm border-b">
+                                <tr>
+                                  <th className="px-4 py-3 w-16 text-center font-bold">Nº</th>
+                                  <th className="px-4 py-3 font-bold">Conteúdo / Tema Pedagógico ({activeSubName})</th>
+                                </tr>
+                              </thead>
+                              <tbody className="divide-y divide-slate-100">
+                                {groupedKeys.map((num) => {
+                                  const q = groupedQuestions[num]?.[0];
+                                  if (!q) return null;
+                                  return (
+                                    <tr key={`${activeSubId}-q-${num}`} className="hover:bg-emerald-50/20 transition-colors">
+                                      <td className="px-4 py-2 text-center font-bold text-emerald-800 bg-slate-50/50">{num}</td>
+                                      <td className="px-4 py-2">
+                                        <Input 
+                                          placeholder={`Ex: Questão ${num} de ${activeSubName}`} 
+                                          className="h-9 border-slate-200 w-full focus-visible:ring-emerald-500 bg-white"
+                                          value={q.theme}
+                                          onChange={(e) => updateQ(num, 'none', 'theme', e.target.value)}
+                                        />
+                                      </td>
+                                    </tr>
+                                  );
+                                })}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
                       );
-                    } else {
-                      const qEn = qs.find(q => q.language === 'ingles');
-                      const qEs = qs.find(q => q.language === 'espanhol');
-                      if (!qEn || !qEs) return null; // safety check
+                    })()}
+                  </div>
+                ) : (
+                  <div className="text-center py-6 border border-dashed rounded-lg text-slate-500 text-sm bg-slate-50">
+                    Selecione ao menos uma matéria na lista acima para exibir a matriz de questões.
+                  </div>
+                )
+              ) : (
+              /* Matriz Padrão de Questões para ENEM / UERJ Objetivas */
+              <div className="rounded-md border max-h-[500px] overflow-y-auto">
+                <table className="w-full text-sm text-left">
+                  <thead className="text-xs text-muted-foreground uppercase bg-muted sticky top-0 z-10 shadow-sm">
+                    <tr>
+                      <th className="px-4 py-3 w-16 text-center">Nº</th>
+                      <th className="px-4 py-3 w-32 text-center">Idiomas?</th>
+                      <th className="px-4 py-3 w-64">Disciplina (ID Opcional)</th>
+                      <th className="px-4 py-3">Conteúdo / Tema Pedagógico</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {groupedKeys.map((numStr) => {
+                      const qs = groupedQuestions[numStr];
+                      const isForeign = qs.length === 2 && qs.some(q => q.language === 'ingles');
 
-                      return (
-                        <React.Fragment key={`${qEn.questionNumber}-foreign`}>
-                          <tr className="border-b border-dashed bg-slate-50/50">
-                            <td rowSpan={2} className="px-4 py-2 text-center font-bold text-primary">{qEn.questionNumber}</td>
-                            <td rowSpan={2} className="px-4 py-2 text-center border-r border-dashed">
+                      if (!isForeign) {
+                        const q = qs[0];
+                        return (
+                          <tr key={`${q.questionNumber}-none`} className="border-b last:border-0 hover:bg-muted/30">
+                            <td className="px-4 py-2 text-center font-medium">{q.questionNumber}</td>
+                            <td className="px-4 py-2 text-center">
                               <input 
                                 type="checkbox" 
-                                checked={true}
-                                onChange={() => mergeQuestion(qEn.questionNumber)}
+                                checked={false}
+                                onChange={() => splitQuestion(q.questionNumber)}
                                 className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary"
                               />
                             </td>
-                            <td className="px-4 py-2 flex items-center gap-2">
-                              <Badge variant="outline" className="w-20 justify-center">Inglês</Badge>
-                              <Select value={qEn.subjectId || undefined} onValueChange={(v) => updateQ(qEn.questionNumber, 'ingles', 'subjectId', v)}>
+                            <td className="px-4 py-2">
+                              <Select value={q.subjectId || undefined} onValueChange={(v) => updateQ(q.questionNumber, 'none', 'subjectId', v)}>
                                 <SelectTrigger className="h-8 w-full border-slate-200">
-                                  <SelectValue placeholder={subjects.length === 0 ? "Carregando..." : "Disciplina..."}>
-                                    {qEn.subjectId ? subjects.find(s => s.id === qEn.subjectId)?.name : null}
-                                  </SelectValue>
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {subjects.map(s => (
-                                    <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </td>
-                            <td className="px-4 py-2 border-b border-dashed">
-                              <Input 
-                                placeholder="Tema de Inglês..." 
-                                className="h-8"
-                                value={qEn.theme}
-                                onChange={(e) => updateQ(qEn.questionNumber, 'ingles', 'theme', e.target.value)}
-                              />
-                            </td>
-                          </tr>
-                          <tr className="border-b last:border-0 bg-slate-50/50">
-                            <td className="px-4 py-2 flex items-center gap-2">
-                              <Badge variant="outline" className="w-20 justify-center">Espanhol</Badge>
-                              <Select value={qEs.subjectId || undefined} onValueChange={(v) => updateQ(qEs.questionNumber, 'espanhol', 'subjectId', v)}>
-                                <SelectTrigger className="h-8 w-full border-slate-200">
-                                  <SelectValue placeholder={subjects.length === 0 ? "Carregando..." : "Disciplina..."}>
-                                    {qEs.subjectId ? subjects.find(s => s.id === qEs.subjectId)?.name : null}
+                                  <SelectValue placeholder={subjects.length === 0 ? "Carregando..." : "Selecione a Disciplina"}>
+                                    {q.subjectId ? subjects.find(s => s.id === q.subjectId)?.name : null}
                                   </SelectValue>
                                 </SelectTrigger>
                                 <SelectContent>
@@ -702,25 +824,94 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
                             </td>
                             <td className="px-4 py-2">
                               <Input 
-                                placeholder="Tema de Espanhol..." 
+                                placeholder="Ex: Progressão Aritmética" 
                                 className="h-8"
-                                value={qEs.theme}
-                                onChange={(e) => updateQ(qEs.questionNumber, 'espanhol', 'theme', e.target.value)}
+                                value={q.theme}
+                                onChange={(e) => updateQ(q.questionNumber, 'none', 'theme', e.target.value)}
                               />
                             </td>
                           </tr>
-                        </React.Fragment>
-                      );
-                    }
-                  })}
-                </tbody>
-              </table>
-            </div>
-          </CardContent>
+                        );
+                      } else {
+                        const qEn = qs.find(q => q.language === 'ingles');
+                        const qEs = qs.find(q => q.language === 'espanhol');
+                        if (!qEn || !qEs) return null;
+
+                        return (
+                          <React.Fragment key={`${qEn.questionNumber}-foreign`}>
+                            <tr className="border-b border-dashed bg-slate-50/50">
+                              <td rowSpan={2} className="px-4 py-2 text-center font-bold text-primary">{qEn.questionNumber}</td>
+                              <td rowSpan={2} className="px-4 py-2 text-center border-r border-dashed">
+                                <input 
+                                  type="checkbox" 
+                                  checked={true}
+                                  onChange={() => mergeQuestion(qEn.questionNumber)}
+                                  className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary"
+                                />
+                              </td>
+                              <td className="px-4 py-2 flex items-center gap-2">
+                                <Badge variant="outline" className="w-20 justify-center">Inglês</Badge>
+                                <Select value={qEn.subjectId || undefined} onValueChange={(v) => updateQ(qEn.questionNumber, 'ingles', 'subjectId', v)}>
+                                  <SelectTrigger className="h-8 w-full border-slate-200">
+                                    <SelectValue placeholder={subjects.length === 0 ? "Carregando..." : "Disciplina..."}>
+                                      {qEn.subjectId ? subjects.find(s => s.id === qEn.subjectId)?.name : null}
+                                    </SelectValue>
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {subjects.map(s => (
+                                      <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </td>
+                              <td className="px-4 py-2 border-b border-dashed">
+                                <Input 
+                                  placeholder="Tema de Inglês..." 
+                                  className="h-8"
+                                  value={qEn.theme}
+                                  onChange={(e) => updateQ(qEn.questionNumber, 'ingles', 'theme', e.target.value)}
+                                />
+                              </td>
+                            </tr>
+                            <tr className="border-b last:border-0 bg-slate-50/50">
+                              <td className="px-4 py-2 flex items-center gap-2">
+                                <Badge variant="outline" className="w-20 justify-center">Espanhol</Badge>
+                                <Select value={qEs.subjectId || undefined} onValueChange={(v) => updateQ(qEs.questionNumber, 'espanhol', 'subjectId', v)}>
+                                  <SelectTrigger className="h-8 w-full border-slate-200">
+                                    <SelectValue placeholder={subjects.length === 0 ? "Carregando..." : "Disciplina..."}>
+                                      {qEs.subjectId ? subjects.find(s => s.id === qEs.subjectId)?.name : null}
+                                    </SelectValue>
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {subjects.map(s => (
+                                      <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </td>
+                              <td className="px-4 py-2">
+                                <Input 
+                                  placeholder="Tema de Espanhol..." 
+                                  className="h-8"
+                                  value={qEs.theme}
+                                  onChange={(e) => updateQ(qEs.questionNumber, 'espanhol', 'theme', e.target.value)}
+                                />
+                              </td>
+                            </tr>
+                          </React.Fragment>
+                        );
+                      }
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
         )}
+        </CardContent>
         
         <CardFooter className="flex justify-end pt-4 border-t">
-          <Button onClick={handleSaveExam} disabled={saving} className="gap-2">
+          <Button onClick={handleSaveExam} disabled={saving} className="gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold">
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : (editingExamId ? <Save className="w-4 h-4" /> : <Plus className="w-4 h-4" />)}
             {editingExamId ? 'Atualizar Simulado e Matriz' : 'Salvar Simulado e Matriz'}
           </Button>
@@ -764,7 +955,11 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
                     <TableRow key={simulado.id}>
                       <TableCell className="font-medium">{simulado.title}</TableCell>
                       <TableCell>{new Date(simulado.date).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</TableCell>
-                      <TableCell className="uppercase">{simulado.type.replace('_', ' ')}</TableCell>
+                      <TableCell className="uppercase">
+                        <Badge variant="outline" className={simulado.type === 'discursivo' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : ''}>
+                          {simulado.type.replace('_', ' ')}
+                        </Badge>
+                      </TableCell>
                       <TableCell>{simulado.totalQuestions}</TableCell>
                       <TableCell>
                         {simulado.isPublished ? (

@@ -16,6 +16,7 @@ import attendanceRoutes from "./routes/attendance.routes";
 import boletimRoutes from "./routes/boletim.routes";
 import triRoutes from "./routes/tri.routes";
 import scheduledClassRoutes from "./routes/scheduledClass.routes";
+import discursiveRoutes from "./routes/discursive.routes";
 import { startCronJobs } from "./services/cron.service";
 
 dotenv.config();
@@ -51,6 +52,7 @@ app.use('/api/students', studentRoutes);
 app.use('/api/tenant', tenantRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/exams', examRoutes);
+app.use('/api/discursive', discursiveRoutes);
 app.use('/api/subjects', subjectRoutes);
 app.use('/api/attendance', attendanceRoutes);
 app.use('/api/scheduled-classes', scheduledClassRoutes);

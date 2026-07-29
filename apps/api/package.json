@@ -11,7 +11,9 @@
     "dependencies": {
         "@repo/database": "*",
         "@supabase/supabase-js": "^2.43.0",
+        "@types/archiver": "^8.0.0",
         "@types/node-cron": "^3.0.11",
+        "archiver": "^8.0.0",
         "bcrypt": "^5.1.1",
         "cors": "^2.8.5",
         "date-fns": "^4.4.0",

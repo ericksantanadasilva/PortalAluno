@@ -67,6 +67,8 @@ model Tenant {
     scheduledClasses  ScheduledClass[]
     triReferences     TriReference[]
     examGrades        ExamGrade[]
+    essayExams        EssayExam[]
+    essaySubmissions  EssaySubmission[]
     allowedReportTemplates String[] @default(["ENEM", "UERJ", "ENEM_PARCIAL", "DISCURSIVO"]) @map("allowed_report_templates")
 
     @@map("tenants")
@@ -93,6 +95,7 @@ model User {
     studentResponses  StudentResponse[]
     examGrades        ExamGrade[]
     examSessions      ExamSession[]
+    essaySubmissions  EssaySubmission[]
 
     @@unique([tenantId, email])
     @@unique([tenantId, registrationNumber])
@@ -368,3 +371,47 @@ model ExamGrade {
   @@unique([examId, studentId, subject])
   @@map("exam_grades")
 }
+
+model EssayExam {
+  id          String            @id @default(uuid()) @db.Uuid
+  tenantId    String            @map("tenant_id") @db.Uuid
+  title       String            // Ex: "Simulado Discursivo UERJ 2026"
+  createdAt   DateTime          @default(now()) @map("created_at")
+
+  tenant      Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  subjects    EssayExamSubject[]
+  submissions EssaySubmission[]
+
+  @@map("essay_exams")
+}
+
+model EssayExamSubject {
+  id          String            @id @default(uuid()) @db.Uuid
+  essayExamId String            @map("essay_exam_id") @db.Uuid
+  subjectName String            @map("subject_name") // Ex: "BIOLOGIA", "QUIMICA", "REDACAO"
+  
+  essayExam   EssayExam         @relation(fields: [essayExamId], references: [id], onDelete: Cascade)
+  submissions EssaySubmission[]
+
+  @@map("essay_exam_subjects")
+}
+
+model EssaySubmission {
+  id                 String           @id @default(uuid()) @db.Uuid
+  tenantId           String           @map("tenant_id") @db.Uuid
+  essayExamId        String           @map("essay_exam_id") @db.Uuid
+  essayExamSubjectId String           @map("essay_exam_subject_id") @db.Uuid
+  studentId          String           @map("student_id") @db.Uuid
+  status             String           @default("PENDING") // PENDING, CORRECTED
+  studentPdfUrl      String           @map("student_pdf_url") // PDF enviado pelo aluno
+  submittedAt        DateTime         @default(now()) @map("submitted_at")
+
+  tenant             Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  essayExam          EssayExam        @relation(fields: [essayExamId], references: [id], onDelete: Cascade)
+  subject            EssayExamSubject @relation(fields: [essayExamSubjectId], references: [id], onDelete: Cascade)
+  student            User             @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([essayExamId, essayExamSubjectId, studentId])
+  @@map("essay_submissions")
+}
+
