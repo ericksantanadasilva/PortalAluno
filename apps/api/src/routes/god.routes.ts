@@ -2,8 +2,12 @@ import { Router } from "express";
 import { prisma } from "@repo/database";
 import crypto from "crypto";
 import bcrypt from 'bcrypt';
+import { requireGod } from "../middlewares/auth.middleware";
 
 const router = Router();
+
+// Protege todas as rotas de /api/god exigindo JWT com role 'super_admin'
+router.use(requireGod);
 
 // POST /api/god/tenants -> Cria Escola + Usuário Admin
 router.post('/tenants', async (req, res) => {
