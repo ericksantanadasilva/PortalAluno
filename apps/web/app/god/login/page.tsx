@@ -25,7 +25,7 @@ export default function GodLoginPage() {
       setError(result.error);
       setIsLoading(false);
     } else {
-      router.push('/god');
+      window.location.href = '/god';
     }
   };
 

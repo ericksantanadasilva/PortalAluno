@@ -12,6 +12,8 @@ export async function godLoginAction(formData: FormData) {
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
 
+  console.log('[godLoginAction] Tentativa de login recebida para:', email);
+
   if (!email || !password) {
     return { error: 'Preencha todos os campos.' };
   }
@@ -23,11 +25,14 @@ export async function godLoginAction(formData: FormData) {
       where: { email }
     });
 
+    console.log('[godLoginAction] Usuário encontrado:', user ? { id: user.id, email: user.email, role: user.role } : 'Não encontrado');
+
     if (!user || user.role !== 'super_admin') {
       return { error: 'Credenciais inválidas ou sem permissão.' };
     }
 
     const isValid = await bcrypt.compare(password, user.passwordHash);
+    console.log('[godLoginAction] Senha válida:', isValid);
 
     if (!isValid) {
       return { error: 'Credenciais inválidas ou sem permissão.' };
@@ -46,13 +51,17 @@ export async function godLoginAction(formData: FormData) {
 
     // Salvar no Cookie (HTTP-Only)
     const cookieStore = await cookies();
+    const isCodespacesOrHttps = process.env.NODE_ENV === 'production' || !!process.env.CODESPACES || !!process.env.CODESPACE_NAME;
+    
     cookieStore.set('god_token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: isCodespacesOrHttps,
       sameSite: 'lax',
       path: '/',
       maxAge: 60 * 60 * 8, // 8 horas
     });
+
+    console.log('[godLoginAction] Cookie god_token gravado com sucesso! (secure:', isCodespacesOrHttps, ')');
 
     return { success: true };
   } catch (err) {

@@ -9,27 +9,34 @@ export async function middleware(request: NextRequest) {
   const url = request.nextUrl;
   const hostname = request.headers.get('host') || '';
 
-  // Ignora chamadas locais de ip ou localhost sem subdomínio
-  let slug = '';
-  // Expressão regular para pegar a parte do subdomínio: ex "teste.localhost:3000" ou "teste.meudominio.com"
-  // Considera o primeiro fragmento antes do primeiro ponto, ignorando 'www'.
-  if (!hostname.startsWith('localhost:') && !hostname.startsWith('127.0.0.1')) {
+  // Ignora chamadas locais de ip, localhost ou URLs do GitHub Codespaces
+  let slug = url.searchParams.get('slug') || '';
+  
+  if (
+    !slug &&
+    !hostname.startsWith('localhost:') &&
+    !hostname.startsWith('127.0.0.1') &&
+    !hostname.includes('app.github.dev') &&
+    !hostname.includes('githubpreview.dev')
+  ) {
     const parts = hostname.split('.');
     if (parts.length >= 2 && parts[0] !== 'www') {
       slug = parts[0];
     }
   }
 
-  // Clona os headers da requisição original para podermos injetar o slug
-  const requestHeaders = new Headers(request.headers);
+  // Só injeta novos headers se slug existir, preservando o objeto de requisição original de Server Actions
+  let responseOptions: { request: { headers: Headers } } | undefined = undefined;
   if (slug) {
+    const requestHeaders = new Headers(request.headers);
     requestHeaders.set('x-tenant-slug', slug);
+    responseOptions = { request: { headers: requestHeaders } };
   }
 
   // Verifica as rotas god (protegidas)
   if (url.pathname.startsWith('/god')) {
     if (url.pathname === '/god/login') {
-      return NextResponse.next({ request: { headers: requestHeaders } });
+      return NextResponse.next(responseOptions);
     }
 
     const token = request.cookies.get('god_token')?.value;
@@ -50,12 +57,8 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // Passa adiante com os novos headers injetados
-  return NextResponse.next({
-    request: {
-      headers: requestHeaders,
-    }
-  });
+  // Passa adiante com os novos headers injetados se houver slug
+  return NextResponse.next(responseOptions);
 }
 
 // Configura o middleware para rodar em todas as rotas (menos arquivos estáticos)
