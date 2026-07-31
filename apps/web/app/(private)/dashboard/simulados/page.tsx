@@ -63,6 +63,8 @@ export default function SimuladosStudentPage() {
     }
   };
 
+  const objectiveExams = exams.filter(e => e.type?.toLowerCase() !== 'discursivo');
+
   return (
     <div className="w-full max-w-7xl mx-auto space-y-8 p-4 md:p-8">
       <div>
@@ -79,14 +81,14 @@ export default function SimuladosStudentPage() {
         </div>
       ) : (
         <Tabs defaultValue="discursive" className="w-full space-y-6">
-          <TabsList className="bg-slate-100 p-1 border">
-            <TabsTrigger value="discursive" className="data-[state=active]:bg-white data-[state=active]:text-emerald-700 font-semibold px-6 py-2.5">
+          <TabsList className="w-full sm:w-auto inline-flex h-11 items-center justify-start rounded-lg bg-slate-100 p-1 border border-slate-200">
+            <TabsTrigger value="discursive" className="data-[active]:bg-white data-[active]:text-emerald-700 data-[state=active]:bg-white data-[state=active]:text-emerald-700 font-semibold px-6 py-2">
               <FileText className="w-4 h-4 mr-2" />
               Simulados Discursivos ({discursiveExams.length})
             </TabsTrigger>
-            <TabsTrigger value="objective" className="data-[state=active]:bg-white data-[state=active]:text-emerald-700 font-semibold px-6 py-2.5">
+            <TabsTrigger value="objective" className="data-[active]:bg-white data-[active]:text-emerald-700 data-[state=active]:bg-white data-[state=active]:text-emerald-700 font-semibold px-6 py-2">
               <FileSignature className="w-4 h-4 mr-2" />
-              Simulados Objetivos ({exams.length})
+              Simulados Objetivos ({objectiveExams.length})
             </TabsTrigger>
           </TabsList>
 
@@ -113,7 +115,7 @@ export default function SimuladosStudentPage() {
 
           {/* TAB: OBJETIVOS */}
           <TabsContent value="objective" className="space-y-6">
-            {exams.length === 0 ? (
+            {objectiveExams.length === 0 ? (
               <div className="text-center p-12 bg-white border border-dashed rounded-xl shadow-sm">
                 <FileSignature className="w-12 h-12 mx-auto text-slate-300 mb-4" />
                 <h3 className="text-lg font-semibold text-slate-700">Nenhum simulado objetivo no momento</h3>
@@ -121,7 +123,7 @@ export default function SimuladosStudentPage() {
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {exams.map((exam) => {
+                {objectiveExams.map((exam) => {
                   const now = new Date();
                   const examDate = new Date(exam.date);
                   const wStart = new Date(exam.windowStart);

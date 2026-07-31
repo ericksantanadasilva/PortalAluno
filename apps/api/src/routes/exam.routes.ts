@@ -55,6 +55,49 @@ router.post('/', requireAuth, requireStaff, async (req, res) => {
             }
         });
 
+        // Se o tipo for 'discursivo', garante a criação do EssayExam para o aluno responder e aparecer na central
+        if (newExam.type === 'discursivo') {
+            try {
+                const rawSubjects = Array.isArray(req.body.discursiveSubjects) && req.body.discursiveSubjects.length > 0
+                    ? req.body.discursiveSubjects
+                    : ["BIOLOGIA", "QUIMICA", "REDACAO"];
+
+                const existingEssay = await prisma.essayExam.findFirst({
+                    where: { tenantId, title: { equals: title.trim(), mode: 'insensitive' } }
+                });
+
+                if (existingEssay) {
+                    await prisma.essayExamSubject.deleteMany({
+                        where: { essayExamId: existingEssay.id }
+                    });
+                    await prisma.essayExam.update({
+                        where: { id: existingEssay.id },
+                        data: {
+                            subjects: {
+                                create: rawSubjects.map((subName: string) => ({
+                                    subjectName: subName.trim().toUpperCase()
+                                }))
+                            }
+                        }
+                    });
+                } else {
+                    await prisma.essayExam.create({
+                        data: {
+                            tenantId,
+                            title: title.trim(),
+                            subjects: {
+                                create: rawSubjects.map((subName: string) => ({
+                                    subjectName: subName.trim().toUpperCase()
+                                }))
+                            }
+                        }
+                    });
+                }
+            } catch (essayErr) {
+                console.error("Erro ao sincronizar EssayExam no POST /api/exams:", essayErr);
+            }
+        }
+
         res.status(201).json(newExam);
     } catch (error) {
         console.error("Erro ao criar simulado:", error);
@@ -74,6 +117,15 @@ router.delete('/:id', requireAuth, requireStaff, async (req, res) => {
 
         if (!exam) {
             return res.status(404).json({ error: 'Simulado não encontrado.' });
+        }
+
+        if (exam.type === 'discursivo') {
+            await prisma.essayExam.deleteMany({
+                where: {
+                    tenantId,
+                    title: { equals: exam.title.trim(), mode: 'insensitive' }
+                }
+            }).catch(e => console.error("Erro ao remover EssayExam vinculado:", e));
         }
 
         await prisma.exam.delete({
@@ -117,6 +169,49 @@ router.put('/:id', requireAuth, requireStaff, async (req, res) => {
                 windowEnd2: windowEnd2 !== undefined ? (windowEnd2 ? new Date(windowEnd2) : null) : (exam as any).windowEnd2,
             }
         });
+
+        // Se o tipo for 'discursivo', atualiza/garante a entrada no EssayExam
+        if (updatedExam.type === 'discursivo') {
+            try {
+                const rawSubjects = Array.isArray(req.body.discursiveSubjects) && req.body.discursiveSubjects.length > 0
+                    ? req.body.discursiveSubjects
+                    : ["BIOLOGIA", "QUIMICA", "REDACAO"];
+
+                const existingEssay = await prisma.essayExam.findFirst({
+                    where: { tenantId, title: { equals: updatedExam.title.trim(), mode: 'insensitive' } }
+                });
+
+                if (existingEssay) {
+                    await prisma.essayExamSubject.deleteMany({
+                        where: { essayExamId: existingEssay.id }
+                    });
+                    await prisma.essayExam.update({
+                        where: { id: existingEssay.id },
+                        data: {
+                            subjects: {
+                                create: rawSubjects.map((subName: string) => ({
+                                    subjectName: subName.trim().toUpperCase()
+                                }))
+                            }
+                        }
+                    });
+                } else {
+                    await prisma.essayExam.create({
+                        data: {
+                            tenantId,
+                            title: updatedExam.title.trim(),
+                            subjects: {
+                                create: rawSubjects.map((subName: string) => ({
+                                    subjectName: subName.trim().toUpperCase()
+                                }))
+                            }
+                        }
+                    });
+                }
+            } catch (essayErr) {
+                console.error("Erro ao sincronizar EssayExam no PUT /api/exams:", essayErr);
+            }
+        }
 
         res.status(200).json(updatedExam);
     } catch (error) {
@@ -229,6 +324,7 @@ router.get('/available', requireAuth, async (req, res) => {
         const exams = await prisma.exam.findMany({
             where: { 
                 tenantId,
+                type: { not: 'discursivo' },
                 windowStart: { lte: new Date(currentDate.getTime() + 2 * 24 * 60 * 60 * 1000) },
                 OR: [
                     { windowEnd2: { gte: new Date(currentDate.getTime() - 3 * 24 * 60 * 60 * 1000) } },

@@ -69,7 +69,7 @@ router.get('/student/exams', requireAuth, async (req: Request, res: Response) =>
         const tenantId = req.user!.tenantId;
         const studentId = req.user!.userId;
 
-        const exams = await prisma.essayExam.findMany({
+        let exams = await prisma.essayExam.findMany({
             where: { tenantId },
             orderBy: { createdAt: 'desc' },
             include: {
@@ -82,6 +82,37 @@ router.get('/student/exams', requireAuth, async (req: Request, res: Response) =>
                 }
             }
         });
+
+        // Se não houver simulado discursivo cadastrado ainda, cria um padrão para o tenant
+        if (exams.length === 0) {
+            try {
+                const createdExam = await prisma.essayExam.create({
+                    data: {
+                        tenantId,
+                        title: "Simulado Discursivo UERJ / Específicas 2026",
+                        subjects: {
+                            create: [
+                                { subjectName: "BIOLOGIA" },
+                                { subjectName: "QUIMICA" },
+                                { subjectName: "REDACAO" }
+                            ]
+                        }
+                    },
+                    include: {
+                        subjects: {
+                            include: {
+                                submissions: {
+                                    where: { studentId }
+                                }
+                            }
+                        }
+                    }
+                });
+                exams = [createdExam];
+            } catch (err) {
+                console.error("Erro ao criar simulado discursivo padrao:", err);
+            }
+        }
 
         // Formata os dados para facilitar o consumo no front-end
         const formattedExams = exams.map(exam => ({
@@ -109,6 +140,52 @@ router.get('/student/exams', requireAuth, async (req: Request, res: Response) =>
     } catch (error) {
         console.error('Erro ao listar simulados discursivos do aluno:', error);
         return res.status(500).json({ error: 'Erro interno ao carregar simulados discursivos.' });
+    }
+});
+
+/**
+ * GET /api/discursive/student/download-single/:submissionId
+ * Permite ao aluno baixar ou visualizar o PDF da sua própria resolução enviada.
+ */
+router.get('/student/download-single/:submissionId', requireAuth, async (req: Request, res: Response) => {
+    try {
+        const studentId = req.user!.userId;
+        const submissionId = req.params.submissionId;
+
+        const sub = await prisma.essaySubmission.findFirst({
+            where: {
+                id: submissionId,
+                studentId
+            },
+            include: {
+                student: true,
+                essayExam: true,
+                subject: true
+            }
+        });
+
+        if (!sub) {
+            return res.status(404).json({ error: 'Submissão não encontrada.' });
+        }
+
+        const formattedFilename = formatSubmissionFilename(
+            sub.student.name,
+            sub.essayExam.title,
+            sub.subject.subjectName
+        );
+
+        const pdfPath = path.isAbsolute(sub.studentPdfUrl)
+            ? sub.studentPdfUrl
+            : path.resolve(process.cwd(), sub.studentPdfUrl);
+
+        if (!fs.existsSync(pdfPath)) {
+            return res.status(404).json({ error: 'Arquivo PDF não encontrado no servidor.' });
+        }
+
+        return res.download(pdfPath, formattedFilename);
+    } catch (error) {
+        console.error('Erro no download do aluno:', error);
+        return res.status(500).json({ error: 'Erro interno ao realizar o download.' });
     }
 });
 
@@ -242,10 +319,40 @@ router.post('/admin/exams', requireAuth, requireAdmin, async (req: Request, res:
             return found ? found.name : sub;
         });
 
+        // Verifica se já existe um EssayExam com o mesmo título para este tenant
+        const existingExam = await prisma.essayExam.findFirst({
+            where: {
+                tenantId,
+                title: { equals: title.trim(), mode: 'insensitive' }
+            }
+        });
+
+        if (existingExam) {
+            await prisma.essayExamSubject.deleteMany({
+                where: { essayExamId: existingExam.id }
+            });
+
+            const updatedExam = await prisma.essayExam.update({
+                where: { id: existingExam.id },
+                data: {
+                    subjects: {
+                        create: subjectNames.map((subName: string) => ({
+                            subjectName: subName.trim().toUpperCase()
+                        }))
+                    }
+                },
+                include: {
+                    subjects: true
+                }
+            });
+
+            return res.json(updatedExam);
+        }
+
         const newExam = await prisma.essayExam.create({
             data: {
                 tenantId,
-                title,
+                title: title.trim(),
                 subjects: {
                     create: subjectNames.map((subName: string) => ({
                         subjectName: subName.trim().toUpperCase()

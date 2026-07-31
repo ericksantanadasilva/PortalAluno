@@ -277,16 +277,14 @@ export function DiscursiveSubmissionsManager() {
   return (
     <div className="space-y-6">
       <Card className="border-slate-200 shadow-sm bg-white">
-        <CardHeader className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-6">
-          <div>
-            <CardTitle className="text-xl font-bold text-slate-900 flex items-center gap-2">
-              <BookOpen className="w-5 h-5 text-emerald-600" />
-              Central de Downloads - Simulados Discursivos
-            </CardTitle>
-            <CardDescription className="text-slate-500 mt-1">
-              Selecione um simulado discursivo para gerenciar as submissões enviadas pelos alunos e efetuar download unitário ou em lote (.ZIP).
-            </CardDescription>
-          </div>
+        <CardHeader className="border-b border-slate-100 pb-6">
+          <CardTitle className="text-xl font-bold text-slate-900 flex items-center gap-2">
+            <BookOpen className="w-5 h-5 text-emerald-600" />
+            Central de Downloads - Simulados Discursivos
+          </CardTitle>
+          <CardDescription className="text-slate-500 mt-1">
+            Selecione um simulado discursivo para gerenciar as submissões enviadas pelos alunos e efetuar download unitário ou em lote (.ZIP).
+          </CardDescription>
         </CardHeader>
 
         <CardContent className="pt-6 space-y-6">

@@ -356,6 +356,10 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
       const token = localStorage.getItem('token');
       let targetExamId = editingExamId;
       
+      const selectedSubjectNames = form.type === 'discursivo'
+        ? discursiveSubjectIds.map(id => subjects.find(s => s.id === id)?.name || id)
+        : [];
+
       const bodyData = {
         title: form.title,
         date: form.date,
@@ -363,6 +367,7 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
         type: form.type,
         isPublished: form.isPublished,
         isEnemFull: form.isEnemFull,
+        discursiveSubjects: selectedSubjectNames,
         windowStart: form.windowStart ? new Date(form.windowStart).toISOString() : undefined,
         windowEnd: form.windowEnd ? new Date(form.windowEnd).toISOString() : undefined,
         windowStart2: form.isEnemFull && form.windowStart2 ? new Date(form.windowStart2).toISOString() : null,
@@ -851,7 +856,7 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
                               </td>
                               <td className="px-4 py-2 flex items-center gap-2">
                                 <Badge variant="outline" className="w-20 justify-center">Inglês</Badge>
-                                <Select value={qEn.subjectId || undefined} onValueChange={(v) => updateQ(qEn.questionNumber, 'ingles', 'subjectId', v)}>
+                                <Select value={qEn.subjectId || undefined} onValueChange={(v) => updateQ(qEn.questionNumber, 'ingles', 'subjectId', v || '')}>
                                   <SelectTrigger className="h-8 w-full border-slate-200">
                                     <SelectValue placeholder={subjects.length === 0 ? "Carregando..." : "Disciplina..."}>
                                       {qEn.subjectId ? subjects.find(s => s.id === qEn.subjectId)?.name : null}
@@ -876,7 +881,7 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
                             <tr className="border-b last:border-0 bg-slate-50/50">
                               <td className="px-4 py-2 flex items-center gap-2">
                                 <Badge variant="outline" className="w-20 justify-center">Espanhol</Badge>
-                                <Select value={qEs.subjectId || undefined} onValueChange={(v) => updateQ(qEs.questionNumber, 'espanhol', 'subjectId', v)}>
+                                <Select value={qEs.subjectId || undefined} onValueChange={(v) => updateQ(qEs.questionNumber, 'espanhol', 'subjectId', v || '')}>
                                   <SelectTrigger className="h-8 w-full border-slate-200">
                                     <SelectValue placeholder={subjects.length === 0 ? "Carregando..." : "Disciplina..."}>
                                       {qEs.subjectId ? subjects.find(s => s.id === qEs.subjectId)?.name : null}

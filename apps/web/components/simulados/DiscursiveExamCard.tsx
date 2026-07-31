@@ -149,10 +149,21 @@ export function DiscursiveExamCard({ exam, onSubmissionSuccess }: DiscursiveExam
                       {subject.subjectName}
                     </span>
                     {submission ? (
-                      <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 gap-1 text-xs font-medium">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                        {formatDate(submission.submittedAt)}
-                      </Badge>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 gap-1 text-xs font-medium">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                          {formatDate(submission.submittedAt)}
+                        </Badge>
+                        <a
+                          href={`/api/discursive/student/download-single/${submission.id}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center text-xs text-emerald-700 hover:text-emerald-800 hover:underline font-semibold bg-emerald-50 px-2 py-1 rounded border border-emerald-200"
+                        >
+                          <FileText className="w-3 h-3 mr-1" />
+                          Ver PDF Enviado
+                        </a>
+                      </div>
                     ) : (
                       <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 text-xs font-medium">
                         Pendente de Envio
