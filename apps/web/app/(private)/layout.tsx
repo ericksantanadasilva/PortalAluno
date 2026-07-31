@@ -41,9 +41,18 @@ export default function DashboardLayout({
     fetch('/api/auth/me', {
       headers: { Authorization: `Bearer ${token}` }
     })
-    .then(res => res.json())
-    .then(data => {
-      if (!data.error) setUserProfile(data);
+    .then(async res => {
+      const data = await res.json();
+      if (!res.ok || data.error) {
+        if (res.status === 401) {
+          localStorage.removeItem("token");
+          localStorage.removeItem("user_role");
+          localStorage.removeItem("tenant_slug");
+          router.replace('/login');
+        }
+      } else {
+        setUserProfile(data);
+      }
     })
     .catch(err => console.error(err));
 

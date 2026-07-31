@@ -1,6 +1,8 @@
+import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import path from "path";
 import { prisma } from "@repo/database";
 import godRoutes from "./routes/god.routes";
 import authRoutes from "./routes/auth.routes";
@@ -20,6 +22,9 @@ import discursiveRoutes from "./routes/discursive.routes";
 import { startCronJobs } from "./services/cron.service";
 
 dotenv.config();
+// Fallbacks para carregar o .env do database ou da raiz do monorepo caso faltem variáveis no .env da API
+dotenv.config({ path: path.resolve(__dirname, "../../../packages/database/.env") });
+dotenv.config({ path: path.resolve(__dirname, "../../../.env") });
 
 const app = express();
 const port = process.env.PORT || 3001;

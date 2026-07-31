@@ -298,7 +298,9 @@ export function DiscursiveSubmissionsManager() {
                   disabled={loadingExams || exams.length === 0}
                 >
                   <SelectTrigger className="bg-white border-slate-300 h-10">
-                    <SelectValue placeholder={loadingExams ? 'Carregando simulados...' : 'Selecione um simulado...'} />
+                    <SelectValue placeholder={loadingExams ? 'Carregando simulados...' : 'Selecione um simulado...'}>
+                      {selectedExamId ? (exams.find(e => e.id === selectedExamId)?.title || 'Carregando...') : null}
+                    </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
                     {exams.map(exam => (

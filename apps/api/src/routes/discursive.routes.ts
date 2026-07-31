@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import multer from 'multer';
-import archiver from 'archiver';
+import * as archiver from 'archiver';
 import path from 'path';
 import fs from 'fs';
 import { prisma } from '@repo/database';
@@ -225,6 +225,23 @@ router.post('/submit', requireAuth, upload.single('file') as any, async (req: Re
                 fs.unlinkSync(req.file.path);
             }
             return res.status(404).json({ error: 'Simulado ou matéria não encontrada.' });
+        }
+
+        const existingSubmission = await prisma.essaySubmission.findUnique({
+            where: {
+                essayExamId_essayExamSubjectId_studentId: {
+                    essayExamId,
+                    essayExamSubjectId,
+                    studentId
+                }
+            }
+        });
+
+        if (existingSubmission) {
+            if (req.file.path && fs.existsSync(req.file.path)) {
+                fs.unlinkSync(req.file.path);
+            }
+            return res.status(400).json({ error: 'Você já enviou sua resolução para esta matéria. O reenvio não é permitido.' });
         }
 
         const relativeFilePath = req.file.path;
@@ -562,7 +579,10 @@ router.post('/admin/download-batch', requireAuth, requireAdmin, async (req: Requ
             return res.status(404).json({ error: 'Nenhuma submissão encontrada com os IDs fornecidos.' });
         }
 
-        const archive = (archiver as any)('zip', { zlib: { level: 9 } });
+        const ArchiverClass = (archiver as any).ZipArchive || (archiver as any).default?.ZipArchive || (archiver as any);
+        const archive = typeof ArchiverClass === 'function' && ArchiverClass.prototype?.pipe
+            ? new ArchiverClass({ zlib: { level: 9 } })
+            : (archiver as any)('zip', { zlib: { level: 9 } });
 
         const zipFilename = `Submissoes_Discursivas_${Date.now()}.zip`;
         res.setHeader('Content-Type', 'application/zip');

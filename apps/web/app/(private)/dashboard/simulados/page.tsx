@@ -81,16 +81,18 @@ export default function SimuladosStudentPage() {
         </div>
       ) : (
         <Tabs defaultValue="discursive" className="w-full space-y-6">
-          <TabsList className="w-full sm:w-auto inline-flex h-11 items-center justify-start rounded-lg bg-slate-100 p-1 border border-slate-200">
-            <TabsTrigger value="discursive" className="data-[active]:bg-white data-[active]:text-emerald-700 data-[state=active]:bg-white data-[state=active]:text-emerald-700 font-semibold px-6 py-2">
-              <FileText className="w-4 h-4 mr-2" />
-              Simulados Discursivos ({discursiveExams.length})
-            </TabsTrigger>
-            <TabsTrigger value="objective" className="data-[active]:bg-white data-[active]:text-emerald-700 data-[state=active]:bg-white data-[state=active]:text-emerald-700 font-semibold px-6 py-2">
-              <FileSignature className="w-4 h-4 mr-2" />
-              Simulados Objetivos ({objectiveExams.length})
-            </TabsTrigger>
-          </TabsList>
+          <div className="flex justify-center w-full">
+            <TabsList className="inline-flex h-11 items-center justify-center rounded-lg bg-slate-100 p-1 border border-slate-200">
+              <TabsTrigger value="discursive" className="data-[active]:bg-white data-[active]:text-emerald-700 data-[state=active]:bg-white data-[state=active]:text-emerald-700 font-semibold px-6 py-2">
+                <FileText className="w-4 h-4 mr-2" />
+                Simulados Discursivos ({discursiveExams.length})
+              </TabsTrigger>
+              <TabsTrigger value="objective" className="data-[active]:bg-white data-[active]:text-emerald-700 data-[state=active]:bg-white data-[state=active]:text-emerald-700 font-semibold px-6 py-2">
+                <FileSignature className="w-4 h-4 mr-2" />
+                Simulados Objetivos ({objectiveExams.length})
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
           {/* TAB: DISCURSIVOS */}
           <TabsContent value="discursive" className="space-y-6">

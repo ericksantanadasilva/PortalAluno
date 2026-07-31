@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken";
 import { requireAuth } from "../middlewares/auth.middleware";
 
 const router = Router();
-const JWT_SECRET = process.env.JWT_SECRET || 'seu_secret_super_seguro_aqui';
+const JWT_SECRET = process.env.JWT_SECRET || 'sua_chave_secreta_aqui_para_desenvolvimento';
 
 //1 endpoint de login
 router.post('/login', async (req, res) => {

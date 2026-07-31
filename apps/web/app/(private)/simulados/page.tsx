@@ -62,7 +62,7 @@ export default function SimuladosPage() {
           onValueChange={setActiveTab} 
           className="hidden md:block w-full"
         >
-          <TabsList className="w-full justify-start h-auto p-1 bg-muted/50 border">
+          <TabsList className="w-full justify-center h-auto p-1 bg-muted/50 border">
             {TABS.map((tab) => {
               const Icon = tab.icon;
               return (

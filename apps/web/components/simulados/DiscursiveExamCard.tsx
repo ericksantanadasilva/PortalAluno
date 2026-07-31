@@ -33,6 +33,7 @@ export function DiscursiveExamCard({ exam, onSubmissionSuccess }: DiscursiveExam
   const [selectedFiles, setSelectedFiles] = useState<{ [subjectId: string]: File | null }>({});
   const [uploadingSubjectId, setUploadingSubjectId] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<{ subjectId: string; type: 'success' | 'error'; message: string } | null>(null);
+  const [viewingSubmissionId, setViewingSubmissionId] = useState<string | null>(null);
 
   const handleFileChange = (subjectId: string, e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
@@ -101,6 +102,43 @@ export function DiscursiveExamCard({ exam, onSubmissionSuccess }: DiscursiveExam
     }
   };
 
+  const handleViewPdf = async (submissionId: string) => {
+    try {
+      setViewingSubmissionId(submissionId);
+      const token = localStorage.getItem('token');
+      const res = await fetch(`/api/discursive/student/download-single/${submissionId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      if (!res.ok) {
+        alert('Erro ao carregar o PDF enviado.');
+        return;
+      }
+
+      const blob = await res.blob();
+      const pdfBlob = new Blob([blob], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(pdfBlob);
+
+      const newTab = window.open(url, '_blank');
+      if (!newTab) {
+        // Fallback caso o bloqueador de pop-up impeça a abertura
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `resolucao_${submissionId}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      }
+    } catch (error) {
+      console.error('Erro ao visualizar PDF:', error);
+      alert('Erro ao carregar o PDF enviado.');
+    } finally {
+      setViewingSubmissionId(null);
+    }
+  };
+
   const formatDate = (isoString: string) => {
     try {
       const date = new Date(isoString);
@@ -154,15 +192,24 @@ export function DiscursiveExamCard({ exam, onSubmissionSuccess }: DiscursiveExam
                           <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
                           {formatDate(submission.submittedAt)}
                         </Badge>
-                        <a
-                          href={`/api/discursive/student/download-single/${submission.id}`}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="inline-flex items-center text-xs text-emerald-700 hover:text-emerald-800 hover:underline font-semibold bg-emerald-50 px-2 py-1 rounded border border-emerald-200"
+                        <button
+                          type="button"
+                          onClick={() => handleViewPdf(submission.id)}
+                          disabled={viewingSubmissionId === submission.id}
+                          className="inline-flex items-center text-xs text-emerald-700 hover:text-emerald-800 hover:underline font-semibold bg-emerald-50 px-2 py-1 rounded border border-emerald-200 cursor-pointer disabled:opacity-50"
                         >
-                          <FileText className="w-3 h-3 mr-1" />
-                          Ver PDF Enviado
-                        </a>
+                          {viewingSubmissionId === submission.id ? (
+                            <>
+                              <Loader2 className="w-3 h-3 mr-1 animate-spin" />
+                              Carregando...
+                            </>
+                          ) : (
+                            <>
+                              <FileText className="w-3 h-3 mr-1" />
+                              Ver PDF Enviado
+                            </>
+                          )}
+                        </button>
                       </div>
                     ) : (
                       <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 text-xs font-medium">
@@ -173,58 +220,67 @@ export function DiscursiveExamCard({ exam, onSubmissionSuccess }: DiscursiveExam
                 </div>
 
                 {/* Upload box */}
-                <div className="flex flex-col gap-2">
-                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-                    <label className="flex-1 cursor-pointer">
-                      <div className="border border-dashed border-slate-300 rounded-md p-2.5 bg-white hover:border-emerald-500 hover:bg-emerald-50/30 transition-all flex items-center justify-center gap-2 text-xs text-slate-600">
-                        <FileUp className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                        <span className="truncate">
-                          {selectedFile ? selectedFile.name : 'Selecionar arquivo PDF da matéria...'}
-                        </span>
-                      </div>
-                      <input
-                        type="file"
-                        accept="application/pdf"
-                        className="hidden"
-                        onChange={(e) => handleFileChange(subject.id, e)}
-                      />
-                    </label>
+                {!submission ? (
+                  <div className="flex flex-col gap-2">
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                      <label className="flex-1 cursor-pointer">
+                        <div className="border border-dashed border-slate-300 rounded-md p-2.5 bg-white hover:border-emerald-500 hover:bg-emerald-50/30 transition-all flex items-center justify-center gap-2 text-xs text-slate-600">
+                          <FileUp className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                          <span className="truncate">
+                            {selectedFile ? selectedFile.name : 'Selecionar arquivo PDF da matéria...'}
+                          </span>
+                        </div>
+                        <input
+                          type="file"
+                          accept="application/pdf"
+                          className="hidden"
+                          onChange={(e) => handleFileChange(subject.id, e)}
+                        />
+                      </label>
 
-                    <Button
-                      size="sm"
-                      disabled={!selectedFile || isUploading}
-                      onClick={() => handleUpload(subject.id)}
-                      className="bg-emerald-600 hover:bg-emerald-700 text-white min-w-[130px] font-semibold shadow-sm"
-                    >
-                      {isUploading ? (
-                        <>
-                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                          Enviando...
-                        </>
-                      ) : (
-                        <>
-                          <FileText className="w-4 h-4 mr-1.5" />
-                          {submission ? 'Reenviar PDF' : 'Enviar PDF'}
-                        </>
-                      )}
-                    </Button>
-                  </div>
-
-                  {itemFeedback && (
-                    <div className={`text-xs p-2 rounded-md flex items-center gap-1.5 ${
-                      itemFeedback.type === 'success' 
-                        ? 'bg-emerald-100/70 text-emerald-800' 
-                        : 'bg-rose-100/70 text-rose-800'
-                    }`}>
-                      {itemFeedback.type === 'success' ? (
-                        <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0" />
-                      ) : (
-                        <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
-                      )}
-                      <span>{itemFeedback.message}</span>
+                      <Button
+                        size="sm"
+                        disabled={!selectedFile || isUploading}
+                        onClick={() => handleUpload(subject.id)}
+                        className="bg-emerald-600 hover:bg-emerald-700 text-white min-w-[130px] font-semibold shadow-sm"
+                      >
+                        {isUploading ? (
+                          <>
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                            Enviando...
+                          </>
+                        ) : (
+                          <>
+                            <FileText className="w-4 h-4 mr-1.5" />
+                            Enviar PDF
+                          </>
+                        )}
+                      </Button>
                     </div>
-                  )}
-                </div>
+
+                    {itemFeedback && (
+                      <div className={`text-xs p-2 rounded-md flex items-center gap-1.5 ${
+                        itemFeedback.type === 'success' 
+                          ? 'bg-emerald-100/70 text-emerald-800' 
+                          : 'bg-rose-100/70 text-rose-800'
+                      }`}>
+                        {itemFeedback.type === 'success' ? (
+                          <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0" />
+                        ) : (
+                          <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+                        )}
+                        <span>{itemFeedback.message}</span>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="text-xs text-slate-600 bg-emerald-50/70 border border-emerald-200 rounded-md p-3 flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                      <span>Resolução enviada para correção. O reenvio está desativado para preservar o arquivo de prova.</span>
+                    </div>
+                  </div>
+                )}
               </div>
             );
           })}
