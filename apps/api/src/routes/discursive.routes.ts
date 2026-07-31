@@ -5,28 +5,13 @@ import path from 'path';
 import fs from 'fs';
 import { prisma } from '@repo/database';
 import { requireAuth, requireAdmin } from '../middlewares/auth.middleware';
+import { uploadToDrive, getDriveFileStream, extractDriveFileId } from '../services/drive.service';
 
 const router = Router();
 
-// Ensure upload directory exists
-const uploadDir = path.join(process.cwd(), 'uploads', 'discursive');
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-}
-
-// Multer storage configuration for saving PDF files
-const storage = multer.diskStorage({
-    destination: (_req, _file, cb) => {
-        cb(null, uploadDir);
-    },
-    filename: (_req, file, cb) => {
-        const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-        cb(null, `essay-${uniqueSuffix}.pdf`);
-    }
-});
-
+// Storage em memória para fazer upload diretamente no Google Drive
 const upload = multer({
-    storage,
+    storage: multer.memoryStorage(),
     limits: { fileSize: 20 * 1024 * 1024 }, // 20 MB limit
     fileFilter: (_req, file, cb) => {
         if (file.mimetype === 'application/pdf' || file.originalname.toLowerCase().endsWith('.pdf')) {
@@ -36,6 +21,9 @@ const upload = multer({
         }
     }
 });
+
+const uploadDir = path.join(process.cwd(), 'uploads', 'discursive');
+
 
 /**
  * HELPER: Normaliza e formata o nome do arquivo seguindo rigorosamente o padrão:
@@ -54,6 +42,43 @@ export function formatSubmissionFilename(studentName: string, examTitle: string,
     const cleanSubject = clean(subjectName).toUpperCase();
 
     return `${cleanStudent} - ${cleanExam} (${cleanSubject}).pdf`;
+}
+
+/**
+ * HELPER: Resolve o caminho do PDF no disco de forma resiliente em qualquer ambiente
+ * (PC local, Codespaces, Docker, etc.), mesmo que o caminho salvo no DB seja de outro OS/máquina.
+ */
+export function resolvePdfPath(storedPath: string): string | null {
+    if (!storedPath) return null;
+
+    // 1. Se o caminho exato existe no disco
+    if (fs.existsSync(storedPath)) {
+        return storedPath;
+    }
+
+    // 2. Tenta resolver relativo ao process.cwd()
+    const relativeToCwd = path.resolve(process.cwd(), storedPath);
+    if (fs.existsSync(relativeToCwd)) {
+        return relativeToCwd;
+    }
+
+    // 3. Tenta buscar pelo nome do arquivo (basename) nos diretórios de upload prováveis
+    const filename = path.basename(storedPath);
+
+    const candidates = [
+        path.join(uploadDir, filename),
+        path.resolve(process.cwd(), 'apps', 'api', 'uploads', 'discursive', filename),
+        path.resolve(process.cwd(), 'uploads', 'discursive', filename),
+        path.resolve(__dirname, '..', '..', 'uploads', 'discursive', filename)
+    ];
+
+    for (const candidate of candidates) {
+        if (fs.existsSync(candidate)) {
+            return candidate;
+        }
+    }
+
+    return null;
 }
 
 /* ==========================================================================
@@ -150,7 +175,7 @@ router.get('/student/exams', requireAuth, async (req: Request, res: Response) =>
 router.get('/student/download-single/:submissionId', requireAuth, async (req: Request, res: Response) => {
     try {
         const studentId = req.user!.userId;
-        const submissionId = req.params.submissionId;
+        const submissionId = req.params.submissionId as string;
 
         const sub = await prisma.essaySubmission.findFirst({
             where: {
@@ -174,12 +199,19 @@ router.get('/student/download-single/:submissionId', requireAuth, async (req: Re
             sub.subject.subjectName
         );
 
-        const pdfPath = path.isAbsolute(sub.studentPdfUrl)
-            ? sub.studentPdfUrl
-            : path.resolve(process.cwd(), sub.studentPdfUrl);
+        res.setHeader('Access-Control-Expose-Headers', 'Content-Disposition');
 
-        if (!fs.existsSync(pdfPath)) {
-            return res.status(404).json({ error: 'Arquivo PDF não encontrado no servidor.' });
+        const driveFileId = extractDriveFileId(sub.studentPdfUrl);
+        if (driveFileId) {
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(formattedFilename)}"`);
+            const driveStream = await getDriveFileStream(driveFileId);
+            return driveStream.pipe(res);
+        }
+
+        const pdfPath = resolvePdfPath(sub.studentPdfUrl);
+        if (!pdfPath) {
+            return res.status(404).json({ error: 'Arquivo PDF não encontrado no servidor ou Google Drive.' });
         }
 
         return res.download(pdfPath, formattedFilename);
@@ -204,10 +236,6 @@ router.post('/submit', requireAuth, upload.single('file') as any, async (req: Re
         }
 
         if (!essayExamId || !essayExamSubjectId) {
-            // Remove uploaded file if missing parameters
-            if (req.file.path && fs.existsSync(req.file.path)) {
-                fs.unlinkSync(req.file.path);
-            }
             return res.status(400).json({ error: 'essayExamId e essayExamSubjectId são obrigatórios.' });
         }
 
@@ -217,13 +245,13 @@ router.post('/submit', requireAuth, upload.single('file') as any, async (req: Re
                 id: essayExamSubjectId,
                 essayExamId,
                 essayExam: { tenantId }
+            },
+            include: {
+                essayExam: true
             }
         });
 
         if (!examSubject) {
-            if (req.file.path && fs.existsSync(req.file.path)) {
-                fs.unlinkSync(req.file.path);
-            }
             return res.status(404).json({ error: 'Simulado ou matéria não encontrada.' });
         }
 
@@ -238,15 +266,27 @@ router.post('/submit', requireAuth, upload.single('file') as any, async (req: Re
         });
 
         if (existingSubmission) {
-            if (req.file.path && fs.existsSync(req.file.path)) {
-                fs.unlinkSync(req.file.path);
-            }
             return res.status(400).json({ error: 'Você já enviou sua resolução para esta matéria. O reenvio não é permitido.' });
         }
 
-        const relativeFilePath = req.file.path;
+        const student = await prisma.user.findUnique({
+            where: { id: studentId }
+        });
 
-        // Upsert na EssaySubmission
+        const formattedFilename = formatSubmissionFilename(
+            student?.name || 'ALUNO',
+            examSubject.essayExam.title,
+            examSubject.subjectName
+        );
+
+        // Upload do arquivo para a pasta do Google Drive
+        const driveResult = await uploadToDrive({
+            buffer: req.file.buffer,
+            filename: formattedFilename,
+            mimetype: req.file.mimetype || 'application/pdf'
+        });
+
+        // Upsert na EssaySubmission com o link do Google Drive
         const submission = await prisma.essaySubmission.upsert({
             where: {
                 essayExamId_essayExamSubjectId_studentId: {
@@ -256,7 +296,7 @@ router.post('/submit', requireAuth, upload.single('file') as any, async (req: Re
                 }
             },
             update: {
-                studentPdfUrl: relativeFilePath,
+                studentPdfUrl: driveResult.driveUrl,
                 submittedAt: new Date(),
                 status: 'PENDING'
             },
@@ -265,7 +305,7 @@ router.post('/submit', requireAuth, upload.single('file') as any, async (req: Re
                 essayExamId,
                 essayExamSubjectId,
                 studentId,
-                studentPdfUrl: relativeFilePath,
+                studentPdfUrl: driveResult.driveUrl,
                 status: 'PENDING'
             },
             include: {
@@ -395,7 +435,7 @@ router.post('/admin/exams', requireAuth, requireAdmin, async (req: Request, res:
 router.put('/admin/exams/:id', requireAuth, requireAdmin, async (req: Request, res: Response) => {
     try {
         const tenantId = req.user!.tenantId;
-        const examId = req.params.id;
+        const examId = req.params.id as string;
         const { title, subjects } = req.body;
 
         const exam = await prisma.essayExam.findFirst({
@@ -450,7 +490,7 @@ router.put('/admin/exams/:id', requireAuth, requireAdmin, async (req: Request, r
 router.delete('/admin/exams/:id', requireAuth, requireAdmin, async (req: Request, res: Response) => {
     try {
         const tenantId = req.user!.tenantId;
-        const examId = req.params.id;
+        const examId = req.params.id as string;
 
         const exam = await prisma.essayExam.findFirst({
             where: { id: examId, tenantId }
@@ -478,7 +518,7 @@ router.delete('/admin/exams/:id', requireAuth, requireAdmin, async (req: Request
 router.get('/admin/:examId/submissions', requireAuth, requireAdmin, async (req: Request, res: Response) => {
     try {
         const tenantId = req.user!.tenantId;
-        const examId = req.params.examId;
+        const examId = req.params.examId as string;
 
         const exam = await prisma.essayExam.findFirst({
             where: { id: examId, tenantId },
@@ -604,14 +644,22 @@ router.post('/admin/download-batch', requireAuth, requireAdmin, async (req: Requ
                 sub.subject.subjectName
             );
 
-            const pdfPath = path.isAbsolute(sub.studentPdfUrl)
-                ? sub.studentPdfUrl
-                : path.resolve(process.cwd(), sub.studentPdfUrl);
+            const driveFileId = extractDriveFileId(sub.studentPdfUrl);
 
-            if (fs.existsSync(pdfPath)) {
-                archive.file(pdfPath, { name: formattedName });
+            if (driveFileId) {
+                try {
+                    const driveStream = await getDriveFileStream(driveFileId);
+                    archive.append(driveStream, { name: formattedName });
+                } catch (streamErr) {
+                    console.error(`Erro ao obter stream do Drive para submissão ${sub.id}:`, streamErr);
+                }
             } else {
-                console.warn(`Arquivo não encontrado no disco para submissão ${sub.id}: ${pdfPath}`);
+                const pdfPath = resolvePdfPath(sub.studentPdfUrl);
+                if (pdfPath) {
+                    archive.file(pdfPath, { name: formattedName });
+                } else {
+                    console.warn(`Arquivo não encontrado no disco para submissão ${sub.id}: ${sub.studentPdfUrl}`);
+                }
             }
         }
 
@@ -632,7 +680,7 @@ router.post('/admin/download-batch', requireAuth, requireAdmin, async (req: Requ
 router.get('/admin/download-single/:submissionId', requireAuth, requireAdmin, async (req: Request, res: Response) => {
     try {
         const tenantId = req.user!.tenantId;
-        const submissionId = req.params.submissionId;
+        const submissionId = req.params.submissionId as string;
 
         const sub = await prisma.essaySubmission.findFirst({
             where: {
@@ -656,12 +704,17 @@ router.get('/admin/download-single/:submissionId', requireAuth, requireAdmin, as
             sub.subject.subjectName
         );
 
-        const pdfPath = path.isAbsolute(sub.studentPdfUrl)
-            ? sub.studentPdfUrl
-            : path.resolve(process.cwd(), sub.studentPdfUrl);
+        const driveFileId = extractDriveFileId(sub.studentPdfUrl);
+        if (driveFileId) {
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(formattedFilename)}"`);
+            const driveStream = await getDriveFileStream(driveFileId);
+            return driveStream.pipe(res);
+        }
 
-        if (!fs.existsSync(pdfPath)) {
-            return res.status(404).json({ error: 'Arquivo PDF não encontrado no servidor.' });
+        const pdfPath = resolvePdfPath(sub.studentPdfUrl);
+        if (!pdfPath) {
+            return res.status(404).json({ error: 'Arquivo PDF não encontrado no servidor ou Google Drive.' });
         }
 
         return res.download(pdfPath, formattedFilename, (err) => {

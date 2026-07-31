@@ -67,14 +67,32 @@ export function DiscursiveSubmissionsManager() {
   useEffect(() => {
     if (selectedExamId) {
       fetchSubmissions(selectedExamId);
+
+      // Revalida em segundo plano sem piscar a tela para atualizar novos arquivos enviados pelos alunos
+      const interval = setInterval(() => {
+        fetchSubmissions(selectedExamId, true);
+        fetchExams(true);
+      }, 8000);
+
+      const handleFocus = () => {
+        fetchSubmissions(selectedExamId, true);
+        fetchExams(true);
+      };
+
+      window.addEventListener('focus', handleFocus);
+
+      return () => {
+        clearInterval(interval);
+        window.removeEventListener('focus', handleFocus);
+      };
     } else {
       setSubmissions([]);
       setSelectedSubmissionIds([]);
     }
   }, [selectedExamId]);
 
-  const fetchExams = async () => {
-    setLoadingExams(true);
+  const fetchExams = async (silent = false) => {
+    if (!silent) setLoadingExams(true);
     try {
       const token = localStorage.getItem('token');
       const res = await fetch('/api/discursive/admin/exams', {
@@ -83,20 +101,22 @@ export function DiscursiveSubmissionsManager() {
       if (res.ok) {
         const data = await res.json();
         setExams(data);
-        if (data.length > 0) {
+        if (data.length > 0 && !selectedExamId) {
           setSelectedExamId(data[0].id);
         }
       }
     } catch (e) {
       console.error('Erro ao carregar simulados discursivos:', e);
     } finally {
-      setLoadingExams(false);
+      if (!silent) setLoadingExams(false);
     }
   };
 
-  const fetchSubmissions = async (examId: string) => {
-    setLoadingSubmissions(true);
-    setSelectedSubmissionIds([]);
+  const fetchSubmissions = async (examId: string, silent = false) => {
+    if (!silent) {
+      setLoadingSubmissions(true);
+      setSelectedSubmissionIds([]);
+    }
     try {
       const token = localStorage.getItem('token');
       const res = await fetch(`/api/discursive/admin/${examId}/submissions`, {
@@ -104,12 +124,17 @@ export function DiscursiveSubmissionsManager() {
       });
       if (res.ok) {
         const data = await res.json();
-        setSubmissions(data.submissions || []);
+        const newSubmissions: SubmissionRow[] = data.submissions || [];
+        setSubmissions(newSubmissions);
+
+        if (silent) {
+          setSelectedSubmissionIds(prev => prev.filter(id => newSubmissions.some(s => s.id === id)));
+        }
       }
     } catch (e) {
       console.error('Erro ao carregar submissões:', e);
     } finally {
-      setLoadingSubmissions(false);
+      if (!silent) setLoadingSubmissions(false);
     }
   };
 

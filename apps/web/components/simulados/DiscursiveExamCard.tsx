@@ -121,16 +121,22 @@ export function DiscursiveExamCard({ exam, onSubmissionSuccess }: DiscursiveExam
       const pdfBlob = new Blob([blob], { type: 'application/pdf' });
       const url = window.URL.createObjectURL(pdfBlob);
 
-      const newTab = window.open(url, '_blank');
-      if (!newTab) {
-        // Fallback caso o bloqueador de pop-up impeça a abertura
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `resolucao_${submissionId}.pdf`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
+      let filename = `resolucao_${submissionId}.pdf`;
+      const disposition = res.headers.get('content-disposition') || res.headers.get('Content-Disposition');
+      if (disposition) {
+        const match = disposition.match(/filename\*?=(?:UTF-8'')?["']?([^"';]+)["']?/i);
+        if (match && match[1]) {
+          filename = decodeURIComponent(match[1]);
+        }
       }
+
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => window.URL.revokeObjectURL(url), 1000);
     } catch (error) {
       console.error('Erro ao visualizar PDF:', error);
       alert('Erro ao carregar o PDF enviado.');
