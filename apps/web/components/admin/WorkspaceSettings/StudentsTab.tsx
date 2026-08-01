@@ -332,10 +332,6 @@ export function StudentsTab() {
     }
   };
 
-  if (loading) {
-    return <div className="p-8 text-center text-sm text-muted-foreground">Buscando configurações escolares no servidor Express...</div>;
-  }
-
   return (
     <div className="space-y-6">
       <Tabs defaultValue="lista" className="w-full flex flex-col space-y-6">
@@ -455,8 +451,8 @@ export function StudentsTab() {
                       return matchBusca && matchTurma && matchModalidade;
                     }).length === 0 && (
                         <TableRow>
-                          <TableCell colSpan={5} className="text-center py-6 text-muted-foreground">
-                            Nenhum aluno encontrado para os filtros selecionados.
+                          <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                            {loading ? "Carregando alunos..." : "Nenhum aluno encontrado para os filtros selecionados."}
                           </TableCell>
                         </TableRow>
                       )}

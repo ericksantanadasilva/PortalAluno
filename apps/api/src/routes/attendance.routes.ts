@@ -29,31 +29,30 @@ router.get('/classes/:classId/students', requireAuth, async (req, res) => {
         const targetDate = scheduledClass.date;
         const subjectId = scheduledClass.subjectId;
 
-        // Busca alunos da turma
-        const usersInClass = await prisma.user.findMany({
-            where: { tenantId, classId, role: 'aluno' },
-            select: { id: true, name: true, registrationNumber: true }
-        });
-
-        // Busca registros de presença existentes para a aula
-        const attendanceRecords = await prisma.attendanceRecord.findMany({
-            where: {
-                tenantId,
-                scheduledClassId: lessonId
-            }
-        });
-
-        // Busca abonos vigentes na data para esses alunos
-        const abonosAtivos = await prisma.attendanceExcuse.findMany({
-            where: {
-                tenantId,
-                studentId: { in: usersInClass.map(u => u.id) },
-                status: 'vigente',
-                startDate: { lte: targetDate },
-                endDate: { gte: targetDate }
-            },
-            include: { excuseSubjects: true }
-        });
+        // Busca alunos, presenças e abonos em paralelo para eliminar o delay sequencial (N+1/cascata)
+        const [usersInClass, attendanceRecords, abonosAtivos] = await Promise.all([
+            prisma.user.findMany({
+                where: { tenantId, classId, role: 'aluno' },
+                select: { id: true, name: true, registrationNumber: true },
+                orderBy: { name: 'asc' }
+            }),
+            prisma.attendanceRecord.findMany({
+                where: {
+                    tenantId,
+                    scheduledClassId: lessonId
+                }
+            }),
+            prisma.attendanceExcuse.findMany({
+                where: {
+                    tenantId,
+                    student: { classId, tenantId, role: 'aluno' },
+                    status: 'vigente',
+                    startDate: { lte: targetDate },
+                    endDate: { gte: targetDate }
+                },
+                include: { excuseSubjects: true }
+            })
+        ]);
 
         // Monta a resposta (mapeando para o formato esperado pelo frontend)
         const alunos = usersInClass.map(aluno => {
