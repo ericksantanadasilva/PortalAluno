@@ -1,159 +1,189 @@
-# Turborepo starter
+<div align="center">
 
-This Turborepo starter is maintained by the Turborepo core team.
+# 🎓 PortalAluno
 
-## Using this example
+Plataforma SaaS multi-tenant para gestão acadêmica de cursos pré-vestibulares.
 
-Run the following command:
+Desenvolvida para substituir processos manuais realizados em planilhas e centralizar a administração da instituição em uma única aplicação.
 
-```sh
-npx create-turbo@latest
+![Status](https://img.shields.io/badge/status-em%20desenvolvimento-blue)
+![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=next.js)
+![React](https://img.shields.io/badge/React-19-61DAFB?logo=react)
+![Node.js](https://img.shields.io/badge/Node.js-20-339933?logo=node.js)
+![Express](https://img.shields.io/badge/Express-4-000000?logo=express)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript)
+![Prisma](https://img.shields.io/badge/Prisma-ORM-2D3748?logo=prisma)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Supabase-3ECF8E?logo=supabase)
+![License](https://img.shields.io/badge/license-MIT-green)
+
+</div>
+
+---
+
+## 📖 Sobre o projeto
+
+O **PortalAluno** é uma plataforma web desenvolvida para auxiliar instituições de ensino na gestão acadêmica.
+
+O sistema foi pensado para substituir processos realizados manualmente em planilhas e documentos, centralizando em um único ambiente funcionalidades como:
+
+- Gestão de alunos
+- Gestão de colaboradores
+- Turmas e modalidades
+- Chamadas e frequência
+- Abonos
+- Simulados objetivos e discursivos
+- Boletins
+- Correção de provas
+- Personalização por instituição (multi-tenant)
+
+O projeto está sendo desenvolvido como um **SaaS Multi-Tenant**, permitindo que múltiplas instituições utilizem a mesma aplicação com isolamento completo de dados.
+
+---
+
+# ✨ Funcionalidades
+
+## ✅ Implementadas
+
+- Autenticação JWT
+- Arquitetura Multi-Tenant
+- Row Level Security (PostgreSQL)
+- Cadastro de alunos
+- Cadastro de colaboradores
+- Gestão de turmas
+- Gestão de modalidades
+- Gestão de disciplinas
+- Sistema de chamadas
+- Sistema de abonos
+- Simulados ENEM
+- Simulados UERJ
+- Upload de PDFs
+- Integração com Google Drive
+- Personalização por tenant
+- Dashboard administrativo
+
+---
+
+## 🚧 Em desenvolvimento
+
+- Fluxo completo de simulados discursivos
+- Correção online
+- Boletim discursivo
+- Templates adicionais de relatórios
+- Melhorias de UX/UI
+- Testes automatizados
+
+---
+
+# 🏗 Arquitetura
+
+```text
+apps/
+ ├── api/          Express + Node.js
+ └── web/          Next.js
+
+packages/
+ ├── database/
+ ├── database-mocks/
+ ├── ui/
+ ├── eslint-config/
+ └── typescript-config/
 ```
 
-## What's inside?
+Projeto organizado em **Monorepo** utilizando **Turborepo**.
 
-This Turborepo includes the following packages/apps:
+---
 
-### Apps and Packages
+# 🛠 Tecnologias
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+### Frontend
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+- Next.js 15
+- React 19
+- TypeScript
+- Tailwind CSS
+- Shadcn UI
+- Radix UI
 
-### Utilities
+### Backend
 
-This Turborepo has some additional tools already setup for you:
+- Node.js
+- Express
+- Prisma ORM
+- PostgreSQL
+- Supabase
+- JWT
+- Bcrypt
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+### Infraestrutura
 
-### Build
+- Turborepo
+- Google Drive API
+- Row Level Security (PostgreSQL)
 
-To build all apps and packages, run the following command:
+---
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
+# 🔒 Segurança
 
-```sh
-cd my-turborepo
-turbo build
-```
+O sistema possui arquitetura preparada para múltiplas instituições.
 
-Without global `turbo`, use your package manager:
+Principais mecanismos implementados:
 
-```sh
-cd my-turborepo
-npx turbo build
-npm dlx turbo build
-npm exec turbo build
-```
+- JWT
+- Multi-Tenant
+- Row Level Security (RLS)
+- Isolamento de dados por `tenant_id`
+- Middleware de autorização por perfil
+- Controle de permissões administrativas
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+---
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+# 📂 Principais módulos
 
-```sh
-turbo build --filter=docs
-```
+- Gestão Acadêmica
+- Gestão de Alunos
+- Gestão de Funcionários
+- Gestão de Turmas
+- Gestão de Modalidades
+- Chamadas
+- Abonos
+- Simulados
+- Boletins
+- Upload de Arquivos
+- Configurações da Instituição
 
-Without global `turbo`:
+---
 
-```sh
-npx turbo build --filter=docs
-npm exec turbo build --filter=docs
-npm exec turbo build --filter=docs
-```
+# 🚀 Roadmap
 
-### Develop
+- [x] Estrutura Multi-Tenant
+- [x] Gestão de alunos
+- [x] Gestão de funcionários
+- [x] Gestão de turmas
+- [x] Sistema de chamadas
+- [x] Sistema de abonos
+- [x] Simulados ENEM
+- [x] Upload de PDFs
+- [x] Integração Google Drive
+- [ ] Correção completa de discursivos
+- [ ] Área do corretor
+- [ ] Dashboard analítico
+- [ ] Testes automatizados
+- [ ] Deploy de produção
 
-To develop all apps and packages, run the following command:
+---
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
+# 📸 Screenshots
 
-```sh
-cd my-turborepo
-turbo dev
-```
+> Em breve
 
-Without global `turbo`, use your package manager:
+---
 
-```sh
-cd my-turborepo
-npx turbo dev
-npm exec turbo dev
-npm exec turbo dev
-```
+# 💡 Objetivo
 
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+Este projeto está sendo desenvolvido como meu principal projeto de portfólio, com foco em aplicar conceitos de desenvolvimento Full Stack, arquitetura multi-tenant, organização de código e construção de aplicações voltadas para problemas reais.
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+---
 
-```sh
-turbo dev --filter=web
-```
+# 📄 Licença
 
-Without global `turbo`:
-
-```sh
-npx turbo dev --filter=web
-npm exec turbo dev --filter=web
-npm exec turbo dev --filter=web
-```
-
-### Remote Caching
-
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo login
-```
-
-Without global `turbo`, use your package manager:
-
-```sh
-cd my-turborepo
-npx turbo login
-npm exec turbo login
-npm exec turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo link
-```
-
-Without global `turbo`:
-
-```sh
-npx turbo link
-npm exec turbo link
-npm exec turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+Este projeto está licenciado sob a licença MIT.
