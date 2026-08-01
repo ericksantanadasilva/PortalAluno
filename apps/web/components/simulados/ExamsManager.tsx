@@ -645,15 +645,15 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
         <CardContent className="space-y-6">
           {/* Seleção de Matérias para Simulado Discursivo - Posicionada no Topo (100% Largura) */}
           {form.type === 'discursivo' && (
-            <div className="bg-emerald-50/60 p-4 rounded-xl border border-emerald-200 space-y-3 mb-4">
+            <div className="bg-primary/5 p-4 rounded-xl border border-primary/20 space-y-3 mb-4">
               <div className="flex items-center justify-between flex-wrap gap-2">
                 <div className="flex items-center gap-2">
-                  <BookOpen className="w-5 h-5 text-emerald-700" />
-                  <Label className="text-emerald-900 font-bold text-base">
+                  <BookOpen className="w-5 h-5 text-primary" />
+                  <Label className="text-foreground font-bold text-base">
                     1. Selecione as Matérias Integrantes do Simulado Discursivo
                   </Label>
                 </div>
-                <Badge variant="secondary" className="bg-emerald-100 text-emerald-800 font-bold text-xs px-3 py-1">
+                <Badge variant="secondary" className="bg-primary/10 text-primary font-bold text-xs px-3 py-1">
                   {discursiveSubjectIds.length} matéria(s) selecionada(s)
                 </Badge>
               </div>
@@ -674,8 +674,8 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
                         key={sub.id}
                         className={`flex items-center gap-2.5 p-2.5 rounded-lg border text-xs font-semibold cursor-pointer transition-all ${
                           isChecked
-                            ? 'bg-emerald-600 border-emerald-600 text-white shadow-sm'
-                            : 'bg-white border-slate-200 text-slate-700 hover:border-emerald-300 hover:bg-emerald-50/40'
+                            ? 'bg-primary border-primary text-primary-foreground shadow-sm'
+                            : 'bg-white border-slate-200 text-slate-700 hover:border-primary hover:bg-primary/5'
                         }`}
                       >
                         <Checkbox
@@ -688,7 +688,7 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
                               setDiscursiveSubjectIds(prev => prev.filter(id => id !== sub.id));
                             }
                           }}
-                          className={isChecked ? 'border-white text-emerald-600 bg-white' : ''}
+                          className={isChecked ? 'border-white text-primary bg-white' : ''}
                         />
                         <span className="truncate">{sub.name}</span>
                       </label>
@@ -722,7 +722,7 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
                               onClick={() => setSelectedDiscursiveTabSubjectId(subId)}
                               className={`px-4 py-2 text-xs font-bold rounded-lg transition-all ${
                                 isActive
-                                  ? 'bg-emerald-600 text-white shadow-sm'
+                                  ? 'bg-primary text-primary-foreground shadow-sm'
                                   : 'bg-white text-slate-700 hover:bg-slate-200/80 border border-slate-200'
                               }`}
                             >
@@ -739,11 +739,11 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
                       const activeSubName = subjects.find(s => s.id === activeSubId)?.name || activeSubId;
                       return (
                         <div className="rounded-xl border border-slate-200 overflow-hidden shadow-sm bg-white w-full">
-                          <div className="bg-emerald-50/80 px-4 py-2.5 border-b border-emerald-100 flex items-center justify-between">
-                            <span className="font-bold text-emerald-900 text-xs uppercase tracking-wide">
+                          <div className="bg-primary/10 px-4 py-2.5 border-b border-primary/20 flex items-center justify-between">
+                            <span className="font-bold text-foreground text-xs uppercase tracking-wide">
                               Matriz de Conteúdos: {activeSubName}
                             </span>
-                            <span className="text-xs text-emerald-700 font-medium">
+                            <span className="text-xs text-primary font-medium">
                               Preencha o tema pedagógico de cada questão
                             </span>
                           </div>
@@ -760,12 +760,12 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
                                   const q = groupedQuestions[num]?.[0];
                                   if (!q) return null;
                                   return (
-                                    <tr key={`${activeSubId}-q-${num}`} className="hover:bg-emerald-50/20 transition-colors">
-                                      <td className="px-4 py-2 text-center font-bold text-emerald-800 bg-slate-50/50">{num}</td>
+                                    <tr key={`${activeSubId}-q-${num}`} className="hover:bg-primary/5 transition-colors">
+                                      <td className="px-4 py-2 text-center font-bold text-primary bg-slate-50/50">{num}</td>
                                       <td className="px-4 py-2">
                                         <Input 
                                           placeholder={`Ex: Questão ${num} de ${activeSubName}`} 
-                                          className="h-9 border-slate-200 w-full focus-visible:ring-emerald-500 bg-white"
+                                          className="h-9 border-slate-200 w-full focus-visible:ring-primary bg-white"
                                           value={q.theme}
                                           onChange={(e) => updateQ(num, 'none', 'theme', e.target.value)}
                                         />
@@ -918,7 +918,7 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
         </CardContent>
         
         <CardFooter className="flex justify-end pt-4 border-t">
-          <Button onClick={handleSaveExam} disabled={saving} className="gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold">
+          <Button onClick={handleSaveExam} disabled={saving} className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold">
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : (editingExamId ? <Save className="w-4 h-4" /> : <Plus className="w-4 h-4" />)}
             {editingExamId ? 'Atualizar Simulado e Matriz' : 'Salvar Simulado e Matriz'}
           </Button>
@@ -963,14 +963,14 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
                       <TableCell className="font-medium">{simulado.title}</TableCell>
                       <TableCell>{new Date(simulado.date).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</TableCell>
                       <TableCell className="uppercase">
-                        <Badge variant="outline" className={simulado.type === 'discursivo' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : ''}>
+                        <Badge variant="outline" className={simulado.type === 'discursivo' ? 'bg-primary/10 text-primary border-primary/20' : ''}>
                           {simulado.type.replace('_', ' ')}
                         </Badge>
                       </TableCell>
                       <TableCell>{simulado.totalQuestions}</TableCell>
                       <TableCell>
                         {simulado.isPublished ? (
-                          <Badge className="rounded-full bg-emerald-500 hover:bg-emerald-600">Publicado</Badge>
+                          <Badge className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground">Publicado</Badge>
                         ) : (
                           <Badge variant="secondary" className="rounded-full">Oculto</Badge>
                         )}
@@ -989,7 +989,7 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
                           <Button 
                             variant="ghost" 
                             size="icon" 
-                            className="text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700" 
+                            className="text-primary hover:bg-primary/10 hover:text-primary" 
                             onClick={() => handleCloseExam(simulado.id)}
                             disabled={closingId === simulado.id}
                             title="Processar Notas / Fechar Simulado"

@@ -60,7 +60,7 @@ function TabsTrigger({ className, ...props }: TabsPrimitive.Tab.Props) {
       data-slot="tabs-trigger"
       className={cn(
         "relative inline-flex items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-semibold whitespace-nowrap text-slate-600 dark:text-slate-400 transition-all cursor-pointer hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
-        "data-[active]:bg-white data-[active]:text-emerald-700 data-[active]:shadow-sm data-[state=active]:bg-white data-[state=active]:text-emerald-700 data-[state=active]:shadow-sm aria-selected:bg-white aria-selected:text-emerald-700 aria-selected:shadow-sm",
+        "data-[active]:bg-white data-[active]:text-primary data-[active]:shadow-sm data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm aria-selected:bg-white aria-selected:text-primary aria-selected:shadow-sm",
         className
       )}
       {...props}

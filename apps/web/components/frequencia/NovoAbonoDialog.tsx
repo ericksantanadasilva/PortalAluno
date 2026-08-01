@@ -265,7 +265,7 @@ export function NovoAbonoDialog({ open, onOpenChange, alunos, subjects, onSalvar
             </Button>
             <Button 
               type="submit" 
-              className="bg-[#0B5C43] hover:bg-[#084834] text-white"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground"
               disabled={escopo === "Disciplina Específica" && disciplinasSelecionadas.length === 0}
             >
               Salvar Abono

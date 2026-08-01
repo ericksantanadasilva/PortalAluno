@@ -146,7 +146,11 @@ router.get('/student/exams', requireAuth, async (req: Request, res: Response) =>
 
         // Formata os dados para facilitar o consumo no front-end
         const formattedExams = exams.map(exam => {
-            const matchedObj = objExams.find(e => e.title.trim().toLowerCase() === exam.title.trim().toLowerCase());
+            const matchedObj = objExams.find(e => {
+                const t1 = e.title.trim().toLowerCase();
+                const t2 = exam.title.trim().toLowerCase();
+                return t1 === t2 || t1.includes(t2) || t2.includes(t1);
+            });
             const windowStart = (exam as any).windowStart || matchedObj?.windowStart || null;
             const windowEnd = (exam as any).windowEnd || matchedObj?.windowEnd || null;
 
@@ -271,12 +275,14 @@ router.post('/submit', requireAuth, upload.single('file') as any, async (req: Re
         let windowStart = (examSubject.essayExam as any).windowStart;
         let windowEnd = (examSubject.essayExam as any).windowEnd;
         if (!windowStart || !windowEnd) {
-            const matchedObj = await prisma.exam.findFirst({
-                where: {
-                    tenantId,
-                    title: { equals: examSubject.essayExam.title.trim(), mode: 'insensitive' }
-                },
-                select: { windowStart: true, windowEnd: true }
+            const allExams = await prisma.exam.findMany({
+                where: { tenantId },
+                select: { title: true, windowStart: true, windowEnd: true }
+            });
+            const matchedObj = allExams.find(e => {
+                const t1 = e.title.trim().toLowerCase();
+                const t2 = examSubject.essayExam.title.trim().toLowerCase();
+                return t1 === t2 || t1.includes(t2) || t2.includes(t1);
             });
             if (matchedObj) {
                 if (!windowStart) windowStart = matchedObj.windowStart;

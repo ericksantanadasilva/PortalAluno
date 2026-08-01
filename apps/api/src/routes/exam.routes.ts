@@ -73,6 +73,8 @@ router.post('/', requireAuth, requireStaff, async (req, res) => {
                     await prisma.essayExam.update({
                         where: { id: existingEssay.id },
                         data: {
+                            windowStart: windowStart ? new Date(windowStart) : new Date(),
+                            windowEnd: windowEnd ? new Date(windowEnd) : new Date(),
                             subjects: {
                                 create: rawSubjects.map((subName: string) => ({
                                     subjectName: subName.trim().toUpperCase()
@@ -85,6 +87,8 @@ router.post('/', requireAuth, requireStaff, async (req, res) => {
                         data: {
                             tenantId,
                             title: title.trim(),
+                            windowStart: windowStart ? new Date(windowStart) : new Date(),
+                            windowEnd: windowEnd ? new Date(windowEnd) : new Date(),
                             subjects: {
                                 create: rawSubjects.map((subName: string) => ({
                                     subjectName: subName.trim().toUpperCase()
@@ -188,6 +192,8 @@ router.put('/:id', requireAuth, requireStaff, async (req, res) => {
                     await prisma.essayExam.update({
                         where: { id: existingEssay.id },
                         data: {
+                            windowStart: updatedExam.windowStart ? new Date(updatedExam.windowStart) : new Date(),
+                            windowEnd: updatedExam.windowEnd ? new Date(updatedExam.windowEnd) : new Date(),
                             subjects: {
                                 create: rawSubjects.map((subName: string) => ({
                                     subjectName: subName.trim().toUpperCase()
@@ -200,6 +206,8 @@ router.put('/:id', requireAuth, requireStaff, async (req, res) => {
                         data: {
                             tenantId,
                             title: updatedExam.title.trim(),
+                            windowStart: updatedExam.windowStart ? new Date(updatedExam.windowStart) : new Date(),
+                            windowEnd: updatedExam.windowEnd ? new Date(updatedExam.windowEnd) : new Date(),
                             subjects: {
                                 create: rawSubjects.map((subName: string) => ({
                                     subjectName: subName.trim().toUpperCase()

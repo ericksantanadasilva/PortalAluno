@@ -150,10 +150,12 @@ export function EmployeesTab() {
     <div className="space-y-6">
       <Tabs defaultValue="lista" className="w-full flex flex-col space-y-6">
         {['admin', 'super_admin'].includes(userRole || '') && (
-          <TabsList className="w-full justify-start h-auto p-1 bg-muted/50 border rounded-lg flex-col sm:flex-row">
-            <TabsTrigger value="lista" className="py-2.5 px-4">Lista de Funcionários</TabsTrigger>
-            <TabsTrigger value="convidar" className="py-2.5 px-4">Convidar Funcionário</TabsTrigger>
-          </TabsList>
+          <div className="flex justify-center w-full">
+            <TabsList className="inline-flex h-11 items-center justify-center rounded-xl bg-slate-100 p-1 border border-slate-200">
+              <TabsTrigger value="lista" className="px-6 py-2 font-semibold rounded-lg data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm transition-all">Lista de Funcionários</TabsTrigger>
+              <TabsTrigger value="convidar" className="px-6 py-2 font-semibold rounded-lg data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm transition-all">Convidar Funcionário</TabsTrigger>
+            </TabsList>
+          </div>
         )}
 
         <TabsContent value="lista">

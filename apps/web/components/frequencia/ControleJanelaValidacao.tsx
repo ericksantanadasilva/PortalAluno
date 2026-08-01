@@ -43,7 +43,7 @@ const STATUS_LABEL: Record<string, { label: string; className: string }> = {
   },
   aberta: {
     label: "Validação aberta",
-    className: "bg-emerald-500/10 text-emerald-700 border-emerald-500/25 dark:text-emerald-400",
+    className: "bg-primary/10 text-primary border-primary/20",
   },
   fechada: {
     label: "Fora do horário",

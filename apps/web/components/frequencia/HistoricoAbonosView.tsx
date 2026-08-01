@@ -187,7 +187,7 @@ export function HistoricoAbonosView({
           </div>
         </div>
         <Button
-          className="hidden md:flex font-semibold px-4 py-2 items-center gap-1.5 shadow-sm shrink-0 bg-[#0B5C43] hover:bg-[#084834] text-white"
+          className="hidden md:flex font-semibold px-4 py-2 items-center gap-1.5 shadow-sm shrink-0 bg-primary hover:bg-primary/90 text-primary-foreground"
           onClick={handleOpenNew}
         >
           <Plus className="w-4 h-4" />
@@ -493,7 +493,7 @@ export function HistoricoAbonosView({
       </div>
 
       {/* FAB (Mobile) */}
-      <button onClick={handleOpenNew} className="md:hidden fixed bottom-6 right-6 w-14 h-14 bg-[#0B5C43] hover:bg-[#084834] text-white rounded-full shadow-lg flex items-center justify-center transition-transform active:scale-95 z-50">
+      <button onClick={handleOpenNew} className="md:hidden fixed bottom-6 right-6 w-14 h-14 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full shadow-lg flex items-center justify-center transition-transform active:scale-95 z-50">
         <Plus className="w-7 h-7" />
       </button>
 

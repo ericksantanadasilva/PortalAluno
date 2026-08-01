@@ -12,8 +12,6 @@ import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 export default function PresencaOnlinePage() {
-  const primaryHSL = tenantConfigMock.cor_primaria;
-  
   const [role, setRole] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [alunoLogado, setAlunoLogado] = useState<any>(null);
@@ -89,10 +87,7 @@ export default function PresencaOnlinePage() {
   }
 
   return (
-    <div
-      className="w-full py-6"
-      style={{ "--primary": primaryHSL } as React.CSSProperties}
-    >
+    <div className="w-full py-6">
       <div className="mb-6 space-y-1">
         <h1 className="text-2xl font-bold tracking-tight text-foreground">
           Confirmar Presença

@@ -167,16 +167,16 @@ export function DiscursiveExamCard({ exam, onSubmissionSuccess }: DiscursiveExam
   };
 
   return (
-    <Card className="border-slate-200 shadow-sm hover:shadow-md transition-all bg-white overflow-hidden">
-      <div className={`h-1 w-full ${isCardActive ? 'bg-emerald-500' : isExpired ? 'bg-destructive' : 'bg-slate-300'}`} />
+    <Card className="border-slate-200 shadow-sm hover:shadow-md transition-all bg-white relative overflow-hidden">
+      <div className={`absolute top-0 left-0 w-full h-1 ${isExpired ? 'bg-destructive' : isCardActive ? 'bg-primary' : 'bg-slate-300'}`} />
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between gap-2">
-          <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100 border-emerald-200 text-[11px] font-semibold tracking-wide uppercase">
+          <Badge className="bg-primary/10 text-primary hover:bg-primary/10 border-primary/20 text-[11px] font-semibold tracking-wide uppercase">
             Simulado Discursivo (UERJ/Específicas)
           </Badge>
           <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500">
             {exam.windowEnd && (
-              <Badge variant="outline" className={`text-xs font-medium ${isExpired ? 'bg-rose-50 text-rose-700 border-rose-200' : 'bg-emerald-50 text-emerald-800 border-emerald-200'}`}>
+              <Badge variant="outline" className={`text-xs font-medium ${isExpired ? 'bg-rose-50 text-rose-700 border-rose-200' : 'bg-primary/10 text-primary border-primary/20'}`}>
                 <Clock className="w-3.5 h-3.5 mr-1" />
                 Prazo: {new Date(exam.windowEnd).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
               </Badge>
@@ -212,15 +212,15 @@ export function DiscursiveExamCard({ exam, onSubmissionSuccess }: DiscursiveExam
                     </span>
                     {submission ? (
                       <div className="flex items-center gap-2">
-                        <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 gap-1 text-xs font-medium">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                        <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20 gap-1 text-xs font-medium">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-primary" />
                           {formatDate(submission.submittedAt)}
                         </Badge>
                         <button
                           type="button"
                           onClick={() => handleViewPdf(submission.id)}
                           disabled={viewingSubmissionId === submission.id}
-                          className="inline-flex items-center text-xs text-emerald-700 hover:text-emerald-800 hover:underline font-semibold bg-emerald-50 px-2 py-1 rounded border border-emerald-200 cursor-pointer disabled:opacity-50"
+                          className="inline-flex items-center text-xs text-primary hover:text-primary/90 hover:underline font-semibold bg-primary/10 px-2 py-1 rounded border border-primary/20 cursor-pointer disabled:opacity-50"
                         >
                           {viewingSubmissionId === submission.id ? (
                             <>
@@ -275,8 +275,8 @@ export function DiscursiveExamCard({ exam, onSubmissionSuccess }: DiscursiveExam
                     <div className="flex flex-col gap-2">
                       <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                         <label className="flex-1 cursor-pointer">
-                          <div className="border border-dashed border-slate-300 rounded-md p-2.5 bg-white hover:border-emerald-500 hover:bg-emerald-50/30 transition-all flex items-center justify-center gap-2 text-xs text-slate-600">
-                            <FileUp className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                          <div className="border border-dashed border-slate-300 rounded-md p-2.5 bg-white hover:border-primary hover:bg-primary/5 transition-all flex items-center justify-center gap-2 text-xs text-slate-600">
+                            <FileUp className="w-4 h-4 text-primary flex-shrink-0" />
                             <span className="truncate">
                               {selectedFile ? selectedFile.name : 'Selecionar arquivo PDF da matéria...'}
                             </span>
@@ -293,7 +293,7 @@ export function DiscursiveExamCard({ exam, onSubmissionSuccess }: DiscursiveExam
                           size="sm"
                           disabled={!selectedFile || isUploading}
                           onClick={() => handleUpload(subject.id)}
-                          className="bg-emerald-600 hover:bg-emerald-700 text-white min-w-[130px] font-semibold shadow-sm"
+                          className="bg-primary hover:bg-primary/90 text-primary-foreground min-w-[130px] font-semibold shadow-sm"
                         >
                           {isUploading ? (
                             <>
@@ -312,7 +312,7 @@ export function DiscursiveExamCard({ exam, onSubmissionSuccess }: DiscursiveExam
                     {itemFeedback && (
                       <div className={`text-xs p-2 rounded-md flex items-center gap-1.5 ${
                         itemFeedback.type === 'success' 
-                          ? 'bg-emerald-100/70 text-emerald-800' 
+                          ? 'bg-primary/15 text-primary' 
                           : 'bg-rose-100/70 text-rose-800'
                       }`}>
                         {itemFeedback.type === 'success' ? (
@@ -326,9 +326,9 @@ export function DiscursiveExamCard({ exam, onSubmissionSuccess }: DiscursiveExam
                   </div>
                   )
                 ) : (
-                  <div className="text-xs text-slate-600 bg-emerald-50/70 border border-emerald-200 rounded-md p-3 flex items-center justify-between gap-2">
+                  <div className="text-xs text-slate-600 bg-primary/10 border border-primary/20 rounded-md p-3 flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                      <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0" />
                       <span>Resolução enviada para correção. O reenvio está desativado para preservar o arquivo de prova.</span>
                     </div>
                   </div>

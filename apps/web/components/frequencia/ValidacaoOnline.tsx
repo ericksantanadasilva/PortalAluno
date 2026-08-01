@@ -196,7 +196,7 @@ export function ValidacaoOnline({
 
   const statusBadgeClass =
     statusJanela === "aberta"
-      ? "bg-emerald-500/10 text-emerald-700 border-emerald-500/25 dark:text-emerald-400"
+      ? "bg-primary/10 text-primary border-primary/20"
       : statusJanela === "aguardando"
         ? "bg-amber-500/10 text-amber-700 border-amber-500/25 dark:text-amber-400"
         : "bg-rose-500/10 text-rose-700 border-rose-500/25 dark:text-rose-400";
@@ -268,10 +268,10 @@ export function ValidacaoOnline({
           )}
 
           {isPresente ? (
-            <div className="text-center py-6 space-y-3 border border-emerald-500/20 bg-emerald-500/5 rounded-lg">
-              <CheckCircle className="w-10 h-10 text-emerald-600 mx-auto" />
+            <div className="text-center py-6 space-y-3 border border-primary/20 bg-primary/5 rounded-lg">
+              <CheckCircle className="w-10 h-10 text-primary mx-auto" />
               <div>
-                <h4 className="font-bold text-emerald-700 dark:text-emerald-400">
+                <h4 className="font-bold text-primary">
                   Presença Confirmada!
                 </h4>
                 <p className="text-xs text-muted-foreground mt-1">
@@ -286,7 +286,7 @@ export function ValidacaoOnline({
               {feedback && (
                 <div
                   className={`p-3 rounded-lg flex items-start gap-2 text-xs font-medium border ${feedback.type === "success"
-                    ? "bg-emerald-500/10 text-emerald-800 border-emerald-500/25 dark:text-emerald-400"
+                    ? "bg-primary/10 text-primary border-primary/20"
                     : "bg-rose-500/10 text-rose-800 border-rose-500/25 dark:text-rose-400"
                     }`}
                 >

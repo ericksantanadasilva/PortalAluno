@@ -62,21 +62,23 @@ export default function SimuladosPage() {
           onValueChange={setActiveTab} 
           className="hidden md:block w-full"
         >
-          <TabsList className="w-full justify-center h-auto p-1 bg-muted/50 border">
-            {TABS.map((tab) => {
-              const Icon = tab.icon;
-              return (
-                <TabsTrigger 
-                  key={tab.id} 
-                  value={tab.id}
-                  className="flex-1 py-3 data-[state=active]:bg-background data-[state=active]:shadow-sm"
-                >
-                  <Icon className="w-4 h-4 mr-2" />
-                  {tab.label}
-                </TabsTrigger>
-              );
-            })}
-          </TabsList>
+          <div className="flex justify-center w-full">
+            <TabsList className="inline-flex h-11 items-center justify-center rounded-xl bg-slate-100 p-1 border border-slate-200">
+              {TABS.map((tab) => {
+                const Icon = tab.icon;
+                return (
+                  <TabsTrigger 
+                    key={tab.id} 
+                    value={tab.id}
+                    className="px-6 py-2 font-semibold rounded-lg data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm transition-all"
+                  >
+                    <Icon className="w-4 h-4 mr-2" />
+                    {tab.label}
+                  </TabsTrigger>
+                );
+              })}
+            </TabsList>
+          </div>
         </Tabs>
 
         {/* Tab Content Container */}

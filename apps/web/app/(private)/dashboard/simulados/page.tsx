@@ -76,18 +76,18 @@ export default function SimuladosStudentPage() {
 
       {loading ? (
         <div className="flex flex-col items-center justify-center p-20 text-muted-foreground">
-          <Loader2 className="w-8 h-8 animate-spin mb-4 text-emerald-600" />
+          <Loader2 className="w-8 h-8 animate-spin mb-4 text-primary" />
           <p>Carregando simulados disponíveis...</p>
         </div>
       ) : (
         <Tabs defaultValue="discursive" className="w-full space-y-6">
           <div className="flex justify-center w-full">
-            <TabsList className="inline-flex h-11 items-center justify-center rounded-lg bg-slate-100 p-1 border border-slate-200">
-              <TabsTrigger value="discursive" className="data-[active]:bg-white data-[active]:text-emerald-700 data-[state=active]:bg-white data-[state=active]:text-emerald-700 font-semibold px-6 py-2">
+            <TabsList className="inline-flex h-11 items-center justify-center rounded-xl bg-slate-100 p-1 border border-slate-200">
+              <TabsTrigger value="discursive" className="data-[active]:bg-white data-[active]:text-primary data-[state=active]:bg-white data-[state=active]:text-primary font-semibold px-6 py-2">
                 <FileText className="w-4 h-4 mr-2" />
                 Simulados Discursivos ({discursiveExams.length})
               </TabsTrigger>
-              <TabsTrigger value="objective" className="data-[active]:bg-white data-[active]:text-emerald-700 data-[state=active]:bg-white data-[state=active]:text-emerald-700 font-semibold px-6 py-2">
+              <TabsTrigger value="objective" className="data-[active]:bg-white data-[active]:text-primary data-[state=active]:bg-white data-[state=active]:text-primary font-semibold px-6 py-2">
                 <FileSignature className="w-4 h-4 mr-2" />
                 Simulados Objetivos ({objectiveExams.length})
               </TabsTrigger>
@@ -177,7 +177,7 @@ export default function SimuladosStudentPage() {
                     
                     return (
                         <Link href={href} className="w-full">
-                            <Button className="w-full justify-start font-semibold bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm hover:shadow transition-all" variant={variant}>
+                            <Button className="w-full justify-start font-semibold bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm hover:shadow transition-all" variant={variant}>
                                 <FileSignature className="w-4 h-4 mr-2 flex-shrink-0" />
                                 <span className="truncate">{text}</span>
                             </Button>
@@ -190,7 +190,7 @@ export default function SimuladosStudentPage() {
 
                   return (
                     <Card key={exam.id} className="hover:shadow-lg transition-all group border-slate-200 flex flex-col h-full bg-white relative overflow-hidden">
-                      <div className={`absolute top-0 left-0 w-full h-1 ${isCardActive ? 'bg-emerald-500' : isCardCompletelyExpired ? 'bg-destructive' : 'bg-slate-300'}`} />
+                      <div className={`absolute top-0 left-0 w-full h-1 ${isCardCompletelyExpired ? 'bg-destructive' : isCardActive ? 'bg-primary' : 'bg-slate-300'}`} />
                       <CardHeader className="pb-3 flex-grow">
                         <div className="flex justify-between items-start mb-2">
                           <Badge variant={isCardActive ? 'default' : 'secondary'} className="uppercase font-semibold tracking-wider text-[10px]">
@@ -201,7 +201,7 @@ export default function SimuladosStudentPage() {
                             {examDate.toLocaleDateString('pt-BR', { timeZone: 'UTC' })}
                           </div>
                         </div>
-                        <CardTitle className="text-lg leading-tight group-hover:text-emerald-600 transition-colors mt-2">
+                        <CardTitle className="text-lg leading-tight group-hover:text-primary transition-colors mt-2">
                           {exam.title}
                         </CardTitle>
                         <CardDescription className="flex items-center gap-1 mt-3">

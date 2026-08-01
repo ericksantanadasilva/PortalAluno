@@ -181,7 +181,7 @@ export function PainelAbonos({
             <Badge variant="outline" className="text-xs font-semibold">
               {totais.total} registros
             </Badge>
-            <Badge variant="outline" className="text-xs bg-emerald-500/10 text-emerald-700 border-emerald-500/25 dark:text-emerald-400">
+            <Badge variant="outline" className="text-xs bg-primary/10 text-primary border-primary/20">
               {totais.vigentes} vigentes
             </Badge>
             <Badge variant="outline" className="text-xs">
@@ -333,7 +333,7 @@ export function PainelAbonos({
                           variant="outline"
                           className={
                             vigente
-                              ? "text-[10px] bg-emerald-500/10 text-emerald-700 border-emerald-500/25 dark:text-emerald-400"
+                              ? "text-[10px] bg-primary/10 text-primary border-primary/20"
                               : "text-[10px] text-muted-foreground"
                           }
                         >
@@ -377,7 +377,7 @@ export function PainelAbonos({
                           variant="outline"
                           className={
                             vigente
-                              ? "text-[10px] bg-emerald-500/10 text-emerald-700 border-emerald-500/25"
+                              ? "text-[10px] bg-primary/10 text-primary border-primary/20"
                               : "text-[10px] text-muted-foreground"
                           }
                         >

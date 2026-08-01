@@ -52,8 +52,8 @@ function StatusActionButtons({
         variant={aluno.status_atual === "Presente" ? "default" : "outline"}
         className={
           aluno.status_atual === "Presente"
-            ? "rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-sm"
-            : "rounded-full text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 border-emerald-200 font-semibold"
+            ? "rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-sm"
+            : "rounded-full text-primary hover:bg-primary/10 border-primary/20 font-semibold"
         }
         onClick={() => onUpdateStatus(aluno.id, "Presente")}
       >
@@ -97,7 +97,7 @@ function OnlineStatusIndicator({ status }: { status: StatusChamada }) {
     return (
       <Badge
         variant="outline"
-        className="rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100 font-semibold tracking-wide uppercase text-[10px]"
+        className="rounded-full bg-primary/10 text-primary border border-primary/20 font-semibold tracking-wide uppercase text-[10px]"
       >
         <UserCheck className="w-3.5 h-3.5 mr-1" />
         Validado via Portal
@@ -346,7 +346,7 @@ export function ChamadaDiaria({
                   variant="outline"
                   className={
                     aluno.status_atual === "Presente"
-                      ? "rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100 font-semibold tracking-wide uppercase text-[10px]"
+                      ? "rounded-full bg-primary/10 text-primary border border-primary/20 font-semibold tracking-wide uppercase text-[10px]"
                       : aluno.status_atual === "Falta"
                         ? "rounded-full bg-rose-50 text-rose-700 border border-rose-100 font-semibold tracking-wide uppercase text-[10px]"
                         : "rounded-full bg-blue-50 text-blue-700 border border-blue-100 font-semibold tracking-wide uppercase text-[10px]"
