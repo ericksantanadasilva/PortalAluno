@@ -401,7 +401,9 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
           body: JSON.stringify({
             title: form.title,
-            subjects: selectedSubjectNames
+            subjects: selectedSubjectNames,
+            windowStart: form.windowStart ? new Date(form.windowStart).toISOString() : null,
+            windowEnd: form.windowEnd ? new Date(form.windowEnd).toISOString() : null
           })
         }).catch((e) => console.error("Erro ao sincronizar EssayExam:", e));
       }

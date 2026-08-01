@@ -377,6 +377,8 @@ model EssayExam {
   tenantId    String            @map("tenant_id") @db.Uuid
   title       String            // Ex: "Simulado Discursivo UERJ 2026"
   createdAt   DateTime          @default(now()) @map("created_at")
+  windowStart DateTime?         @map("window_start")
+  windowEnd   DateTime?         @map("window_end")
 
   tenant      Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   subjects    EssayExamSubject[]

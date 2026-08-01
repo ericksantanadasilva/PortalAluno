@@ -139,27 +139,40 @@ router.get('/student/exams', requireAuth, async (req: Request, res: Response) =>
             }
         }
 
+        const objExams = await prisma.exam.findMany({
+            where: { tenantId },
+            select: { title: true, windowStart: true, windowEnd: true }
+        });
+
         // Formata os dados para facilitar o consumo no front-end
-        const formattedExams = exams.map(exam => ({
-            id: exam.id,
-            title: exam.title,
-            createdAt: exam.createdAt,
-            subjects: exam.subjects.map(subject => {
-                const submission = subject.submissions[0] || null;
-                return {
-                    id: subject.id,
-                    subjectName: subject.subjectName,
-                    submission: submission
-                        ? {
-                            id: submission.id,
-                            status: submission.status,
-                            studentPdfUrl: submission.studentPdfUrl,
-                            submittedAt: submission.submittedAt
-                        }
-                        : null
-                };
-            })
-        }));
+        const formattedExams = exams.map(exam => {
+            const matchedObj = objExams.find(e => e.title.trim().toLowerCase() === exam.title.trim().toLowerCase());
+            const windowStart = (exam as any).windowStart || matchedObj?.windowStart || null;
+            const windowEnd = (exam as any).windowEnd || matchedObj?.windowEnd || null;
+
+            return {
+                id: exam.id,
+                title: exam.title,
+                createdAt: exam.createdAt,
+                windowStart,
+                windowEnd,
+                subjects: exam.subjects.map(subject => {
+                    const submission = subject.submissions[0] || null;
+                    return {
+                        id: subject.id,
+                        subjectName: subject.subjectName,
+                        submission: submission
+                            ? {
+                                id: submission.id,
+                                status: submission.status,
+                                studentPdfUrl: submission.studentPdfUrl,
+                                submittedAt: submission.submittedAt
+                            }
+                            : null
+                    };
+                })
+            };
+        });
 
         return res.json(formattedExams);
     } catch (error) {
@@ -253,6 +266,30 @@ router.post('/submit', requireAuth, upload.single('file') as any, async (req: Re
 
         if (!examSubject) {
             return res.status(404).json({ error: 'Simulado ou matéria não encontrada.' });
+        }
+
+        let windowStart = (examSubject.essayExam as any).windowStart;
+        let windowEnd = (examSubject.essayExam as any).windowEnd;
+        if (!windowStart || !windowEnd) {
+            const matchedObj = await prisma.exam.findFirst({
+                where: {
+                    tenantId,
+                    title: { equals: examSubject.essayExam.title.trim(), mode: 'insensitive' }
+                },
+                select: { windowStart: true, windowEnd: true }
+            });
+            if (matchedObj) {
+                if (!windowStart) windowStart = matchedObj.windowStart;
+                if (!windowEnd) windowEnd = matchedObj.windowEnd;
+            }
+        }
+
+        const now = new Date();
+        if (windowEnd && now > windowEnd) {
+            return res.status(403).json({ error: 'O prazo para envio da resolução para este simulado foi encerrado.' });
+        }
+        if (windowStart && now < windowStart) {
+            return res.status(403).json({ error: 'O prazo para envio da resolução para este simulado ainda não começou.' });
         }
 
         const existingSubmission = await prisma.essaySubmission.findUnique({
@@ -361,7 +398,7 @@ router.get('/admin/exams', requireAuth, requireAdmin, async (req: Request, res: 
 router.post('/admin/exams', requireAuth, requireAdmin, async (req: Request, res: Response) => {
     try {
         const tenantId = req.user!.tenantId;
-        const { title, subjects } = req.body; // subjects: array de IDs ou Nomes de matérias
+        const { title, subjects, windowStart, windowEnd } = req.body; // subjects: array de IDs ou Nomes de matérias
 
         if (!title || !Array.isArray(subjects) || subjects.length === 0) {
             return res.status(400).json({ error: 'Título e ao menos uma matéria são obrigatórios.' });
@@ -392,6 +429,8 @@ router.post('/admin/exams', requireAuth, requireAdmin, async (req: Request, res:
             const updatedExam = await prisma.essayExam.update({
                 where: { id: existingExam.id },
                 data: {
+                    windowStart: windowStart !== undefined ? (windowStart ? new Date(windowStart) : null) : undefined,
+                    windowEnd: windowEnd !== undefined ? (windowEnd ? new Date(windowEnd) : null) : undefined,
                     subjects: {
                         create: subjectNames.map((subName: string) => ({
                             subjectName: subName.trim().toUpperCase()
@@ -410,6 +449,8 @@ router.post('/admin/exams', requireAuth, requireAdmin, async (req: Request, res:
             data: {
                 tenantId,
                 title: title.trim(),
+                windowStart: windowStart ? new Date(windowStart) : null,
+                windowEnd: windowEnd ? new Date(windowEnd) : null,
                 subjects: {
                     create: subjectNames.map((subName: string) => ({
                         subjectName: subName.trim().toUpperCase()
@@ -436,7 +477,7 @@ router.put('/admin/exams/:id', requireAuth, requireAdmin, async (req: Request, r
     try {
         const tenantId = req.user!.tenantId;
         const examId = req.params.id as string;
-        const { title, subjects } = req.body;
+        const { title, subjects, windowStart, windowEnd } = req.body;
 
         const exam = await prisma.essayExam.findFirst({
             where: { id: examId, tenantId }
@@ -465,6 +506,8 @@ router.put('/admin/exams/:id', requireAuth, requireAdmin, async (req: Request, r
             where: { id: examId },
             data: {
                 title: title || exam.title,
+                windowStart: windowStart !== undefined ? (windowStart ? new Date(windowStart) : null) : (exam as any).windowStart,
+                windowEnd: windowEnd !== undefined ? (windowEnd ? new Date(windowEnd) : null) : (exam as any).windowEnd,
                 subjects: {
                     create: subjectNames.map((subName: string) => ({
                         subjectName: subName.trim().toUpperCase()

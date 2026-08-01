@@ -21,6 +21,8 @@ export type DiscursiveExam = {
   id: string;
   title: string;
   createdAt: string;
+  windowStart?: string | null;
+  windowEnd?: string | null;
   subjects: DiscursiveSubject[];
 };
 
@@ -34,6 +36,14 @@ export function DiscursiveExamCard({ exam, onSubmissionSuccess }: DiscursiveExam
   const [uploadingSubjectId, setUploadingSubjectId] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<{ subjectId: string; type: 'success' | 'error'; message: string } | null>(null);
   const [viewingSubmissionId, setViewingSubmissionId] = useState<string | null>(null);
+
+  const now = new Date();
+  const wStart = exam.windowStart ? new Date(exam.windowStart) : null;
+  const wEnd = exam.windowEnd ? new Date(exam.windowEnd) : null;
+
+  const isStarted = !wStart || wStart <= now;
+  const isExpired = wEnd ? wEnd < now : false;
+  const isCardActive = isStarted && !isExpired;
 
   const handleFileChange = (subjectId: string, e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
@@ -158,15 +168,23 @@ export function DiscursiveExamCard({ exam, onSubmissionSuccess }: DiscursiveExam
 
   return (
     <Card className="border-slate-200 shadow-sm hover:shadow-md transition-all bg-white overflow-hidden">
-      <div className="h-1.5 w-full bg-gradient-to-r from-emerald-500 to-teal-600" />
+      <div className={`h-1 w-full ${isCardActive ? 'bg-emerald-500' : isExpired ? 'bg-destructive' : 'bg-slate-300'}`} />
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between gap-2">
           <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100 border-emerald-200 text-[11px] font-semibold tracking-wide uppercase">
             Simulado Discursivo (UERJ/Específicas)
           </Badge>
-          <div className="flex items-center text-xs text-slate-500">
-            <Clock className="w-3.5 h-3.5 mr-1 text-slate-400" />
-            {new Date(exam.createdAt).toLocaleDateString('pt-BR')}
+          <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500">
+            {exam.windowEnd && (
+              <Badge variant="outline" className={`text-xs font-medium ${isExpired ? 'bg-rose-50 text-rose-700 border-rose-200' : 'bg-emerald-50 text-emerald-800 border-emerald-200'}`}>
+                <Clock className="w-3.5 h-3.5 mr-1" />
+                Prazo: {new Date(exam.windowEnd).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
+              </Badge>
+            )}
+            <span className="flex items-center">
+              <Clock className="w-3.5 h-3.5 mr-1 text-slate-400" />
+              {new Date(exam.createdAt).toLocaleDateString('pt-BR')}
+            </span>
           </div>
         </div>
         <CardTitle className="text-xl font-bold text-slate-900 mt-2">
@@ -217,6 +235,14 @@ export function DiscursiveExamCard({ exam, onSubmissionSuccess }: DiscursiveExam
                           )}
                         </button>
                       </div>
+                    ) : isExpired ? (
+                      <Badge variant="destructive" className="bg-rose-50 text-rose-700 border-rose-200 text-xs font-medium">
+                        Prazo Encerrado
+                      </Badge>
+                    ) : !isStarted ? (
+                      <Badge variant="outline" className="bg-slate-50 text-slate-600 border-slate-200 text-xs font-medium">
+                        Aguardando Prazo
+                      </Badge>
                     ) : (
                       <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 text-xs font-medium">
                         Pendente de Envio
@@ -227,42 +253,61 @@ export function DiscursiveExamCard({ exam, onSubmissionSuccess }: DiscursiveExam
 
                 {/* Upload box */}
                 {!submission ? (
-                  <div className="flex flex-col gap-2">
-                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-                      <label className="flex-1 cursor-pointer">
-                        <div className="border border-dashed border-slate-300 rounded-md p-2.5 bg-white hover:border-emerald-500 hover:bg-emerald-50/30 transition-all flex items-center justify-center gap-2 text-xs text-slate-600">
-                          <FileUp className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                          <span className="truncate">
-                            {selectedFile ? selectedFile.name : 'Selecionar arquivo PDF da matéria...'}
-                          </span>
-                        </div>
-                        <input
-                          type="file"
-                          accept="application/pdf"
-                          className="hidden"
-                          onChange={(e) => handleFileChange(subject.id, e)}
-                        />
-                      </label>
-
-                      <Button
-                        size="sm"
-                        disabled={!selectedFile || isUploading}
-                        onClick={() => handleUpload(subject.id)}
-                        className="bg-emerald-600 hover:bg-emerald-700 text-white min-w-[130px] font-semibold shadow-sm"
-                      >
-                        {isUploading ? (
-                          <>
-                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                            Enviando...
-                          </>
-                        ) : (
-                          <>
-                            <FileText className="w-4 h-4 mr-1.5" />
-                            Enviar PDF
-                          </>
-                        )}
-                      </Button>
+                  isExpired ? (
+                    <div className="flex items-center justify-between p-3 bg-rose-50/70 border border-rose-200 rounded-md text-rose-700 text-xs font-medium">
+                      <span className="flex items-center gap-1.5">
+                        <AlertCircle className="w-4 h-4 text-rose-600 flex-shrink-0" />
+                        O prazo para envio da resolução deste simulado foi encerrado.
+                      </span>
+                      <Badge variant="destructive" className="text-[11px] bg-rose-600 text-white font-semibold">
+                        Não Realizado
+                      </Badge>
                     </div>
+                  ) : !isStarted ? (
+                    <div className="flex items-center justify-between p-3 bg-slate-100 border border-slate-200 rounded-md text-slate-600 text-xs font-medium">
+                      <span className="flex items-center gap-1.5">
+                        <Clock className="w-4 h-4 text-slate-500 flex-shrink-0" />
+                        Aguardando início do prazo para envio da resolução.
+                      </span>
+                      <Badge variant="outline" className="text-[11px]">Em Breve</Badge>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col gap-2">
+                      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                        <label className="flex-1 cursor-pointer">
+                          <div className="border border-dashed border-slate-300 rounded-md p-2.5 bg-white hover:border-emerald-500 hover:bg-emerald-50/30 transition-all flex items-center justify-center gap-2 text-xs text-slate-600">
+                            <FileUp className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                            <span className="truncate">
+                              {selectedFile ? selectedFile.name : 'Selecionar arquivo PDF da matéria...'}
+                            </span>
+                          </div>
+                          <input
+                            type="file"
+                            accept="application/pdf"
+                            className="hidden"
+                            onChange={(e) => handleFileChange(subject.id, e)}
+                          />
+                        </label>
+
+                        <Button
+                          size="sm"
+                          disabled={!selectedFile || isUploading}
+                          onClick={() => handleUpload(subject.id)}
+                          className="bg-emerald-600 hover:bg-emerald-700 text-white min-w-[130px] font-semibold shadow-sm"
+                        >
+                          {isUploading ? (
+                            <>
+                              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                              Enviando...
+                            </>
+                          ) : (
+                            <>
+                              <FileText className="w-4 h-4 mr-1.5" />
+                              Enviar PDF
+                            </>
+                          )}
+                        </Button>
+                      </div>
 
                     {itemFeedback && (
                       <div className={`text-xs p-2 rounded-md flex items-center gap-1.5 ${
@@ -279,6 +324,7 @@ export function DiscursiveExamCard({ exam, onSubmissionSuccess }: DiscursiveExam
                       </div>
                     )}
                   </div>
+                  )
                 ) : (
                   <div className="text-xs text-slate-600 bg-emerald-50/70 border border-emerald-200 rounded-md p-3 flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2">
