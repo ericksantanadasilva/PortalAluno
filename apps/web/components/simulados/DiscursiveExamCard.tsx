@@ -171,12 +171,12 @@ export function DiscursiveExamCard({ exam, onSubmissionSuccess }: DiscursiveExam
       <div className={`absolute top-0 left-0 w-full h-1 ${isExpired ? 'bg-destructive' : isCardActive ? 'bg-primary' : 'bg-slate-300'}`} />
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between gap-2">
-          <Badge className="bg-primary/10 text-primary hover:bg-primary/10 border-primary/20 text-[11px] font-semibold tracking-wide uppercase">
+          <Badge className="bg-primary/10 text-primary hover:bg-primary/10 border-primary/20 text-[11px] font-semibold tracking-wide uppercase rounded-full">
             Simulado Discursivo (UERJ/Específicas)
           </Badge>
           <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500">
             {exam.windowEnd && (
-              <Badge variant="outline" className={`text-xs font-medium ${isExpired ? 'bg-rose-50 text-rose-700 border-rose-200' : 'bg-primary/10 text-primary border-primary/20'}`}>
+              <Badge variant="outline" className={`text-xs font-medium ${isExpired ? 'bg-rose-50 text-rose-700 border-rose-200 rounded-full' : 'bg-primary/10 text-primary border-primary/20 rounded-full'}`}>
                 <Clock className="w-3.5 h-3.5 mr-1" />
                 Prazo: {new Date(exam.windowEnd).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
               </Badge>
@@ -212,7 +212,7 @@ export function DiscursiveExamCard({ exam, onSubmissionSuccess }: DiscursiveExam
                     </span>
                     {submission ? (
                       <div className="flex items-center gap-2">
-                        <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20 gap-1 text-xs font-medium">
+                        <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20 gap-1 text-xs font-medium rounded">
                           <CheckCircle2 className="w-3.5 h-3.5 text-primary" />
                           {formatDate(submission.submittedAt)}
                         </Badge>
@@ -236,15 +236,15 @@ export function DiscursiveExamCard({ exam, onSubmissionSuccess }: DiscursiveExam
                         </button>
                       </div>
                     ) : isExpired ? (
-                      <Badge variant="destructive" className="bg-rose-50 text-rose-700 border-rose-200 text-xs font-medium">
+                      <Badge variant="destructive" className="bg-rose-50 text-rose-700 border-rose-200 text-xs font-medium rounded">
                         Prazo Encerrado
                       </Badge>
                     ) : !isStarted ? (
-                      <Badge variant="outline" className="bg-slate-50 text-slate-600 border-slate-200 text-xs font-medium">
+                      <Badge variant="outline" className="bg-slate-50 text-slate-600 border-slate-200 text-xs font-medium rounded">
                         Aguardando Prazo
                       </Badge>
                     ) : (
-                      <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 text-xs font-medium">
+                      <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 text-xs font-medium rounded">
                         Pendente de Envio
                       </Badge>
                     )}
@@ -259,7 +259,7 @@ export function DiscursiveExamCard({ exam, onSubmissionSuccess }: DiscursiveExam
                         <AlertCircle className="w-4 h-4 text-rose-600 flex-shrink-0" />
                         O prazo para envio da resolução deste simulado foi encerrado.
                       </span>
-                      <Badge variant="destructive" className="text-[11px] bg-rose-600 text-white font-semibold">
+                      <Badge variant="destructive" className="text-[11px] bg-rose-600 text-white font-semibold rounded">
                         Não Realizado
                       </Badge>
                     </div>
@@ -309,21 +309,20 @@ export function DiscursiveExamCard({ exam, onSubmissionSuccess }: DiscursiveExam
                         </Button>
                       </div>
 
-                    {itemFeedback && (
-                      <div className={`text-xs p-2 rounded-md flex items-center gap-1.5 ${
-                        itemFeedback.type === 'success' 
-                          ? 'bg-primary/15 text-primary' 
+                      {itemFeedback && (
+                        <div className={`text-xs p-2 rounded-md flex items-center gap-1.5 ${itemFeedback.type === 'success'
+                          ? 'bg-primary/15 text-primary'
                           : 'bg-rose-100/70 text-rose-800'
-                      }`}>
-                        {itemFeedback.type === 'success' ? (
-                          <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0" />
-                        ) : (
-                          <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
-                        )}
-                        <span>{itemFeedback.message}</span>
-                      </div>
-                    )}
-                  </div>
+                          }`}>
+                          {itemFeedback.type === 'success' ? (
+                            <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0" />
+                          ) : (
+                            <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+                          )}
+                          <span>{itemFeedback.message}</span>
+                        </div>
+                      )}
+                    </div>
                   )
                 ) : (
                   <div className="text-xs text-slate-600 bg-primary/10 border border-primary/20 rounded-md p-3 flex items-center justify-between gap-2">

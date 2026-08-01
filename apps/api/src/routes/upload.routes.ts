@@ -32,19 +32,19 @@ router.get('/image/:id', async (req, res) => {
     try {
         const fileId = req.params.id;
         const drive = getDriveClient();
-        
+
         const response = await drive.files.get(
             { fileId: fileId, alt: 'media', supportsAllDrives: true },
             { responseType: 'stream' }
         );
-        
+
         // Passa os cabeçalhos corretos, se possível
         if (response.headers['content-type']) {
             res.setHeader('Content-Type', response.headers['content-type']);
         }
         // Cache na borda por muito tempo já que a imagem não muda
         res.setHeader('Cache-Control', 'public, max-age=31536000');
-        
+
         response.data
             .on('error', (err) => {
                 console.error('Erro ao ler stream do drive:', err);
@@ -76,7 +76,7 @@ router.post('/', upload.single('file'), async (req, res) => {
 
         const fileMetadata = {
             name: `${Date.now()}_${req.file.originalname}`,
-            parents: ['1i-ShnRuD2mDp12SmQursnAG2ptijPC9g'], // Pasta do Google Drive fornecida pelo admin
+            parents: [process.env.GOOGLE_DRIVE_FOLDER_ID || '1i-ShnRuD2mDp12SmQursnAG2ptijPC9g'], // Pasta do Google Drive fornecida pelo admin
         };
 
         const media = {
