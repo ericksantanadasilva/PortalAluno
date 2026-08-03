@@ -88,15 +88,43 @@ export interface UploadToDriveOptions {
     filename: string;
     mimetype: string;
     folderId?: string;
+    existingFileId?: string | null;
 }
 
-export async function uploadToDrive({ buffer, filename, mimetype, folderId }: UploadToDriveOptions) {
+export async function uploadToDrive({ buffer, filename, mimetype, folderId, existingFileId }: UploadToDriveOptions) {
     const bufferStream = new stream.PassThrough();
     bufferStream.end(buffer);
 
     const drive = getDriveClient();
-    const targetFolder = folderId || (await getDiscursiveFolderId());
 
+    // Se já houver um ID de arquivo existente no Drive, substitui o conteúdo do arquivo existente em vez de criar um novo
+    if (existingFileId) {
+        try {
+            const media = {
+                mimeType: mimetype,
+                body: bufferStream
+            };
+
+            const response = await drive.files.update({
+                fileId: existingFileId,
+                media: media,
+                fields: 'id, webViewLink, webContentLink',
+                supportsAllDrives: true
+            });
+
+            return {
+                fileId: existingFileId,
+                driveUrl: `drive:${existingFileId}`,
+                webViewLink: response.data.webViewLink,
+                webContentLink: response.data.webContentLink
+            };
+        } catch (updateError) {
+            console.warn(`Aviso: falha ao atualizar arquivo existente (${existingFileId}) no Drive, criando um novo arquivo:`, updateError);
+            // Em caso de falha ao encontrar o arquivo antigo, prossegue para criar um novo
+        }
+    }
+
+    const targetFolder = folderId || (await getDiscursiveFolderId());
 
     const fileMetadata = {
         name: filename,

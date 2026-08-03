@@ -164,6 +164,12 @@ export default function CorrectorAreaPage() {
   const handleSubmitGrade = async (finalize: boolean) => {
     if (!activeSubmission) return;
 
+    // Requisito 1: Não pode finalizar a correção sem enviar o arquivo corrigido
+    if (finalize && !correctedFile && !activeSubmission.correctedPdfUrl) {
+      setErrorMessage('É obrigatório anexar o arquivo PDF corrigido antes de finalizar a correção.');
+      return;
+    }
+
     setSaving(true);
     setErrorMessage(null);
     setSuccessMessage(null);
@@ -377,11 +383,18 @@ export default function CorrectorAreaPage() {
                 ))
               )}
 
-              {/* Upload opcional de PDF Corrigido no Google Drive */}
+              {/* Upload obrigatório de PDF Corrigido no Google Drive */}
               <div className="mt-6 pt-6 border-t border-border space-y-2">
-                <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground block">
-                  Anexar PDF Corrigido / Rabiscado (Opcional - Drive)
-                </Label>
+                <div className="flex items-center justify-between">
+                  <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground block">
+                    Anexar PDF Corrigido / Rabiscado (Obrigatório)
+                  </Label>
+                  {activeSubmission.correctedPdfUrl && (
+                    <Badge className="bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border-emerald-500/30 text-[11px]">
+                      PDF Corrigido Anexado
+                    </Badge>
+                  )}
+                </div>
                 <div className="flex items-center gap-3">
                   <Input
                     type="file"
@@ -391,7 +404,7 @@ export default function CorrectorAreaPage() {
                   />
                   {correctedFile && (
                     <Badge variant="secondary" className="shrink-0 bg-primary/10 text-primary rounded">
-                      1 arquivo
+                      Novo arquivo selecionado
                     </Badge>
                   )}
                 </div>
@@ -399,7 +412,7 @@ export default function CorrectorAreaPage() {
             </CardContent>
             <CardFooter className="bg-muted/30 border-t p-4 flex items-center justify-between">
               <span className="text-xs text-muted-foreground">
-                Finalização restrita até todas as questões estarem preenchidas.
+                Finalização requer notas de todas as questões e o PDF corrigido anexado.
               </span>
               <div className="font-bold text-lg text-primary">
                 Total: {totalScore.toFixed(1)} pts

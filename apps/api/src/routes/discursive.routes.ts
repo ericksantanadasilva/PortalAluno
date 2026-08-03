@@ -1932,12 +1932,14 @@ router.post('/corrector/submit-grade', requireAuth, upload.single('correctedPdf'
         }
 
         if (req.file) {
+            const existingFileId = extractDriveFileId(submission.correctedPdfUrl);
             const folderId = await getDiscursiveFolderId(`Simulado - ${submission.exam.title} - Corrigidas`);
             const driveResult = await uploadToDrive({
                 buffer: req.file.buffer,
                 filename: `CORRIGIDA - ${submissionId} - ${req.file.originalname}`,
                 mimetype: req.file.mimetype || 'application/pdf',
-                folderId
+                folderId,
+                existingFileId
             });
             correctedPdfUrl = driveResult.driveUrl;
         }
@@ -1969,6 +1971,13 @@ router.post('/corrector/submit-grade', requireAuth, upload.single('correctedPdf'
         const isFinalize = finalize === 'true' || finalize === true;
 
         if (isFinalize) {
+            // Requisito 1: Não pode finalizar a correção sem ter enviado o arquivo corrigido
+            if (!correctedPdfUrl && !submission.correctedPdfUrl) {
+                return res.status(400).json({
+                    error: 'É obrigatório anexar/enviar o PDF corrigido antes de finalizar a correção.'
+                });
+            }
+
             const allQuestions = submission.exam.examQuestions;
             const savedGrades = await prisma.essayQuestionGrade.findMany({
                 where: { submissionId: submission.id }
@@ -2043,6 +2052,60 @@ router.post('/corrector/submit-grade', requireAuth, upload.single('correctedPdf'
     } catch (error) {
         console.error('Erro em corrector/submit-grade:', error);
         return res.status(500).json({ error: 'Erro interno ao salvar nota/correção.' });
+    }
+});
+
+/**
+ * POST /api/discursive/admin/reopen-submission
+ * Requisito 2: Permite que o administrador devolva uma correção finalizada ao corretor
+ * (reverte o status para UNDER_CORRECTION para permitir alteração de nota e substituição do arquivo)
+ */
+router.post('/admin/reopen-submission', requireAuth, async (req: Request, res: Response) => {
+    try {
+        const tenantId = req.user!.tenantId || '';
+        const isAdmin = ['admin', 'super_admin'].includes(req.user!.role);
+
+        if (!isAdmin) {
+            return res.status(403).json({ error: 'Apenas administradores podem reabrir ou devolver correções.' });
+        }
+
+        const { submissionId } = req.body;
+        if (!submissionId) {
+            return res.status(400).json({ error: 'submissionId é obrigatório.' });
+        }
+
+        const submission = await prisma.examSubmission.findFirst({
+            where: { id: submissionId, tenantId },
+            include: { batchItem: true }
+        });
+
+        if (!submission) {
+            return res.status(404).json({ error: 'Submissão não encontrada.' });
+        }
+
+        // Reverte status para UNDER_CORRECTION
+        const updated = await prisma.examSubmission.update({
+            where: { id: submission.id },
+            data: {
+                status: 'UNDER_CORRECTION'
+            }
+        });
+
+        // Se o lote estava como COMPLETED, reabre como IN_PROGRESS
+        if (submission.batchItem?.batchId) {
+            await prisma.correctionBatch.update({
+                where: { id: submission.batchItem.batchId },
+                data: { status: 'IN_PROGRESS' }
+            });
+        }
+
+        return res.json({
+            message: 'Correção reaberta/devolvida ao corretor com sucesso.',
+            submission: updated
+        });
+    } catch (error) {
+        console.error('Erro em admin/reopen-submission:', error);
+        return res.status(500).json({ error: 'Erro interno ao devolver correção.' });
     }
 });
 
@@ -2130,7 +2193,12 @@ router.get('/pdf-stream/:submissionId/:type', requireAuth, async (req: Request, 
             return res.status(404).json({ error: 'Submissão não encontrada.' });
         }
 
-        const url = type === 'corrected' ? sub.correctedPdfUrl : sub.originalPdfUrl;
+        const url = type === 'corrected'
+            ? sub.correctedPdfUrl
+            : type === 'auto'
+                ? (sub.correctedPdfUrl || sub.originalPdfUrl)
+                : sub.originalPdfUrl;
+
         if (!url) {
             return res.status(404).json({ error: 'PDF não encontrado para esta submissão.' });
         }
