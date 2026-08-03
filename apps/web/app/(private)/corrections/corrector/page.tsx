@@ -234,7 +234,7 @@ export default function CorrectorAreaPage() {
               <h2 className="text-lg font-bold flex items-center gap-2">
                 <User className="size-4 text-primary" />
                 <span>{activeSubmission.student.name}</span>
-                <Badge variant="secondary" className="font-mono text-xs">
+                <Badge variant="secondary" className="font-mono text-xs rounded">
                   MAT {activeSubmission.student.registrationNumber}
                 </Badge>
               </h2>
@@ -292,7 +292,7 @@ export default function CorrectorAreaPage() {
                 Prova Digitalizada (Google Drive)
               </span>
               <div className="flex items-center gap-2">
-                <Badge variant="outline" className="text-xs font-mono">PDF Viewer</Badge>
+                <Badge variant="outline" className="text-xs font-mono rounded">PDF Viewer</Badge>
                 <a
                   href={`${pdfUrl}&download=true`}
                   target="_blank"
@@ -390,7 +390,7 @@ export default function CorrectorAreaPage() {
                     className="text-xs"
                   />
                   {correctedFile && (
-                    <Badge variant="secondary" className="shrink-0 bg-primary/10 text-primary">
+                    <Badge variant="secondary" className="shrink-0 bg-primary/10 text-primary rounded">
                       1 arquivo
                     </Badge>
                   )}
@@ -427,13 +427,13 @@ export default function CorrectorAreaPage() {
               size="sm"
               onClick={handleDownloadMyBatch}
               disabled={loading || downloadingBatch || submissions.length === 0}
-              className="gap-2 font-semibold shadow-sm"
+              className="gap-2 font-semibold shadow-sm rounded"
               title="Baixar todas as suas provas para correção em arquivo ZIP"
             >
               {downloadingBatch ? <Loader2 className="size-4 animate-spin" /> : <Download className="size-4" />}
               <span>Baixar Provas do Lote (.ZIP)</span>
             </Button>
-            <Button variant="outline" size="sm" onClick={fetchMySubmissions} disabled={loading} className="gap-2">
+            <Button variant="outline" size="sm" onClick={fetchMySubmissions} disabled={loading} className="gap-2 rounded">
               <RefreshCw className="size-4" />
               <span>Atualizar</span>
             </Button>
@@ -479,11 +479,11 @@ export default function CorrectorAreaPage() {
                         <TableCell className="font-medium text-sm">{sub.exam.title}</TableCell>
                         <TableCell>
                           {sub.status === 'CORRECTED' ? (
-                            <Badge className="bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30">
+                            <Badge className="bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30 rounded">
                               Corrigida
                             </Badge>
                           ) : (
-                            <Badge className="bg-blue-500/15 text-blue-700 dark:text-blue-300 border-blue-500/30">
+                            <Badge className="bg-blue-500/15 text-blue-700 dark:text-blue-300 border-blue-500/30 rounded">
                               Em Andamento
                             </Badge>
                           )}
@@ -502,7 +502,7 @@ export default function CorrectorAreaPage() {
                           <Button
                             size="sm"
                             onClick={() => handleSelectSubmission(sub)}
-                            className="gap-1.5 font-semibold shadow-sm"
+                            className="gap-1.5 font-semibold shadow-sm rounded"
                           >
                             <span>Corrigir Prova</span>
                             <ChevronRight className="size-4" />

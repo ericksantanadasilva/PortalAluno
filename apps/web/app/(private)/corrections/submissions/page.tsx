@@ -21,6 +21,7 @@ interface SubmissionItem {
   originalPdfUrl: string;
   correctedPdfUrl?: string;
   totalScore?: number;
+  subjectName?: string;
   submittedAt: string;
   student: {
     id: string;
@@ -105,19 +106,19 @@ export default function SubmissionsOverviewPage() {
     switch (status) {
       case 'PENDING_CORRECTION':
         return (
-          <Badge className="bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/30 font-medium">
+          <Badge className="bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/30 font-medium rounded">
             <Clock className="size-3 mr-1" /> Aguardando Lote
           </Badge>
         );
       case 'UNDER_CORRECTION':
         return (
-          <Badge className="bg-blue-500/15 text-blue-700 dark:text-blue-300 border-blue-500/30 font-medium">
+          <Badge className="bg-blue-500/15 text-blue-700 dark:text-blue-300 border-blue-500/30 font-medium rounded">
             <PlayCircle className="size-3 mr-1" /> Em Correção
           </Badge>
         );
       case 'CORRECTED':
         return (
-          <Badge className="bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30 font-medium">
+          <Badge className="bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30 font-medium rounded">
             <CheckCircle2 className="size-3 mr-1" /> Corrigida
           </Badge>
         );
@@ -264,18 +265,18 @@ export default function SubmissionsOverviewPage() {
                       <TableCell className="font-medium text-sm">
                         <div>{sub.exam.title}</div>
                         {sub.subjectName && sub.subjectName !== 'Geral' && (
-                          <Badge variant="secondary" className="mt-1 text-xs font-semibold bg-primary/15 text-primary">
+                          <Badge variant="secondary" className="mt-1 text-xs font-semibold bg-primary/15 text-primary rounded">
                             {sub.subjectName}
                           </Badge>
                         )}
                       </TableCell>
                       <TableCell>
                         {sub.type === 'PRESENTIAL' ? (
-                          <Badge variant="outline" className="border-purple-500/30 text-purple-600 dark:text-purple-400 bg-purple-500/10">
+                          <Badge variant="outline" className="border-purple-500/30 text-purple-600 dark:text-purple-400 bg-purple-500/10 rounded">
                             Presencial
                           </Badge>
                         ) : (
-                          <Badge variant="outline" className="border-teal-500/30 text-teal-600 dark:text-teal-400 bg-teal-500/10">
+                          <Badge variant="outline" className="border-teal-500/30 text-teal-600 dark:text-teal-400 bg-teal-500/10 rounded">
                             Online
                           </Badge>
                         )}
@@ -299,11 +300,14 @@ export default function SubmissionsOverviewPage() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => setViewPdfModal({
-                            isOpen: true,
-                            url: `/api/discursive/pdf-stream/${sub.id}/original`,
-                            title: `Prova de ${sub.student.name} - ${sub.exam.title}`
-                          })}
+                          onClick={() => {
+                            const token = typeof window !== 'undefined' ? localStorage.getItem('token') || '' : '';
+                            setViewPdfModal({
+                              isOpen: true,
+                              url: `/api/discursive/pdf-stream/${sub.id}/original?token=${token}`,
+                              title: `Prova de ${sub.student.name} - ${sub.exam.title}`
+                            });
+                          }}
                           className="hover:bg-primary/10 hover:text-primary"
                         >
                           <Eye className="size-4 mr-1.5" />

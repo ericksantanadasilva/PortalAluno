@@ -227,7 +227,7 @@ export default function DistributionPage() {
                       : (availableSubjects.find((s) => s.name === selectedSubject)?.count || 0)}
                   </span>
                 </div>
-                <Badge variant="secondary" className="bg-primary/20 text-primary font-bold">
+                <Badge variant="secondary" className="bg-primary/20 text-primary font-bold rounded">
                   Aguardando Distribuição
                 </Badge>
               </div>
@@ -314,7 +314,7 @@ export default function DistributionPage() {
               size="sm"
               onClick={fetchData}
               disabled={loading}
-              className="gap-2 shrink-0"
+              className="gap-2 shrink-0 rounded"
             >
               <RefreshCw className="size-4" />
               <span>Atualizar</span>
@@ -373,11 +373,11 @@ export default function DistributionPage() {
                           </TableCell>
                           <TableCell>
                             {batch.status === 'COMPLETED' ? (
-                              <Badge className="bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border-emerald-500/30">
+                              <Badge className="bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border-emerald-500/30 rounded">
                                 <CheckCircle2 className="size-3 mr-1" /> Concluído
                               </Badge>
                             ) : (
-                              <Badge className="bg-blue-500/20 text-blue-700 dark:text-blue-300 border-blue-500/30">
+                              <Badge className="bg-blue-500/20 text-blue-700 dark:text-blue-300 border-blue-500/30 rounded">
                                 <Clock className="size-3 mr-1" /> Em Andamento
                               </Badge>
                             )}

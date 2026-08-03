@@ -295,11 +295,14 @@ export default function ResultsAndBulletinPage() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => setViewPdfModal({
-                              isOpen: true,
-                              url: `/api/discursive/pdf-stream/${item.id}/original`,
-                              title: `Prova Original - ${item.student.name}`
-                            })}
+                            onClick={() => {
+                              const token = typeof window !== 'undefined' ? localStorage.getItem('token') || '' : '';
+                              setViewPdfModal({
+                                isOpen: true,
+                                url: `/api/discursive/pdf-stream/${item.id}/original?token=${token}`,
+                                title: `Prova Original - ${item.student.name}`
+                              });
+                            }}
                             className="text-xs h-8"
                           >
                             <Eye className="size-3.5 mr-1" />
@@ -310,11 +313,14 @@ export default function ResultsAndBulletinPage() {
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={() => setViewPdfModal({
-                                isOpen: true,
-                                url: `/api/discursive/pdf-stream/${item.id}/corrected`,
-                                title: `Prova Corrigida - ${item.student.name}`
-                              })}
+                              onClick={() => {
+                                const token = typeof window !== 'undefined' ? localStorage.getItem('token') || '' : '';
+                                setViewPdfModal({
+                                  isOpen: true,
+                                  url: `/api/discursive/pdf-stream/${item.id}/corrected?token=${token}`,
+                                  title: `Prova Corrigida - ${item.student.name}`
+                                });
+                              }}
                               className="text-xs h-8 border-emerald-500/30 text-emerald-600 dark:text-emerald-400"
                             >
                               <CheckCircle2 className="size-3.5 mr-1" />
