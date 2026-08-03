@@ -358,20 +358,20 @@ export default function DistributionPage() {
 
             {/* Destaque de Provas Pendentes */}
             {currentExam && (
-              <div className="p-4 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-between">
-                <div>
-                  <span className="text-xs font-semibold uppercase tracking-wider text-primary block">
-                    Disponíveis ({selectedSubject})
-                  </span>
-                  <span className="text-2xl font-black text-foreground">
+              <div className="p-4 rounded-2xl bg-primary/10 border border-primary/20 space-y-2">
+                <span className="text-xs font-semibold uppercase tracking-wider text-primary block leading-snug">
+                  Disponíveis ({selectedSubject})
+                </span>
+                <div className="flex items-center justify-between gap-2 flex-wrap">
+                  <span className="text-3xl font-black text-foreground">
                     {selectedSubject === 'Todas as Matérias'
                       ? (currentExam.stats?.pending || 0)
                       : (availableSubjects.find((s) => s.name === selectedSubject)?.count || 0)}
                   </span>
+                  <Badge variant="secondary" className="bg-primary/20 text-primary font-bold rounded px-2.5 py-1 text-xs shrink-0">
+                    Aguardando Distribuição
+                  </Badge>
                 </div>
-                <Badge variant="secondary" className="bg-primary/20 text-primary font-bold rounded px-3 py-1 text-xs">
-                  Aguardando Distribuição
-                </Badge>
               </div>
             )}
 
