@@ -124,12 +124,12 @@ export default function PresentialUploadPage() {
   return (
     <div className="space-y-6">
       {/* Aviso Exclusivo Google Drive */}
-      <div className="flex items-center gap-3 p-4 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400">
+      {/*<div className="flex items-center gap-3 p-4 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400">
         <Cloud className="size-5 shrink-0" />
         <div className="text-sm">
           <span className="font-semibold">Armazenamento Exclusivo no Google Drive:</span> Todos os PDFs presenciais são processados, renomeados automaticamente pela Matrícula e enviados direto para a subpasta <strong>&quot;Simulados Discursivos&quot;</strong> na nuvem.
         </div>
-      </div>
+      </div>*/}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Painel de Seleção e Upload */}

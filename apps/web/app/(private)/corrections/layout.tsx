@@ -38,7 +38,7 @@ export default function CorrectionsLayout({ children }: { children: React.ReactN
       </div>
 
       {/* Navegação Superior Em Abas/Pills */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-border">
+      {/* <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-border">
         {NAV_ITEMS.map((item) => {
           const Icon = item.icon;
           const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
@@ -58,7 +58,7 @@ export default function CorrectionsLayout({ children }: { children: React.ReactN
             </Link>
           );
         })}
-      </div>
+      </div> */}
 
       {/* Conteúdo da Rota Ativa */}
       <div className="pt-2">
