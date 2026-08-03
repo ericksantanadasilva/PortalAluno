@@ -264,11 +264,13 @@ export function DiscursiveSubmissionsManager() {
         return;
       }
 
+      const currentExam = exams.find(e => e.id === selectedExamId);
+      const examTitleName = currentExam ? currentExam.title.trim().replace(/[^a-zA-Z0-9 -]/g, '') : 'Simulado';
       const blob = await res.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `simulados_discursivos_${Date.now()}.zip`;
+      a.download = `${examTitleName}.zip`;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);

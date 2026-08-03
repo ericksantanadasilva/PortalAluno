@@ -44,6 +44,22 @@ enum DifficultyTier {
     dificil
 }
 
+enum SubmissionType {
+    ONLINE
+    PRESENTIAL
+}
+
+enum SubmissionStatus {
+    PENDING_CORRECTION
+    UNDER_CORRECTION
+    CORRECTED
+}
+
+enum BatchStatus {
+    IN_PROGRESS
+    COMPLETED
+}
+
 model Tenant {
     id           String   @id @default(uuid()) @db.Uuid
     name         String
@@ -96,6 +112,8 @@ model User {
     examGrades        ExamGrade[]
     examSessions      ExamSession[]
     essaySubmissions  EssaySubmission[]
+    examSubmissions   ExamSubmission[]
+    correctionBatches CorrectionBatch[]
 
     @@unique([tenantId, email])
     @@unique([tenantId, registrationNumber])
@@ -233,6 +251,8 @@ model Exam {
     studentResponses StudentResponse[]
     examGrades       ExamGrade[]
     examSessions     ExamSession[]
+    examSubmissions  ExamSubmission[]
+    correctionBatches CorrectionBatch[]
 
     @@map("exams")
 }
@@ -266,6 +286,7 @@ model ExamQuestion {
 
     exam    Exam    @relation(fields: [examId], references: [id], onDelete: Cascade)
     subject Subject @relation(fields: [subjectId], references: [id], onDelete: Restrict)
+    essayQuestionGrades EssayQuestionGrade[]
 
     @@unique([examId, questionNumber, language])
     @@map("exam_questions")
@@ -415,5 +436,67 @@ model EssaySubmission {
 
   @@unique([essayExamId, essayExamSubjectId, studentId])
   @@map("essay_submissions")
+}
+
+model ExamSubmission {
+    id              String               @id @default(uuid()) @db.Uuid
+    tenantId        String               @map("tenant_id") @db.Uuid
+    examId          String               @map("exam_id") @db.Uuid
+    studentId       String               @map("student_id") @db.Uuid
+    subjectId       String?              @map("subject_id") @db.Uuid
+    subjectName     String?              @map("subject_name")
+    type            SubmissionType       @default(PRESENTIAL)
+    status          SubmissionStatus     @default(PENDING_CORRECTION)
+    originalPdfUrl  String               @map("original_pdf_url")
+    correctedPdfUrl String?              @map("corrected_pdf_url")
+    totalScore      Float?               @map("total_score")
+    submittedAt     DateTime             @default(now()) @map("submitted_at")
+    correctedAt     DateTime?            @map("corrected_at")
+
+    exam            Exam                 @relation(fields: [examId], references: [id], onDelete: Cascade)
+    student         User                 @relation(fields: [studentId], references: [id], onDelete: Cascade)
+    batchItem       CorrectionBatchItem?
+    grades          EssayQuestionGrade[]
+
+    @@map("exam_submissions")
+}
+
+model CorrectionBatch {
+    id          String                @id @default(uuid()) @db.Uuid
+    tenantId    String                @map("tenant_id") @db.Uuid
+    examId      String                @map("exam_id") @db.Uuid
+    correctorId String                @map("corrector_id") @db.Uuid
+    status      BatchStatus           @default(IN_PROGRESS)
+    createdAt   DateTime              @default(now()) @map("created_at")
+
+    exam        Exam                  @relation(fields: [examId], references: [id], onDelete: Cascade)
+    corrector   User                  @relation(fields: [correctorId], references: [id], onDelete: Cascade)
+    items       CorrectionBatchItem[]
+
+    @@map("correction_batches")
+}
+
+model CorrectionBatchItem {
+    id           String          @id @default(uuid()) @db.Uuid
+    batchId      String          @map("batch_id") @db.Uuid
+    submissionId String          @unique @map("submission_id") @db.Uuid
+
+    batch      CorrectionBatch @relation(fields: [batchId], references: [id], onDelete: Cascade)
+    submission ExamSubmission  @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+
+    @@map("correction_batch_items")
+}
+
+model EssayQuestionGrade {
+    id           String         @id @default(uuid()) @db.Uuid
+    submissionId String         @map("submission_id") @db.Uuid
+    questionId   String         @map("question_id") @db.Uuid
+    score        Float          @map("score")
+
+    submission   ExamSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+    question     ExamQuestion   @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+    @@unique([submissionId, questionId])
+    @@map("essay_question_grades")
 }
 

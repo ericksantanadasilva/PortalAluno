@@ -19,7 +19,7 @@ import {
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { BookOpen, Laptop, FileSignature, Briefcase, LogOut, Settings, ChevronsUpDown, ChevronRight, GraduationCap, LayoutDashboard } from "lucide-react";
+import { BookOpen, Laptop, FileSignature, Briefcase, LogOut, Settings, ChevronsUpDown, ChevronRight, GraduationCap, LayoutDashboard, CheckSquare } from "lucide-react";
 
 interface AppSidebarProps {
   userRole: string | null;
@@ -155,6 +155,52 @@ export function AppSidebar({ userRole, userProfile, tenantConfig, onLogout }: Ap
                         <SidebarMenuSubItem>
                           <SidebarMenuSubButton render={<Link href="/admin/tri" />} isActive={pathname === "/admin/tri"}>
                             <span>Mapeador TRI</span>
+                          </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                      )}
+                    </SidebarMenuSub>
+                  </CollapsibleContent>
+                </SidebarMenuItem>
+              </Collapsible>
+
+              {/* Correção de Simulados Collapsible */}
+              <Collapsible className="group/collapsible">
+                <SidebarMenuItem>
+                  <SidebarMenuButton render={<CollapsibleTrigger />} tooltip="Correção de Simulados">
+                    <CheckSquare />
+                    <span>Correção de Simulados</span>
+                    <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                  </SidebarMenuButton>
+                  <CollapsibleContent>
+                    <SidebarMenuSub>
+                      {['admin', 'super_admin'].includes(userRole || '') && (
+                        <>
+                          <SidebarMenuSubItem>
+                            <SidebarMenuSubButton render={<Link href="/corrections/presential" />} isActive={pathname === "/corrections/presential"}>
+                              <span>Recebimento Presencial</span>
+                            </SidebarMenuSubButton>
+                          </SidebarMenuSubItem>
+                          <SidebarMenuSubItem>
+                            <SidebarMenuSubButton render={<Link href="/corrections/submissions" />} isActive={pathname === "/corrections/submissions"}>
+                              <span>Participações / Entregas</span>
+                            </SidebarMenuSubButton>
+                          </SidebarMenuSubItem>
+                          <SidebarMenuSubItem>
+                            <SidebarMenuSubButton render={<Link href="/corrections/distribution" />} isActive={pathname === "/corrections/distribution"}>
+                              <span>Distribuição de Lotes</span>
+                            </SidebarMenuSubButton>
+                          </SidebarMenuSubItem>
+                        </>
+                      )}
+                      <SidebarMenuSubItem>
+                        <SidebarMenuSubButton render={<Link href="/corrections/corrector" />} isActive={pathname === "/corrections/corrector"}>
+                          <span>Minhas Correções</span>
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                      {['admin', 'super_admin', 'professor'].includes(userRole || '') && (
+                        <SidebarMenuSubItem>
+                          <SidebarMenuSubButton render={<Link href="/corrections/results" />} isActive={pathname === "/corrections/results"}>
+                            <span>Resultados & Boletim</span>
                           </SidebarMenuSubButton>
                         </SidebarMenuSubItem>
                       )}

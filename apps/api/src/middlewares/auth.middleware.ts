@@ -56,13 +56,25 @@ export function requireGod(req: Request, res: Response, next: NextFunction) {
 }
 
 export function requireAuth(req: Request, res: Response, next: NextFunction) {
-    const authHeader = req.headers.authorization;
+    let token: string | undefined;
 
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return res.status(401).json({ error: 'Token não fornecido ou inválido.' });
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+        token = authHeader.split(' ')[1];
+    } else if (req.query.token) {
+        token = String(req.query.token);
+    } else if (req.headers.cookie) {
+        const cookies = req.headers.cookie.split(';').reduce((acc, cookie) => {
+            const [key, value] = cookie.trim().split('=');
+            if (key && value) acc[key] = value;
+            return acc;
+        }, {} as Record<string, string>);
+        token = cookies['token'] || cookies['god_token'];
     }
 
-    const token = authHeader.split(' ')[1];
+    if (!token) {
+        return res.status(401).json({ error: 'Token não fornecido ou inválido.' });
+    }
 
     try {
         const decoded = jwt.verify(token, JWT_SECRET) as { userId: string; role: string; tenantId: string };
