@@ -1424,7 +1424,21 @@ router.get('/batches', requireAuth, async (req: Request, res: Response) => {
                 items: {
                     include: {
                         submission: {
-                            select: { id: true, status: true, totalScore: true }
+                            select: {
+                                id: true,
+                                status: true,
+                                totalScore: true,
+                                subjectName: true,
+                                submittedAt: true,
+                                student: {
+                                    select: {
+                                        id: true,
+                                        name: true,
+                                        registrationNumber: true,
+                                        email: true
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -1445,6 +1459,201 @@ router.get('/batches', requireAuth, async (req: Request, res: Response) => {
     } catch (error) {
         console.error('Erro ao listar lotes de correção:', error);
         return res.status(500).json({ error: 'Erro interno ao carregar lotes de correção.' });
+    }
+});
+
+/**
+ * GET /api/discursive/admin/submissions-by-exam
+ * Lista todas as submissões de um simulado com informações do corretor/lote atual (para reatribuição granular)
+ */
+router.get('/admin/submissions-by-exam', requireAuth, requireAdmin, async (req: Request, res: Response) => {
+    try {
+        const tenantId = req.user!.tenantId || '';
+        const { examId, status, subjectName, correctorId } = req.query;
+
+        if (!examId || examId === 'all') {
+            return res.status(400).json({ error: 'examId é obrigatório.' });
+        }
+
+        const whereClause: any = {
+            tenantId,
+            examId: String(examId)
+        };
+        if (status && status !== 'all') whereClause.status = String(status);
+        if (subjectName && subjectName !== 'all' && subjectName !== 'Todas as Matérias') {
+            whereClause.subjectName = String(subjectName);
+        }
+        if (correctorId && correctorId !== 'all') {
+            whereClause.batchItem = {
+                batch: {
+                    correctorId: String(correctorId)
+                }
+            };
+        }
+
+        const submissions = await prisma.examSubmission.findMany({
+            where: whereClause,
+            orderBy: [{ subjectName: 'asc' }, { submittedAt: 'asc' }],
+            include: {
+                student: {
+                    select: {
+                        id: true,
+                        name: true,
+                        registrationNumber: true,
+                        email: true
+                    }
+                },
+                batchItem: {
+                    include: {
+                        batch: {
+                            select: {
+                                id: true,
+                                status: true,
+                                corrector: {
+                                    select: {
+                                        id: true,
+                                        name: true,
+                                        email: true
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        return res.json(submissions);
+    } catch (error) {
+        console.error('Erro ao listar submissões por exame:', error);
+        return res.status(500).json({ error: 'Erro interno ao carregar submissões para reatribuição.' });
+    }
+});
+
+/**
+ * POST /api/discursive/admin/reassign-submissions
+ * Reatribuição granular: permite enviar 1 ou mais provas para 1 ou múltiplos corretores (distribuindo uniformemente)
+ */
+router.post('/admin/reassign-submissions', requireAuth, requireAdmin, async (req: Request, res: Response) => {
+    try {
+        const tenantId = req.user!.tenantId || '';
+        const { examId, submissionIds, targetCorrectorIds, returnToQueue } = req.body;
+
+        if (!examId || !Array.isArray(submissionIds) || submissionIds.length === 0) {
+            return res.status(400).json({ error: 'examId e um array de submissionIds são obrigatórios.' });
+        }
+
+        const exam = await prisma.exam.findFirst({
+            where: { id: examId, tenantId }
+        });
+        if (!exam) {
+            return res.status(404).json({ error: 'Simulado não encontrado.' });
+        }
+
+        const shouldReturnToQueue = returnToQueue === true || !Array.isArray(targetCorrectorIds) || targetCorrectorIds.length === 0;
+
+        await prisma.$transaction(async (tx) => {
+            // 1. Remove os itens dos lotes atuais
+            await tx.correctionBatchItem.deleteMany({
+                where: {
+                    submissionId: { in: submissionIds }
+                }
+            });
+
+            if (shouldReturnToQueue) {
+                // 2A. Devolve para fila de pendentes
+                await tx.examSubmission.updateMany({
+                    where: { id: { in: submissionIds } },
+                    data: { status: 'PENDING_CORRECTION' }
+                });
+            } else {
+                // 2B. Distribui entre 1 ou vários corretores em round-robin
+                const correctors = await tx.user.findMany({
+                    where: { id: { in: targetCorrectorIds }, tenantId }
+                });
+                if (correctors.length === 0) {
+                    throw new Error('Nenhum corretor de destino válido foi encontrado.');
+                }
+
+                // Distribuição circular (round-robin)
+                const distributionMap = new Map<string, string[]>();
+                for (const corr of correctors) {
+                    distributionMap.set(corr.id, []);
+                }
+
+                submissionIds.forEach((subId, idx) => {
+                    const targetCorr = correctors[idx % correctors.length];
+                    distributionMap.get(targetCorr.id)!.push(subId);
+                });
+
+                for (const [correctorId, subIds] of distributionMap.entries()) {
+                    if (subIds.length === 0) continue;
+
+                    let batch = await tx.correctionBatch.findFirst({
+                        where: {
+                            tenantId,
+                            examId,
+                            correctorId,
+                            status: 'IN_PROGRESS'
+                        }
+                    });
+
+                    if (!batch) {
+                        batch = await tx.correctionBatch.create({
+                            data: {
+                                tenantId,
+                                examId,
+                                correctorId,
+                                status: 'IN_PROGRESS'
+                            }
+                        });
+                    }
+
+                    for (const subId of subIds) {
+                        await tx.correctionBatchItem.create({
+                            data: {
+                                batchId: batch.id,
+                                submissionId: subId
+                            }
+                        });
+                    }
+
+                    await tx.examSubmission.updateMany({
+                        where: { id: { in: subIds } },
+                        data: { status: 'UNDER_CORRECTION' }
+                    });
+                }
+            }
+
+            // 3. Limpeza de lotes que ficaram vazios e estão EM ANDAMENTO
+            const emptyBatches = await tx.correctionBatch.findMany({
+                where: {
+                    tenantId,
+                    status: 'IN_PROGRESS',
+                    items: { none: {} }
+                },
+                select: { id: true }
+            });
+
+            if (emptyBatches.length > 0) {
+                await tx.correctionBatch.deleteMany({
+                    where: { id: { in: emptyBatches.map(b => b.id) } }
+                });
+            }
+        });
+
+        const message = shouldReturnToQueue
+            ? `${submissionIds.length} prova(s) devolvida(s) para a fila de pendentes com sucesso.`
+            : `${submissionIds.length} prova(s) reatribuída(s) com sucesso entre ${targetCorrectorIds.length} corretor(es).`;
+
+        return res.json({
+            message,
+            reassignedCount: submissionIds.length,
+            correctorsCount: shouldReturnToQueue ? 0 : targetCorrectorIds.length
+        });
+    } catch (error: any) {
+        console.error('Erro na reatribuição granular:', error);
+        return res.status(500).json({ error: error?.message || 'Erro interno ao reatribuir provas.' });
     }
 });
 
