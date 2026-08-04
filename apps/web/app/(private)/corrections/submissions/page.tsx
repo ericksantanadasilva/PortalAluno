@@ -48,7 +48,18 @@ interface SubmissionItem {
   exam: {
     id: string;
     title: string;
+    examQuestions?: Array<{
+      id: string;
+      questionNumber: number;
+      maxScore?: number;
+      theme?: string;
+    }>;
   };
+  grades?: Array<{
+    id: string;
+    questionId: string;
+    score: number;
+  }>;
   batchItem?: {
     batch: {
       id: string;
@@ -85,10 +96,33 @@ export default function SubmissionsOverviewPage() {
     submission: SubmissionItem | null;
   }>({ isOpen: false, submission: null });
 
-  const [adminNewScore, setAdminNewScore] = useState<string>('');
+  // Modal de Confirmação de Devolução (substitui o confirm nativo)
+  const [returnConfirmModal, setReturnConfirmModal] = useState<{
+    isOpen: boolean;
+    submission: SubmissionItem | null;
+  }>({ isOpen: false, submission: null });
+  const [returning, setReturning] = useState(false);
+
+  const [adminScores, setAdminScores] = useState<Record<string, string>>({});
   const [adminReplacementFile, setAdminReplacementFile] = useState<File | null>(null);
   const [adminSaving, setAdminSaving] = useState(false);
   const [actionMessage, setActionMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  const handleAdminScoreChange = (questionId: string, val: string) => {
+    setAdminScores((prev) => ({
+      ...prev,
+      [questionId]: val,
+    }));
+  };
+
+  const calculateAdminTotal = () => {
+    let sum = 0;
+    Object.values(adminScores).forEach((val) => {
+      const num = parseFloat(val);
+      if (!isNaN(num)) sum += num;
+    });
+    return sum;
+  };
 
   const userRole = typeof window !== 'undefined' ? localStorage.getItem('user_role') || '' : '';
   const isAdmin = ['admin', 'super_admin'].includes(userRole);
@@ -136,9 +170,11 @@ export default function SubmissionsOverviewPage() {
     }
   };
 
-  // Requisito 2: Admin devolve correção ao corretor
-  const handleReopenSubmission = async (submissionId: string) => {
-    if (!confirm('Deseja devolver esta correção ao corretor para reavaliação?')) return;
+  // Requisito 2: Admin devolve correção ao corretor via Dialog customizado
+  const handleConfirmReopenSubmission = async () => {
+    if (!returnConfirmModal.submission) return;
+    setReturning(true);
+    setActionMessage(null);
     try {
       const token = localStorage.getItem('token');
       const res = await fetch('/api/discursive/admin/reopen-submission', {
@@ -147,12 +183,13 @@ export default function SubmissionsOverviewPage() {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify({ submissionId })
+        body: JSON.stringify({ submissionId: returnConfirmModal.submission.id })
       });
 
       const data = await res.json();
       if (res.ok) {
         setActionMessage({ type: 'success', text: 'Correção devolvida ao corretor com sucesso!' });
+        setReturnConfirmModal({ isOpen: false, submission: null });
         fetchSubmissions();
       } else {
         setActionMessage({ type: 'error', text: data.error || 'Erro ao devolver correção.' });
@@ -160,6 +197,8 @@ export default function SubmissionsOverviewPage() {
     } catch (e) {
       console.error('Erro ao devolver correção:', e);
       setActionMessage({ type: 'error', text: 'Erro de conexão ao devolver correção.' });
+    } finally {
+      setReturning(false);
     }
   };
 
@@ -174,6 +213,16 @@ export default function SubmissionsOverviewPage() {
       const formData = new FormData();
       formData.append('submissionId', adminEditModal.submission.id);
       formData.append('finalize', 'true');
+
+      const gradesPayload = Object.entries(adminScores)
+        .filter(([_, val]) => val.trim() !== '')
+        .map(([questionId, val]) => ({
+          questionId,
+          score: parseFloat(val),
+        }));
+      if (gradesPayload.length > 0) {
+        formData.append('grades', JSON.stringify(gradesPayload));
+      }
 
       if (adminReplacementFile) {
         formData.append('correctedPdf', adminReplacementFile);
@@ -423,7 +472,7 @@ export default function SubmissionsOverviewPage() {
                               <Button
                                 variant="outline"
                                 size="sm"
-                                onClick={() => handleReopenSubmission(sub.id)}
+                                onClick={() => setReturnConfirmModal({ isOpen: true, submission: sub })}
                                 className="h-8 rounded-md border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-300 text-xs font-semibold gap-1.5 shadow-2xs"
                                 title="Devolver correção ao corretor para reavaliação"
                               >
@@ -460,7 +509,16 @@ export default function SubmissionsOverviewPage() {
                                 size="sm"
                                 onClick={() => {
                                   setAdminEditModal({ isOpen: true, submission: sub });
-                                  setAdminNewScore(sub.totalScore !== undefined ? String(sub.totalScore) : '');
+                                  const initialMap: Record<string, string> = {};
+                                  sub.exam.examQuestions?.forEach((q) => {
+                                    const found = sub.grades?.find((g) => g.questionId === q.id);
+                                    if (found && found.score !== undefined && found.score !== null) {
+                                      initialMap[q.id] = String(found.score);
+                                    } else {
+                                      initialMap[q.id] = '';
+                                    }
+                                  });
+                                  setAdminScores(initialMap);
                                   setAdminReplacementFile(null);
                                 }}
                                 className="h-8 rounded-md border-border bg-card hover:bg-muted text-xs font-semibold gap-1.5 shadow-2xs"
@@ -552,7 +610,7 @@ export default function SubmissionsOverviewPage() {
               <span>Gerenciar & Substituir Correção</span>
             </DialogTitle>
             <DialogDescription>
-              Substitua o arquivo PDF no Google Drive (sobrescreve o existente em tempo real) ou devolva ao corretor.
+              Altere as notas por questão do aluno e/ou substitua o arquivo PDF no Google Drive (sobrescreve o existente em tempo real).
             </DialogDescription>
           </DialogHeader>
 
@@ -561,33 +619,154 @@ export default function SubmissionsOverviewPage() {
               <div className="p-3.5 rounded-xl bg-muted/50 border border-border text-sm space-y-1">
                 <div><strong>Aluno:</strong> {adminEditModal.submission.student.name}</div>
                 <div><strong>Simulado:</strong> {adminEditModal.submission.exam.title}</div>
-                <div><strong>Status Atual:</strong> {adminEditModal.submission.status}</div>
+                <div>
+                  <strong>Status:</strong>{' '}
+                  {adminEditModal.submission.status === 'CORRECTED'
+                    ? 'Corrigida'
+                    : adminEditModal.submission.status === 'UNDER_CORRECTION'
+                    ? 'Em Correção'
+                    : 'Aguardando Lote'}
+                </div>
               </div>
 
-              <div className="space-y-2">
-                <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground block">
-                  Substituir PDF Corrigido no Google Drive
-                </Label>
-                <Input
-                  type="file"
-                  accept="application/pdf"
-                  onChange={(e) => setAdminReplacementFile(e.target.files ? e.target.files[0] : null)}
-                  className="text-xs"
-                />
-                <p className="text-[11px] text-muted-foreground">
-                  Ao selecionar um novo PDF, o sistema atualizará o arquivo diretamente no Google Drive sem criar cópias duplicadas.
-                </p>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground block">
+                      Notas por Questão
+                    </Label>
+                    <span className="text-xs font-bold text-primary">
+                      Total: {calculateAdminTotal().toFixed(1)} pts
+                    </span>
+                  </div>
+
+                  {(!adminEditModal.submission.exam.examQuestions ||
+                    adminEditModal.submission.exam.examQuestions.length === 0) ? (
+                    <div className="p-4 text-center text-xs text-muted-foreground border border-dashed rounded-lg">
+                      Nenhuma questão discursiva cadastrada neste simulado.
+                    </div>
+                  ) : (
+                    <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
+                      {adminEditModal.submission.exam.examQuestions.map((q) => (
+                        <div
+                          key={q.id}
+                          className="p-3 rounded-lg bg-muted/40 border border-border flex items-center justify-between gap-3 text-sm"
+                        >
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                              <span className="font-bold text-foreground">
+                                Questão #{q.questionNumber}
+                              </span>
+                              {q.maxScore && (
+                                <span className="text-xs text-muted-foreground">
+                                  (Máx: {q.maxScore} pts)
+                                </span>
+                              )}
+                            </div>
+                            {q.theme && (
+                              <p className="text-xs text-muted-foreground mt-0.5 truncate">
+                                {q.theme}
+                              </p>
+                            )}
+                          </div>
+                          <div className="w-24 shrink-0">
+                            <Input
+                              type="number"
+                              step="0.1"
+                              min="0"
+                              placeholder="Nota..."
+                              value={adminScores[q.id] ?? ''}
+                              onChange={(e) => handleAdminScoreChange(q.id, e.target.value)}
+                              className="text-right font-bold h-9 text-sm"
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <p className="text-[11px] text-muted-foreground">
+                    Altere ou preencha as notas por questão de forma independente ou junto com a substituição do arquivo.
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground block">
+                    Substituir PDF Corrigido no Google Drive (Opcional)
+                  </Label>
+                  <Input
+                    type="file"
+                    accept="application/pdf"
+                    onChange={(e) => setAdminReplacementFile(e.target.files ? e.target.files[0] : null)}
+                    className="text-xs"
+                  />
+                  <p className="text-[11px] text-muted-foreground">
+                    Ao selecionar um novo PDF, o sistema atualizará o arquivo diretamente no Google Drive sem criar cópias duplicadas.
+                  </p>
+                </div>
               </div>
             </div>
           )}
 
-          <DialogFooter className="gap-2 sm:gap-0">
-            <Button variant="outline" onClick={() => setAdminEditModal({ isOpen: false, submission: null })}>
+          <DialogFooter className="flex flex-row items-center justify-end gap-3 pt-4">
+            <Button
+              variant="outline"
+              onClick={() => setAdminEditModal({ isOpen: false, submission: null })}
+              className="px-4"
+            >
               Cancelar
             </Button>
-            <Button onClick={handleAdminSaveEdit} disabled={adminSaving} className="gap-2 font-semibold">
+            <Button
+              onClick={handleAdminSaveEdit}
+              disabled={adminSaving}
+              className="gap-2 font-semibold px-4"
+            >
               {adminSaving ? <Loader2 className="size-4 animate-spin" /> : <UploadCloud className="size-4" />}
-              <span>Salvar & Substituir no Drive</span>
+              <span>Salvar Alterações</span>
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal de Confirmação de Devolução (substitui o confirm/alert nativo) */}
+      <Dialog open={returnConfirmModal.isOpen} onOpenChange={(open) => !open && setReturnConfirmModal({ isOpen: false, submission: null })}>
+        <DialogContent className="max-w-md p-6">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold flex items-center gap-2 text-amber-600 dark:text-amber-400">
+              <RotateCcw className="size-5" />
+              <span>Devolver Correção ao Corretor</span>
+            </DialogTitle>
+            <DialogDescription>
+              A prova retornará para a fila de correção do professor responsável para reavaliação.
+            </DialogDescription>
+          </DialogHeader>
+
+          {returnConfirmModal.submission && (
+            <div className="py-3">
+              <div className="p-3.5 rounded-xl bg-muted/50 border border-border text-sm space-y-1.5">
+                <div><strong>Aluno:</strong> {returnConfirmModal.submission.student.name}</div>
+                <div><strong>Matrícula:</strong> {returnConfirmModal.submission.student.registrationNumber}</div>
+                <div><strong>Simulado:</strong> {returnConfirmModal.submission.exam.title}</div>
+                <div><strong>Status:</strong> Corrigida</div>
+              </div>
+            </div>
+          )}
+
+          <DialogFooter className="flex flex-row items-center justify-end gap-3 pt-4">
+            <Button
+              variant="outline"
+              onClick={() => setReturnConfirmModal({ isOpen: false, submission: null })}
+              disabled={returning}
+              className="px-4"
+            >
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleConfirmReopenSubmission}
+              disabled={returning}
+              className="gap-2 font-semibold bg-amber-600 hover:bg-amber-700 text-white px-4"
+            >
+              {returning ? <Loader2 className="size-4 animate-spin" /> : <RotateCcw className="size-4" />}
+              <span>Confirmar Devolução</span>
             </Button>
           </DialogFooter>
         </DialogContent>

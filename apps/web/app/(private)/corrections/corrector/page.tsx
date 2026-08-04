@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -65,6 +65,22 @@ export default function CorrectorAreaPage() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [downloadingBatch, setDownloadingBatch] = useState(false);
+  const [selectedExamId, setSelectedExamId] = useState<string>('all');
+
+  const uniqueExams = useMemo(() => {
+    const map = new Map<string, string>();
+    submissions.forEach((s) => {
+      if (s.exam?.id && s.exam?.title) {
+        map.set(s.exam.id, s.exam.title);
+      }
+    });
+    return Array.from(map.entries()).map(([id, title]) => ({ id, title }));
+  }, [submissions]);
+
+  const filteredSubmissions = useMemo(() => {
+    if (selectedExamId === 'all') return submissions;
+    return submissions.filter((sub) => sub.exam?.id === selectedExamId);
+  }, [submissions, selectedExamId]);
 
   useEffect(() => {
     fetchMySubmissions();
@@ -89,7 +105,7 @@ export default function CorrectorAreaPage() {
   };
 
   const handleDownloadMyBatch = async () => {
-    if (submissions.length === 0) return;
+    if (filteredSubmissions.length === 0) return;
     setDownloadingBatch(true);
     try {
       const token = localStorage.getItem('token');
@@ -99,7 +115,7 @@ export default function CorrectorAreaPage() {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify({ submissionIds: submissions.map(s => s.id) })
+        body: JSON.stringify({ submissionIds: filteredSubmissions.map(s => s.id) })
       });
 
       if (!res.ok) {
@@ -109,7 +125,9 @@ export default function CorrectorAreaPage() {
 
       const blob = await res.blob();
       const url = window.URL.createObjectURL(blob);
-      const examTitle = submissions[0]?.exam?.title || 'Simulado';
+      const examTitle = selectedExamId !== 'all' && filteredSubmissions[0]?.exam?.title
+        ? filteredSubmissions[0].exam.title
+        : (submissions[0]?.exam?.title || 'Simulado');
       const cleanTitle = examTitle.trim().replace(/[^a-zA-Z0-9 -]/g, '');
       const a = document.createElement('a');
       a.href = url;
@@ -439,12 +457,16 @@ export default function CorrectorAreaPage() {
               variant="default"
               size="sm"
               onClick={handleDownloadMyBatch}
-              disabled={loading || downloadingBatch || submissions.length === 0}
+              disabled={loading || downloadingBatch || filteredSubmissions.length === 0}
               className="gap-2 font-semibold shadow-sm rounded"
               title="Baixar todas as suas provas para correção em arquivo ZIP"
             >
               {downloadingBatch ? <Loader2 className="size-4 animate-spin" /> : <Download className="size-4" />}
-              <span>Baixar Provas do Lote (.ZIP)</span>
+              <span>
+                {selectedExamId !== 'all'
+                  ? `Baixar Provas do Simulado (${filteredSubmissions.length}) (.ZIP)`
+                  : `Baixar Provas do Lote (${filteredSubmissions.length}) (.ZIP)`}
+              </span>
             </Button>
             <Button variant="outline" size="sm" onClick={fetchMySubmissions} disabled={loading} className="gap-2 rounded">
               <RefreshCw className="size-4" />
@@ -453,6 +475,41 @@ export default function CorrectorAreaPage() {
           </div>
         </CardHeader>
         <CardContent>
+          {submissions.length > 0 && (
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4 bg-muted/30 p-3 rounded-lg border">
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap">
+                  Filtrar por Simulado:
+                </Label>
+                <select
+                  value={selectedExamId}
+                  onChange={(e) => setSelectedExamId(e.target.value)}
+                  className="h-9 w-full sm:w-72 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                >
+                  <option value="all">Todos os Simulados ({submissions.length})</option>
+                  {uniqueExams.map((ex) => {
+                    const count = submissions.filter((s) => s.exam.id === ex.id).length;
+                    return (
+                      <option key={ex.id} value={ex.id}>
+                        {ex.title} ({count})
+                      </option>
+                    );
+                  })}
+                </select>
+              </div>
+              {selectedExamId !== 'all' && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setSelectedExamId('all')}
+                  className="text-xs h-8 px-2 text-muted-foreground hover:text-foreground"
+                >
+                  Limpar filtro
+                </Button>
+              )}
+            </div>
+          )}
+
           {loading ? (
             <div className="h-64 flex flex-col items-center justify-center text-center">
               <Loader2 className="size-8 animate-spin text-primary mb-2" />
@@ -465,6 +522,14 @@ export default function CorrectorAreaPage() {
               <p className="text-xs max-w-sm mt-1">
                 Assim que a coordenação distribuir um lote de correção, as provas aparecerão aqui automaticamente.
               </p>
+            </div>
+          ) : filteredSubmissions.length === 0 ? (
+            <div className="h-48 flex flex-col items-center justify-center text-center text-muted-foreground border border-dashed rounded-xl p-8">
+              <FileText className="size-10 opacity-30 mb-2" />
+              <p className="font-medium">Nenhuma prova encontrada para o simulado selecionado</p>
+              <Button variant="link" size="sm" onClick={() => setSelectedExamId('all')} className="mt-2 text-xs">
+                Ver todos os simulados
+              </Button>
             </div>
           ) : (
             <div className="border rounded-xl overflow-hidden">
@@ -480,7 +545,7 @@ export default function CorrectorAreaPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {submissions.map((sub) => {
+                  {filteredSubmissions.map((sub) => {
                     const totalQ = sub.exam.examQuestions?.length || 0;
                     const gradedQ = sub.grades?.length || 0;
                     return (
