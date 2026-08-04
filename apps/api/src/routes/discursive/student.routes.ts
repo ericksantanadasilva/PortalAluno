@@ -2,7 +2,7 @@ import { Router, Request, Response } from 'express';
 import { prisma } from '@repo/database';
 import { requireAuth } from '../../middlewares/auth.middleware';
 import { uploadToDrive, getDriveFileStream, extractDriveFileId } from '../../services/drive.service';
-import { discursiveUpload, formatSubmissionFilename, resolvePdfPath } from '../../services/discursive.service';
+import { discursiveUpload, formatSubmissionFilename, resolvePdfPath, formatContentDispositionHeader } from '../../services/discursive.service';
 
 const router = Router();
 
@@ -99,7 +99,21 @@ router.get('/student/exams', requireAuth, async (req: Request, res: Response) =>
             };
         });
 
-        return res.json(formattedExams);
+        const now = new Date();
+        const maxFutureStart = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
+        const minPastEnd = new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000);
+
+        const visibleExams = formattedExams.filter(exam => {
+            if (exam.windowStart && new Date(exam.windowStart) > maxFutureStart) {
+                return false;
+            }
+            if (exam.windowEnd && new Date(exam.windowEnd) < minPastEnd) {
+                return false;
+            }
+            return true;
+        });
+
+        return res.json(visibleExams);
     } catch (error) {
         console.error('Erro ao listar simulados discursivos do aluno:', error);
         return res.status(500).json({ error: 'Erro interno ao carregar simulados discursivos.' });
@@ -137,12 +151,13 @@ router.get('/student/download-single/:submissionId', requireAuth, async (req: Re
             sub.subject.subjectName
         );
 
+        const disposition = formatContentDispositionHeader(formattedFilename, true);
         res.setHeader('Access-Control-Expose-Headers', 'Content-Disposition');
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', disposition);
 
         const driveFileId = extractDriveFileId(sub.studentPdfUrl);
         if (driveFileId) {
-            res.setHeader('Content-Type', 'application/pdf');
-            res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(formattedFilename)}"`);
             const driveStream = await getDriveFileStream(driveFileId);
             return driveStream.pipe(res);
         }
@@ -152,7 +167,7 @@ router.get('/student/download-single/:submissionId', requireAuth, async (req: Re
             return res.status(404).json({ error: 'Arquivo PDF não encontrado no servidor ou Google Drive.' });
         }
 
-        return res.download(pdfPath, formattedFilename);
+        return res.sendFile(pdfPath);
     } catch (error) {
         console.error('Erro no download do aluno:', error);
         return res.status(500).json({ error: 'Erro interno ao realizar o download.' });

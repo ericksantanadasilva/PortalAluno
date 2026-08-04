@@ -44,6 +44,7 @@ export function DiscursiveExamCard({ exam, onSubmissionSuccess }: DiscursiveExam
   const isStarted = !wStart || wStart <= now;
   const isExpired = wEnd ? wEnd < now : false;
   const isCardActive = isStarted && !isExpired;
+  const allSubmitted = exam.subjects.length > 0 && exam.subjects.every(s => Boolean(s.submission));
 
   const handleFileChange = (subjectId: string, e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
@@ -131,22 +132,8 @@ export function DiscursiveExamCard({ exam, onSubmissionSuccess }: DiscursiveExam
       const pdfBlob = new Blob([blob], { type: 'application/pdf' });
       const url = window.URL.createObjectURL(pdfBlob);
 
-      let filename = `resolucao_${submissionId}.pdf`;
-      const disposition = res.headers.get('content-disposition') || res.headers.get('Content-Disposition');
-      if (disposition) {
-        const match = disposition.match(/filename\*?=(?:UTF-8'')?["']?([^"';]+)["']?/i);
-        if (match && match[1]) {
-          filename = decodeURIComponent(match[1]);
-        }
-      }
-
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      setTimeout(() => window.URL.revokeObjectURL(url), 1000);
+      window.open(url, '_blank', 'noopener,noreferrer');
+      setTimeout(() => window.URL.revokeObjectURL(url), 60000);
     } catch (error) {
       console.error('Erro ao visualizar PDF:', error);
       alert('Erro ao carregar o PDF enviado.');
@@ -168,26 +155,26 @@ export function DiscursiveExamCard({ exam, onSubmissionSuccess }: DiscursiveExam
 
   return (
     <Card className="border-slate-200 shadow-sm hover:shadow-md transition-all bg-white relative overflow-hidden">
-      <div className={`absolute top-0 left-0 w-full h-1 ${isExpired ? 'bg-destructive' : isCardActive ? 'bg-primary' : 'bg-slate-300'}`} />
+      <div className={`absolute top-0 left-0 w-full h-1 ${allSubmitted ? 'bg-emerald-600' : isExpired ? 'bg-destructive' : isCardActive ? 'bg-primary' : 'bg-slate-300'}`} />
       <CardHeader className="pb-4">
-        <div className="flex items-center justify-between gap-2">
-          <Badge className="bg-primary/10 text-primary hover:bg-primary/10 border-primary/20 text-[11px] font-semibold tracking-wide uppercase rounded-full">
-            Simulado Discursivo (UERJ/Específicas)
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+          <Badge className="self-start bg-primary/10 text-primary hover:bg-primary/10 border-primary/20 text-xs font-semibold tracking-wide uppercase rounded-full whitespace-nowrap h-auto py-0.5 px-2.5">
+            Simulado Discursivo
           </Badge>
           <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500">
             {exam.windowEnd && (
-              <Badge variant="outline" className={`text-xs font-medium ${isExpired ? 'bg-rose-50 text-rose-700 border-rose-200 rounded-full' : 'bg-primary/10 text-primary border-primary/20 rounded-full'}`}>
-                <Clock className="w-3.5 h-3.5 mr-1" />
+              <Badge variant="outline" className={`text-xs font-medium whitespace-nowrap ${isExpired ? 'bg-rose-50 text-rose-700 border-rose-200 rounded-full' : 'bg-primary/10 text-primary border-primary/20 rounded-full'}`}>
+                <Clock className="w-3.5 h-3.5 mr-1 flex-shrink-0" />
                 Prazo: {new Date(exam.windowEnd).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
               </Badge>
             )}
-            <span className="flex items-center">
-              <Clock className="w-3.5 h-3.5 mr-1 text-slate-400" />
+            <span className="flex items-center whitespace-nowrap">
+              <Clock className="w-3.5 h-3.5 mr-1 text-slate-400 flex-shrink-0" />
               {new Date(exam.createdAt).toLocaleDateString('pt-BR')}
             </span>
           </div>
         </div>
-        <CardTitle className="text-xl font-bold text-slate-900 mt-2">
+        <CardTitle className="text-xl font-bold text-slate-900 mt-2 break-words">
           {exam.title}
         </CardTitle>
         <CardDescription className="text-slate-500 text-sm">
@@ -205,46 +192,46 @@ export function DiscursiveExamCard({ exam, onSubmissionSuccess }: DiscursiveExam
 
             return (
               <div key={subject.id} className="p-4 bg-slate-50/50 hover:bg-slate-50 transition-colors">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
-                  <div className="flex items-center gap-2">
-                    <span className="font-bold text-slate-800 text-base">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-3 mb-3">
+                  <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+                    <span className="font-bold text-slate-800 text-base mr-1">
                       {subject.subjectName}
                     </span>
                     {submission ? (
-                      <div className="flex items-center gap-2">
-                        <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20 gap-1 text-xs font-medium rounded">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-primary" />
+                      <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto mt-1 sm:mt-0">
+                        <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 gap-1.5 text-xs font-semibold rounded whitespace-nowrap">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0" />
                           {formatDate(submission.submittedAt)}
                         </Badge>
                         <button
                           type="button"
                           onClick={() => handleViewPdf(submission.id)}
                           disabled={viewingSubmissionId === submission.id}
-                          className="inline-flex items-center text-xs text-primary hover:text-primary/90 hover:underline font-semibold bg-primary/10 px-2 py-1 rounded border border-primary/20 cursor-pointer disabled:opacity-50"
+                          className="inline-flex items-center text-xs text-emerald-700 hover:text-emerald-800 hover:underline font-semibold bg-emerald-50 hover:bg-emerald-100 px-2.5 py-1 rounded border border-emerald-200 cursor-pointer disabled:opacity-50 transition-colors whitespace-nowrap"
                         >
                           {viewingSubmissionId === submission.id ? (
                             <>
-                              <Loader2 className="w-3 h-3 mr-1 animate-spin" />
+                              <Loader2 className="w-3 h-3 mr-1 animate-spin flex-shrink-0" />
                               Carregando...
                             </>
                           ) : (
                             <>
-                              <FileText className="w-3 h-3 mr-1" />
+                              <FileText className="w-3.5 h-3.5 mr-1 flex-shrink-0" />
                               Ver PDF Enviado
                             </>
                           )}
                         </button>
                       </div>
                     ) : isExpired ? (
-                      <Badge variant="destructive" className="bg-rose-50 text-rose-700 border-rose-200 text-xs font-medium rounded">
+                      <Badge variant="destructive" className="bg-rose-50 text-rose-700 border-rose-200 text-xs font-medium rounded whitespace-nowrap">
                         Prazo Encerrado
                       </Badge>
                     ) : !isStarted ? (
-                      <Badge variant="outline" className="bg-slate-50 text-slate-600 border-slate-200 text-xs font-medium rounded">
+                      <Badge variant="outline" className="bg-slate-50 text-slate-600 border-slate-200 text-xs font-medium rounded whitespace-nowrap">
                         Aguardando Prazo
                       </Badge>
                     ) : (
-                      <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 text-xs font-medium rounded">
+                      <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 text-xs font-medium rounded whitespace-nowrap">
                         Pendente de Envio
                       </Badge>
                     )}
@@ -254,22 +241,22 @@ export function DiscursiveExamCard({ exam, onSubmissionSuccess }: DiscursiveExam
                 {/* Upload box */}
                 {!submission ? (
                   isExpired ? (
-                    <div className="flex items-center justify-between p-3 bg-rose-50/70 border border-rose-200 rounded-md text-rose-700 text-xs font-medium">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 bg-rose-50/70 border border-rose-200 rounded-md text-rose-700 text-xs font-medium">
                       <span className="flex items-center gap-1.5">
                         <AlertCircle className="w-4 h-4 text-rose-600 flex-shrink-0" />
                         O prazo para envio da resolução deste simulado foi encerrado.
                       </span>
-                      <Badge variant="destructive" className="text-[11px] bg-rose-600 text-white font-semibold rounded">
+                      <Badge variant="destructive" className="self-start sm:self-auto text-[11px] bg-rose-600 text-white font-semibold rounded whitespace-nowrap">
                         Não Realizado
                       </Badge>
                     </div>
                   ) : !isStarted ? (
-                    <div className="flex items-center justify-between p-3 bg-slate-100 border border-slate-200 rounded-md text-slate-600 text-xs font-medium">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 bg-slate-100 border border-slate-200 rounded-md text-slate-600 text-xs font-medium">
                       <span className="flex items-center gap-1.5">
                         <Clock className="w-4 h-4 text-slate-500 flex-shrink-0" />
                         Aguardando início do prazo para envio da resolução.
                       </span>
-                      <Badge variant="outline" className="text-[11px]">Em Breve</Badge>
+                      <Badge variant="outline" className="self-start sm:self-auto text-[11px] whitespace-nowrap">Em Breve</Badge>
                     </div>
                   ) : (
                     <div className="flex flex-col gap-2">
@@ -310,8 +297,8 @@ export function DiscursiveExamCard({ exam, onSubmissionSuccess }: DiscursiveExam
                       </div>
 
                       {itemFeedback && (
-                        <div className={`text-xs p-2 rounded-md flex items-center gap-1.5 ${itemFeedback.type === 'success'
-                          ? 'bg-primary/15 text-primary'
+                        <div className={`text-xs p-2.5 rounded-md flex items-center gap-1.5 ${itemFeedback.type === 'success'
+                          ? 'bg-emerald-50 text-emerald-800 border border-emerald-200 font-medium'
                           : 'bg-rose-100/70 text-rose-800'
                           }`}>
                           {itemFeedback.type === 'success' ? (
@@ -325,10 +312,10 @@ export function DiscursiveExamCard({ exam, onSubmissionSuccess }: DiscursiveExam
                     </div>
                   )
                 ) : (
-                  <div className="text-xs text-slate-600 bg-primary/10 border border-primary/20 rounded-md p-3 flex items-center justify-between gap-2">
+                  <div className="text-xs text-emerald-800 bg-emerald-50/80 border border-emerald-200 rounded-md p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <div className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0" />
-                      <span>Resolução enviada para correção. O reenvio está desativado para preservar o arquivo de prova.</span>
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                      <span className="font-medium">Resolução enviada para correção. O reenvio está desativado para preservar o arquivo de prova.</span>
                     </div>
                   </div>
                 )}

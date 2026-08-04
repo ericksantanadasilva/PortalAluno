@@ -37,6 +37,21 @@ export function formatSubmissionFilename(studentName: string, examTitle: string,
 }
 
 /**
+ * Gera o cabeçalho Content-Disposition seguindo padrão RFC 5987 e compatível com navegadores
+ * para garantir visualização inline e nome de arquivo sem truncar por espaços.
+ */
+export function formatContentDispositionHeader(filename: string, inline = true): string {
+    const type = inline ? 'inline' : 'attachment';
+    const asciiFilename = filename
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^\w\s.-]/g, '')
+        .replace(/\s+/g, '_');
+    const encodedFilename = encodeURIComponent(filename);
+    return `${type}; filename="${asciiFilename}"; filename*=UTF-8''${encodedFilename}`;
+}
+
+/**
  * Resolve o caminho do PDF no disco de forma resiliente em qualquer ambiente
  * (PC local, Codespaces, Docker, etc.), mesmo que o caminho salvo no DB seja de outro OS/máquina.
  */

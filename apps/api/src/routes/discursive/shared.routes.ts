@@ -2,7 +2,7 @@ import { Router, Request, Response } from 'express';
 import { prisma } from '@repo/database';
 import { requireAuth } from '../../middlewares/auth.middleware';
 import { getDriveFileStream, extractDriveFileId } from '../../services/drive.service';
-import { formatSubmissionFilename, syncOnlineSubmissionsToNewFlow } from '../../services/discursive.service';
+import { formatSubmissionFilename, syncOnlineSubmissionsToNewFlow, formatContentDispositionHeader } from '../../services/discursive.service';
 
 const router = Router();
 
@@ -315,9 +315,9 @@ router.get('/pdf-stream/:submissionId/:type', requireAuth, async (req: Request, 
             sub.exam.title,
             sub.subjectName || 'Geral'
         );
-        const disposition = req.query.download === 'true' ? 'attachment' : 'inline';
+        const isInline = req.query.download !== 'true';
         res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', `${disposition}; filename="${encodeURIComponent(formattedFilename)}"`);
+        res.setHeader('Content-Disposition', formatContentDispositionHeader(formattedFilename, isInline));
         const stream = await getDriveFileStream(fileId);
         return stream.pipe(res);
     } catch (error) {

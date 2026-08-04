@@ -333,7 +333,7 @@ router.get('/available', requireAuth, async (req, res) => {
             where: { 
                 tenantId,
                 type: { not: 'discursivo' },
-                windowStart: { lte: new Date(currentDate.getTime() + 2 * 24 * 60 * 60 * 1000) },
+                windowStart: { lte: new Date(currentDate.getTime() + 3 * 24 * 60 * 60 * 1000) },
                 OR: [
                     { windowEnd2: { gte: new Date(currentDate.getTime() - 3 * 24 * 60 * 60 * 1000) } },
                     { windowEnd2: null, windowEnd: { gte: new Date(currentDate.getTime() - 3 * 24 * 60 * 60 * 1000) } }

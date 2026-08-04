@@ -4,7 +4,7 @@ import path from 'path';
 import { prisma } from '@repo/database';
 import { requireAuth, requireAdmin } from '../../middlewares/auth.middleware';
 import { uploadToDrive, getDriveFileStream, extractDriveFileId, getDiscursiveFolderId } from '../../services/drive.service';
-import { discursiveUpload, formatSubmissionFilename, resolvePdfPath } from '../../services/discursive.service';
+import { discursiveUpload, formatSubmissionFilename, resolvePdfPath, formatContentDispositionHeader } from '../../services/discursive.service';
 
 const router = Router();
 
@@ -482,10 +482,13 @@ router.get('/admin/download-single/:submissionId', requireAuth, requireAdmin, as
             pdfUrl = subNew.originalPdfUrl;
         }
 
+        const disposition = formatContentDispositionHeader(formattedFilename, true);
+        res.setHeader('Access-Control-Expose-Headers', 'Content-Disposition');
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', disposition);
+
         const driveFileId = extractDriveFileId(pdfUrl);
         if (driveFileId) {
-            res.setHeader('Content-Type', 'application/pdf');
-            res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(formattedFilename)}"`);
             const driveStream = await getDriveFileStream(driveFileId);
             return driveStream.pipe(res);
         }
@@ -495,12 +498,7 @@ router.get('/admin/download-single/:submissionId', requireAuth, requireAdmin, as
             return res.status(404).json({ error: 'Arquivo PDF não encontrado no servidor ou Google Drive.' });
         }
 
-        return res.download(pdfPath, formattedFilename, (err) => {
-            if (err && !res.headersSent) {
-                console.error('Erro ao enviar download do arquivo:', err);
-                res.status(500).json({ error: 'Erro ao realizar o download do PDF.' });
-            }
-        });
+        return res.sendFile(pdfPath);
     } catch (error) {
         console.error('Erro no download de submissão única:', error);
         return res.status(500).json({ error: 'Erro interno ao realizar o download.' });

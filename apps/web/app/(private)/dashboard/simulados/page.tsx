@@ -66,7 +66,7 @@ export default function SimuladosStudentPage() {
   const objectiveExams = exams.filter(e => e.type?.toLowerCase() !== 'discursivo');
 
   return (
-    <div className="w-full max-w-7xl mx-auto space-y-8 p-4 md:p-8">
+    <div className="w-full max-w-7xl mx-auto space-y-8 p-4 md:p-8 overflow-x-hidden">
       <div>
         <h1 className="text-3xl font-bold tracking-tight text-slate-800">Meus Simulados</h1>
         <p className="text-muted-foreground mt-2">
@@ -82,14 +82,14 @@ export default function SimuladosStudentPage() {
       ) : (
         <Tabs defaultValue="discursive" className="w-full space-y-6">
           <div className="flex justify-center w-full">
-            <TabsList className="inline-flex h-11 items-center justify-center rounded-xl bg-slate-100 p-1 border border-slate-200">
-              <TabsTrigger value="discursive" className="data-[active]:bg-white data-[active]:text-primary data-[state=active]:bg-white data-[state=active]:text-primary font-semibold px-6 py-2">
-                <FileText className="w-4 h-4 mr-2" />
-                Simulados Discursivos ({discursiveExams.length})
+            <TabsList className="grid grid-cols-1 sm:inline-flex sm:h-11 h-auto items-center justify-center rounded-xl bg-slate-100 p-1 border border-slate-200 w-full sm:w-auto gap-1">
+              <TabsTrigger value="discursive" className="data-[active]:bg-white data-[active]:text-primary data-[state=active]:bg-white data-[state=active]:text-primary font-semibold px-4 py-2 text-xs sm:text-sm w-full justify-center">
+                <FileText className="w-4 h-4 mr-1.5 sm:mr-2 flex-shrink-0" />
+                <span className="truncate">Simulados Discursivos ({discursiveExams.length})</span>
               </TabsTrigger>
-              <TabsTrigger value="objective" className="data-[active]:bg-white data-[active]:text-primary data-[state=active]:bg-white data-[state=active]:text-primary font-semibold px-6 py-2">
-                <FileSignature className="w-4 h-4 mr-2" />
-                Simulados Objetivos ({objectiveExams.length})
+              <TabsTrigger value="objective" className="data-[active]:bg-white data-[active]:text-primary data-[state=active]:bg-white data-[state=active]:text-primary font-semibold px-4 py-2 text-xs sm:text-sm w-full justify-center">
+                <FileSignature className="w-4 h-4 mr-1.5 sm:mr-2 flex-shrink-0" />
+                <span className="truncate">Simulados Objetivos ({objectiveExams.length})</span>
               </TabsTrigger>
             </TabsList>
           </div>

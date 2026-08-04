@@ -4,7 +4,7 @@ import adminRoutes from './discursive/admin.routes';
 import correctorRoutes from './discursive/corrector.routes';
 import sharedRoutes from './discursive/shared.routes';
 
-export { formatSubmissionFilename, resolvePdfPath } from '../services/discursive.service';
+export { formatSubmissionFilename, resolvePdfPath, formatContentDispositionHeader } from '../services/discursive.service';
 
 const router = Router();
 
