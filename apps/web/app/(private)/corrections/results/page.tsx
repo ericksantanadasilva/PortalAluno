@@ -151,7 +151,7 @@ export default function ResultsAndBulletinPage() {
               size="sm"
               onClick={handleExportCSV}
               disabled={results.length === 0}
-              className="gap-2"
+              className="gap-2 rounded-xl"
             >
               <Download className="size-4" />
               <span>Exportar CSV</span>
@@ -161,7 +161,7 @@ export default function ResultsAndBulletinPage() {
               size="sm"
               onClick={fetchResults}
               disabled={loading}
-              className="gap-2"
+              className="gap-2 rounded-xl"
             >
               <RefreshCw className="size-4" />
               <span>Atualizar</span>
@@ -177,7 +177,7 @@ export default function ResultsAndBulletinPage() {
                 Simulado
               </label>
               <Select value={filterExamId} onValueChange={setFilterExamId}>
-                <SelectTrigger className="w-full h-10 truncate">
+                <SelectTrigger className="w-full h-10 truncate rounded-xl">
                   <SelectValue placeholder="Todos os Simulados">
                     {filterExamId === "all"
                       ? "Todos os Simulados"
@@ -198,7 +198,7 @@ export default function ResultsAndBulletinPage() {
                 Status na Planilha
               </label>
               <Select value={filterStatus} onValueChange={setFilterStatus}>
-                <SelectTrigger className="w-full h-10 truncate">
+                <SelectTrigger className="w-full h-10 truncate rounded-xl">
                   <SelectValue placeholder="Status...">
                     {filterStatus === "CORRECTED"
                       ? "Apenas Corrigidos (Boletim Final)"
@@ -213,7 +213,7 @@ export default function ResultsAndBulletinPage() {
             </div>
 
             <div className="flex items-end">
-              <Button onClick={fetchResults} className="w-full h-10 font-semibold shadow-sm">
+              <Button onClick={fetchResults} className="w-full h-10 font-semibold shadow-sm rounded-xl">
                 <span>Filtrar Resultados</span>
               </Button>
             </div>
@@ -303,7 +303,7 @@ export default function ResultsAndBulletinPage() {
                                 title: `Prova Original - ${item.student.name}`
                               });
                             }}
-                            className="text-xs h-8"
+                            className="text-xs h-8 rounded-lg"
                           >
                             <Eye className="size-3.5 mr-1" />
                             <span>Original</span>
@@ -321,7 +321,7 @@ export default function ResultsAndBulletinPage() {
                                   title: `Prova Corrigida - ${item.student.name}`
                                 });
                               }}
-                              className="text-xs h-8 border-emerald-500/30 text-emerald-600 dark:text-emerald-400"
+                              className="text-xs h-8 rounded-lg border-emerald-500/30 text-emerald-600 dark:text-emerald-400"
                             >
                               <CheckCircle2 className="size-3.5 mr-1" />
                               <span>Corrigida</span>
