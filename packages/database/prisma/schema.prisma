@@ -85,6 +85,8 @@ model Tenant {
     examGrades        ExamGrade[]
     essayExams        EssayExam[]
     essaySubmissions  EssaySubmission[]
+    themes            Theme[]
+    subthemes         Subtheme[]
     allowedReportTemplates String[] @default(["ENEM", "UERJ", "ENEM_PARCIAL", "DISCURSIVO"]) @map("allowed_report_templates")
 
     @@map("tenants")
@@ -134,6 +136,7 @@ model Subject {
     modalitySubjects  ModalitySubject[]
     presenceWindows   PresenceWindow[]
     scheduledClasses  ScheduledClass[]
+    themes            Theme[]
 
     @@unique([tenantId, name])
     @@map("subjects")
@@ -282,14 +285,53 @@ model ExamQuestion {
     isAnnulled         Boolean        @default(false) @map("is_annulled")
     subjectId          String         @map("subject_id") @db.Uuid
     theme              String?
+    themeId            String?        @map("theme_id") @db.Uuid
+    subthemeId         String?        @map("subtheme_id") @db.Uuid
     language           String         @default("none")
 
     exam    Exam    @relation(fields: [examId], references: [id], onDelete: Cascade)
     subject Subject @relation(fields: [subjectId], references: [id], onDelete: Restrict)
+    themeRef Theme?  @relation(fields: [themeId], references: [id], onDelete: SetNull)
+    subtheme Subtheme? @relation(fields: [subthemeId], references: [id], onDelete: SetNull)
     essayQuestionGrades EssayQuestionGrade[]
 
     @@unique([examId, questionNumber, language])
     @@map("exam_questions")
+}
+
+model Theme {
+    id        String   @id @default(uuid()) @db.Uuid
+    tenantId  String   @map("tenant_id") @db.Uuid
+    subjectId String   @map("subject_id") @db.Uuid
+    name      String
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+
+    tenant        Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+    subject       Subject        @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+    subthemes     Subtheme[]
+    examQuestions ExamQuestion[]
+
+    @@unique([tenantId, subjectId, name])
+    @@index([tenantId, subjectId])
+    @@map("themes")
+}
+
+model Subtheme {
+    id        String   @id @default(uuid()) @db.Uuid
+    tenantId  String   @map("tenant_id") @db.Uuid
+    themeId   String   @map("theme_id") @db.Uuid
+    name      String
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+
+    tenant        Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+    theme         Theme          @relation(fields: [themeId], references: [id], onDelete: Cascade)
+    examQuestions ExamQuestion[]
+
+    @@unique([tenantId, themeId, name])
+    @@index([tenantId, themeId])
+    @@map("subthemes")
 }
 
 model StudentResponse {

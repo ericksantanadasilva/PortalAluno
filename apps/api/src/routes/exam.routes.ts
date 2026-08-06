@@ -244,6 +244,10 @@ router.get('/:id/questions', requireAuth, requireStaff, async (req, res) => {
 
         const questions = await prisma.examQuestion.findMany({
             where: { examId },
+            include: {
+                themeRef: { select: { id: true, name: true } },
+                subtheme: { select: { id: true, name: true } }
+            },
             orderBy: { questionNumber: 'asc' }
         });
 
@@ -259,7 +263,7 @@ router.put('/:id/questions', requireAuth, requireStaff, async (req, res) => {
     try {
         const tenantId = req.user!.tenantId;
         const examId = req.params.id;
-        const { answers } = req.body; // Array of { questionNumber, correctAlternative, isAnnulled, subjectId, difficultyTier }
+        const { answers } = req.body; // Array of { questionNumber, correctAlternative, isAnnulled, subjectId, difficultyTier, themeId, subthemeId }
 
         if (!Array.isArray(answers)) {
             return res.status(400).json({ error: 'Formato inválido. Esperado array de respostas.' });
@@ -273,9 +277,8 @@ router.put('/:id/questions', requireAuth, requireStaff, async (req, res) => {
             return res.status(404).json({ error: 'Simulado não encontrado.' });
         }
         
-        // As subjectId is required by schema, if the frontend doesn't send it, we need a fallback.
-        // Let's get the first subject of the tenant as a fallback for now.
-        let defaultSubjectId = answers[0]?.subjectId;
+        // Se alguma questão não tiver subjectId, usa uma default do tenant se existir
+        let defaultSubjectId = answers.find((a: any) => a.subjectId)?.subjectId;
         if (!defaultSubjectId) {
             const firstSubject = await prisma.subject.findFirst({ where: { tenantId } });
             if (!firstSubject) {
@@ -299,7 +302,9 @@ router.put('/:id/questions', requireAuth, requireStaff, async (req, res) => {
                     isAnnulled: ans.isAnnulled || false,
                     difficultyTier: ans.difficultyTier || 'medio',
                     subjectId: ans.subjectId || defaultSubjectId,
-                    theme: ans.theme || null
+                    theme: ans.theme || null,
+                    themeId: ans.themeId || null,
+                    subthemeId: ans.subthemeId || null
                 },
                 create: {
                     examId: examId,
@@ -309,6 +314,8 @@ router.put('/:id/questions', requireAuth, requireStaff, async (req, res) => {
                     difficultyTier: ans.difficultyTier || 'medio',
                     subjectId: ans.subjectId || defaultSubjectId,
                     theme: ans.theme || null,
+                    themeId: ans.themeId || null,
+                    subthemeId: ans.subthemeId || null,
                     language: lang
                 }
             });

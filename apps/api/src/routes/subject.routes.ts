@@ -134,20 +134,60 @@ router.delete('/:id', async (req, res) => {
     try {
         const tenantId = req.user!.tenantId;
         const { id } = req.params;
+        const force = req.query.force === 'true';
 
         if (req.user!.role === 'aluno' || req.user!.role === 'professor') {
             return res.status(403).json({ error: 'Você não tem permissão para excluir disciplinas.' });
         }
 
         const existingSubject = await prisma.subject.findFirst({
-            where: { id, tenantId }
+            where: { id, tenantId },
+            include: {
+                _count: {
+                    select: {
+                        examQuestions: true,
+                        themes: true
+                    }
+                }
+            }
         });
 
         if (!existingSubject) {
             return res.status(404).json({ error: 'Disciplina não encontrada.' });
         }
 
-        // Deleta (as constraints on delete devem ser tratadas pelo prisma schema, ex: set null ou restrict)
+        const questionsCount = existingSubject._count.examQuestions;
+
+        if (questionsCount > 0 && !force) {
+            return res.status(400).json({
+                error: `Esta disciplina possui ${questionsCount} questão(ões) de simulado vinculada(s).`,
+                canForce: true,
+                questionsCount
+            });
+        }
+
+        if (questionsCount > 0 && force) {
+            const fallbackSubject = await prisma.subject.findFirst({
+                where: { tenantId, id: { not: id } }
+            });
+
+            if (fallbackSubject) {
+                await prisma.examQuestion.updateMany({
+                    where: { subjectId: id },
+                    data: {
+                        subjectId: fallbackSubject.id,
+                        theme: null,
+                        themeId: null,
+                        subthemeId: null
+                    }
+                });
+            } else {
+                await prisma.examQuestion.deleteMany({
+                    where: { subjectId: id }
+                });
+            }
+        }
+
         await prisma.subject.delete({
             where: { id }
         });
@@ -155,8 +195,7 @@ router.delete('/:id', async (req, res) => {
         return res.json({ message: 'Disciplina excluída com sucesso.' });
     } catch (error) {
         console.error('Error deleting subject:', error);
-        // Pode falhar se houver restrição de chave estrangeira (Restrict)
-        return res.status(400).json({ error: 'Não foi possível excluir a disciplina. Ela pode estar vinculada a questões ou modalidades.' });
+        return res.status(400).json({ error: 'Não foi possível excluir a disciplina. Verifique se ela possui dados associados.' });
     }
 });
 

@@ -6,7 +6,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Loader2, Trash2, Edit2, Plus, X, Save } from 'lucide-react';
+import Link from 'next/link';
+import { Loader2, Trash2, Edit2, Plus, X, Save, Layers } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 
 const API_URL = "/api";
@@ -109,17 +110,24 @@ export default function SubjectsPage() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Deseja realmente excluir esta disciplina?')) return;
+  const handleDelete = async (id: string, force = false) => {
+    if (!force && !confirm('Deseja realmente excluir esta disciplina? (Seus temas e subtemas vinculados também serão removidos)')) return;
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch(`${API_URL}/subjects/${id}`, {
+      const url = force ? `${API_URL}/subjects/${id}?force=true` : `${API_URL}/subjects/${id}`;
+      const res = await fetch(url, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
       
       if (!res.ok) {
         const errData = await res.json();
+        if (errData.canForce) {
+          if (confirm(`${errData.error}\nDeseja forçar a exclusão? As questões associadas perderão seus temas e ficarão marcadas como "Sem Tema".`)) {
+            return handleDelete(id, true);
+          }
+          return;
+        }
         throw new Error(errData.error || 'Erro ao excluir disciplina');
       }
       
@@ -139,9 +147,16 @@ export default function SubjectsPage() {
             Gerencie as matérias (disciplinas) oferecidas na sua unidade. Elas serão utilizadas nas avaliações e relatórios.
           </p>
         </div>
-        <Button onClick={() => openModal()} className="gap-2">
-          <Plus className="w-4 h-4" /> Nova Disciplina
-        </Button>
+        <div className="flex items-center gap-3">
+          <Link href="/materias/temas">
+            <Button variant="outline" className="gap-2 border-emerald-600 text-emerald-700 hover:bg-emerald-50 dark:border-emerald-500 dark:text-emerald-400">
+              <Layers className="w-4 h-4" /> Temas e Subtemas (Caça Gaps)
+            </Button>
+          </Link>
+          <Button onClick={() => openModal()} className="gap-2">
+            <Plus className="w-4 h-4" /> Nova Disciplina
+          </Button>
+        </div>
       </div>
 
       <Card>

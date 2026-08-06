@@ -13,6 +13,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Plus, Trash2, Loader2, Edit2, X, Save, Calculator, UserX, BookOpen, CheckSquare } from 'lucide-react';
+import { ThemeSelect, SubjectTreeItem } from './ThemeSelect';
 
 const API_URL = "/api";
 
@@ -35,6 +36,8 @@ type FormQuestion = {
   language: string; // 'none', 'ingles', 'espanhol'
   subjectId: string;
   theme: string;
+  themeId?: string;
+  subthemeId?: string;
 };
 
 export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigger?: number }) {
@@ -45,6 +48,7 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
   const [closingId, setClosingId] = useState<string | null>(null);
   const [editingExamId, setEditingExamId] = useState<string | null>(null);
   const [subjects, setSubjects] = useState<{ id: string, name: string }[]>([]);
+  const [themeTree, setThemeTree] = useState<SubjectTreeItem[]>([]);
 
   // State for Discursive Exams Multi-Subject Selection
   const [discursiveSubjectIds, setDiscursiveSubjectIds] = useState<string[]>([]);
@@ -97,7 +101,22 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
   useEffect(() => {
     fetchExams();
     fetchSubjects();
+    fetchThemeTree();
   }, []);
+
+  const fetchThemeTree = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch(`${API_URL}/themes/tree`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        setThemeTree(await res.json());
+      }
+    } catch (e) {
+      console.error('Erro ao buscar árvore de temas', e);
+    }
+  };
 
   const fetchSubjects = async () => {
     try {
@@ -227,8 +246,8 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
       ...form,
       questions: [
         ...semAQuestao,
-        { questionNumber: numero, language: 'ingles', subjectId: inglesSubject?.id || '', theme: questaoAntiga?.theme || '' },
-        { questionNumber: numero, language: 'espanhol', subjectId: espanholSubject?.id || '', theme: questaoAntiga?.theme || '' }
+        { questionNumber: numero, language: 'ingles', subjectId: inglesSubject?.id || '', theme: questaoAntiga?.theme || '', themeId: questaoAntiga?.themeId, subthemeId: questaoAntiga?.subthemeId },
+        { questionNumber: numero, language: 'espanhol', subjectId: espanholSubject?.id || '', theme: questaoAntiga?.theme || '', themeId: questaoAntiga?.themeId, subthemeId: questaoAntiga?.subthemeId }
       ].sort((a, b) => a.questionNumber - b.questionNumber)
     });
   };
@@ -241,7 +260,7 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
       ...form,
       questions: [
         ...semAQuestao,
-        { questionNumber: numero, language: 'none', subjectId: questaoAntiga?.subjectId || '', theme: questaoAntiga?.theme || '' }
+        { questionNumber: numero, language: 'none', subjectId: questaoAntiga?.subjectId || '', theme: questaoAntiga?.theme || '', themeId: questaoAntiga?.themeId, subthemeId: questaoAntiga?.subthemeId }
       ].sort((a, b) => a.questionNumber - b.questionNumber)
     });
   };
@@ -252,6 +271,23 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
       questions: prev.questions.map(q => {
         if (q.questionNumber === numero && q.language === language) {
           return { ...q, [campo]: valor };
+        }
+        return q;
+      })
+    }));
+  };
+
+  const updateQFull = (numero: number, language: string, data: { theme: string; themeId?: string; subthemeId?: string }) => {
+    setForm(prev => ({
+      ...prev,
+      questions: prev.questions.map(q => {
+        if (q.questionNumber === numero && q.language === language) {
+          return {
+            ...q,
+            theme: data.theme,
+            themeId: data.themeId,
+            subthemeId: data.subthemeId
+          };
         }
         return q;
       })
@@ -317,7 +353,9 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
           questionNumber: q.questionNumber,
           language: q.language || 'none',
           subjectId: q.subjectId || '',
-          theme: q.theme || ''
+          theme: q.theme || '',
+          themeId: q.themeId || undefined,
+          subthemeId: q.subthemeId || undefined
         }));
 
         const maxQ = formattedQuestions.length > 0 ? Math.max(...formattedQuestions.map(q => q.questionNumber)) : 0;
@@ -392,7 +430,6 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
         targetExamId = newExam.id;
       }
 
-      // Se o tipo for Discursivo, cria/atualiza a entrada no EssayExam para gerar o card e os botões por matéria
       if (form.type === 'discursivo') {
         const selectedSubjectNames = discursiveSubjectIds.map(id => subjects.find(s => s.id === id)?.name || id);
 
@@ -408,12 +445,13 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
         }).catch((e) => console.error("Erro ao sincronizar EssayExam:", e));
       }
 
-      // UPSERT QUESTIONS
       if (form.questions.length > 0 && targetExamId) {
         const payload = form.questions.map(q => ({
           questionNumber: q.questionNumber,
           subjectId: q.subjectId || undefined,
           theme: q.theme || '',
+          themeId: q.themeId,
+          subthemeId: q.subthemeId,
           language: q.language
         }));
 
@@ -615,8 +653,6 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
                 </div>
               </>
             )}
-
-            {/* (Removido do grid superior para ficar localizado acima da matriz de questões) */}
           </div>
         </CardContent>
       </Card>
@@ -649,7 +685,6 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
         </CardHeader>
 
         <CardContent className="space-y-6">
-          {/* Seleção de Matérias para Simulado Discursivo - Posicionada no Topo (100% Largura) */}
           {form.type === 'discursivo' && (
             <div className="bg-primary/5 p-4 rounded-xl border border-primary/20 space-y-3 mb-4">
               <div className="flex items-center justify-between flex-wrap gap-2">
@@ -708,14 +743,12 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
             <div className="w-full">
               {form.type === 'discursivo' ? (
                 discursiveSubjectIds.length > 0 ? (
-                  /* Classificação de Questões por Matéria - Menu de Abas Horizontais ACIMA da Tabela */
                   <div className="w-full space-y-4 pt-2">
                     <div>
                       <Label className="text-xs font-bold text-slate-700 uppercase tracking-wider block mb-2">
                         2. Selecione a Matéria para Preencher os Temas das Questões:
                       </Label>
 
-                      {/* Menu de Botões das Matérias - 100% Horizontal no Topo */}
                       <div className="flex flex-wrap gap-2 p-1.5 bg-slate-100 rounded-xl border border-slate-200">
                         {discursiveSubjectIds.map(subId => {
                           const subName = subjects.find(s => s.id === subId)?.name || subId;
@@ -737,7 +770,6 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
                       </div>
                     </div>
 
-                    {/* Tabela de Questões da Matéria Selecionada (Ocupa 100% da Largura) */}
                     {(() => {
                       const activeSubId = selectedDiscursiveTabSubjectId || discursiveSubjectIds[0];
                       const activeSubName = subjects.find(s => s.id === activeSubId)?.name || activeSubId;
@@ -746,9 +778,6 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
                           <div className="bg-primary/10 px-4 py-2.5 border-b border-primary/20 flex items-center justify-between">
                             <span className="font-bold text-foreground text-xs uppercase tracking-wide">
                               Matriz de Conteúdos: {activeSubName}
-                            </span>
-                            <span className="text-xs text-primary font-medium">
-                              Preencha o tema pedagógico de cada questão
                             </span>
                           </div>
                           <div className="max-h-[450px] overflow-y-auto">
@@ -767,11 +796,14 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
                                     <tr key={`${activeSubId}-q-${num}`} className="hover:bg-primary/5 transition-colors">
                                       <td className="px-4 py-2 text-center font-bold text-primary bg-slate-50/50">{num}</td>
                                       <td className="px-4 py-2">
-                                        <Input
-                                          placeholder={`Ex: Questão ${num} de ${activeSubName}`}
-                                          className="h-9 border-slate-200 w-full focus-visible:ring-primary bg-white"
+                                        <ThemeSelect
+                                          subjectId={activeSubId}
+                                          themeTree={themeTree}
                                           value={q.theme}
-                                          onChange={(e) => updateQ(num, 'none', 'theme', e.target.value)}
+                                          themeId={q.themeId}
+                                          subthemeId={q.subthemeId}
+                                          placeholder={`Tema para questão ${num}...`}
+                                          onChange={(data) => updateQFull(num, 'none', data)}
                                         />
                                       </td>
                                     </tr>
@@ -790,7 +822,6 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
                   </div>
                 )
               ) : (
-                /* Matriz Padrão de Questões para ENEM / UERJ Objetivas */
                 <div className="rounded-md border max-h-[500px] overflow-y-auto">
                   <table className="w-full text-sm text-left">
                     <thead className="text-xs text-muted-foreground uppercase bg-muted sticky top-0 z-10 shadow-sm">
@@ -834,11 +865,14 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
                                 </Select>
                               </td>
                               <td className="px-4 py-2">
-                                <Input
-                                  placeholder="Ex: Progressão Aritmética"
-                                  className="h-8"
+                                <ThemeSelect
+                                  subjectId={q.subjectId}
+                                  themeTree={themeTree}
                                   value={q.theme}
-                                  onChange={(e) => updateQ(q.questionNumber, 'none', 'theme', e.target.value)}
+                                  themeId={q.themeId}
+                                  subthemeId={q.subthemeId}
+                                  placeholder="Busque ou digite o tema..."
+                                  onChange={(data) => updateQFull(q.questionNumber, 'none', data)}
                                 />
                               </td>
                             </tr>
@@ -876,11 +910,14 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
                                   </Select>
                                 </td>
                                 <td className="px-4 py-2 border-b border-dashed">
-                                  <Input
-                                    placeholder="Tema de Inglês..."
-                                    className="h-8"
+                                  <ThemeSelect
+                                    subjectId={qEn.subjectId}
+                                    themeTree={themeTree}
                                     value={qEn.theme}
-                                    onChange={(e) => updateQ(qEn.questionNumber, 'ingles', 'theme', e.target.value)}
+                                    themeId={qEn.themeId}
+                                    subthemeId={qEn.subthemeId}
+                                    placeholder="Tema de Inglês..."
+                                    onChange={(data) => updateQFull(qEn.questionNumber, 'ingles', data)}
                                   />
                                 </td>
                               </tr>
@@ -901,11 +938,14 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
                                   </Select>
                                 </td>
                                 <td className="px-4 py-2">
-                                  <Input
-                                    placeholder="Tema de Espanhol..."
-                                    className="h-8"
+                                  <ThemeSelect
+                                    subjectId={qEs.subjectId}
+                                    themeTree={themeTree}
                                     value={qEs.theme}
-                                    onChange={(e) => updateQ(qEs.questionNumber, 'espanhol', 'theme', e.target.value)}
+                                    themeId={qEs.themeId}
+                                    subthemeId={qEs.subthemeId}
+                                    placeholder="Tema de Espanhol..."
+                                    onChange={(data) => updateQFull(qEs.questionNumber, 'espanhol', data)}
                                   />
                                 </td>
                               </tr>
