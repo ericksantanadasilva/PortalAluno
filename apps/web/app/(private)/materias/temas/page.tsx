@@ -350,7 +350,7 @@ export default function TemasPage() {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100 flex items-center gap-3">
-                        <Layers className="w-8 h-8 text-emerald-600" /> Temas e Subtemas (Caça Gaps)
+                        <Layers className="w-8 h-8 text-primary" /> Temas e Subtemas (Caça Gaps)
                     </h1>
                     <p className="text-slate-500 dark:text-slate-400 mt-2">
                         Cadastre e organize os conteúdos cobrados nos simulados por Disciplina, Tema e Subtema.
@@ -364,12 +364,12 @@ export default function TemasPage() {
                             setImportResult(null);
                             setImportModalOpen(true);
                         }}
-                        className="gap-2 border-emerald-600 text-emerald-700 hover:bg-emerald-50 dark:border-emerald-500 dark:text-emerald-400"
+                        className="gap-2 border-primary text-primary hover:bg-primary/5 dark:border-primary dark:text-primary"
                     >
                         <FileSpreadsheet className="w-4 h-4" /> Importar Planilha (.xlsx)
                     </Button>
 
-                    <Button onClick={() => openThemeModal()} className="gap-2 bg-emerald-600 hover:bg-emerald-700 text-white">
+                    <Button onClick={() => openThemeModal()} className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground">
                         <Plus className="w-4 h-4" /> Novo Tema
                     </Button>
                 </div>
@@ -396,7 +396,7 @@ export default function TemasPage() {
             {/* Árvore Hierárquica */}
             {loading ? (
                 <div className="flex flex-col items-center justify-center py-16 gap-3 text-slate-500">
-                    <Loader2 className="w-8 h-8 animate-spin text-emerald-600" />
+                    <Loader2 className="w-8 h-8 animate-spin text-primary" />
                     <p>Carregando catálogo de temas...</p>
                 </div>
             ) : filteredTree.length === 0 ? (
@@ -409,7 +409,7 @@ export default function TemasPage() {
                     {!search && (
                         <Button
                             onClick={() => setImportModalOpen(true)}
-                            className="mt-6 gap-2 bg-emerald-600 text-white"
+                            className="mt-6 gap-2 bg-primary text-primary-foreground"
                         >
                             <FileSpreadsheet className="w-4 h-4" /> Importar Planilha Caça Gaps
                         </Button>
@@ -429,14 +429,14 @@ export default function TemasPage() {
                                 >
                                     <div className="flex items-center gap-3">
                                         {isExpanded ? (
-                                            <ChevronDown className="w-5 h-5 text-emerald-600" />
+                                            <ChevronDown className="w-5 h-5 text-primary" />
                                         ) : (
                                             <ChevronRight className="w-5 h-5 text-slate-400" />
                                         )}
                                         <div>
                                             <CardTitle className="text-lg font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
                                                 {subject.name}
-                                                <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 font-medium">
+                                                <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary dark:bg-primary/10 dark:text-primary font-medium">
                                                     {subject.themes.length} temas | {totalSubthemes} subtemas
                                                 </span>
                                             </CardTitle>
@@ -449,7 +449,7 @@ export default function TemasPage() {
                                             e.stopPropagation();
                                             openThemeModal(subject.id);
                                         }}
-                                        className="gap-1 border-slate-300"
+                                        className="gap-1 border-slate-300 rounded-md"
                                     >
                                         <Plus className="w-3.5 h-3.5" /> Adicionar Tema
                                     </Button>
@@ -473,7 +473,7 @@ export default function TemasPage() {
                                                         <div className="flex items-center justify-between">
                                                             <div
                                                                 onClick={() => toggleTheme(theme.id)}
-                                                                className="flex items-center gap-2 cursor-pointer font-semibold text-slate-700 dark:text-slate-200 hover:text-emerald-600"
+                                                                className="flex items-center gap-2 cursor-pointer font-semibold text-slate-700 dark:text-slate-200 hover:text-primary"
                                                             >
                                                                 {isThemeExpanded ? (
                                                                     <ChevronDown className="w-4 h-4 text-slate-500" />
@@ -491,7 +491,7 @@ export default function TemasPage() {
                                                                     size="sm"
                                                                     variant="ghost"
                                                                     onClick={() => openSubthemeModal(theme.id)}
-                                                                    className="h-8 text-xs text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 gap-1"
+                                                                    className="h-8 text-xs text-primary hover:text-primary/80 hover:bg-primary/5 gap-1"
                                                                 >
                                                                     <Plus className="w-3 h-3" /> Subtema
                                                                 </Button>
@@ -527,7 +527,7 @@ export default function TemasPage() {
                                                                             className="flex items-center justify-between text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900/50 p-1.5 rounded transition-colors"
                                                                         >
                                                                             <span className="flex items-center gap-2">
-                                                                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                                                                <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
                                                                                 {sub.name}
                                                                             </span>
                                                                             <div className="flex items-center gap-1 opacity-80 hover:opacity-100">
@@ -592,7 +592,7 @@ export default function TemasPage() {
                     </div>
                     <DialogFooter>
                         <Button variant="outline" onClick={() => setThemeModalOpen(false)}>Cancelar</Button>
-                        <Button onClick={handleSaveTheme} disabled={saving} className="bg-emerald-600 text-white">
+                        <Button onClick={handleSaveTheme} disabled={saving} className="bg-primary text-primary-foreground">
                             {saving && <Loader2 className="w-4 h-4 animate-spin mr-2" />} Salvar
                         </Button>
                     </DialogFooter>
@@ -617,7 +617,7 @@ export default function TemasPage() {
                     </div>
                     <DialogFooter>
                         <Button variant="outline" onClick={() => setSubthemeModalOpen(false)}>Cancelar</Button>
-                        <Button onClick={handleSaveSubtheme} disabled={saving} className="bg-emerald-600 text-white">
+                        <Button onClick={handleSaveSubtheme} disabled={saving} className="bg-primary text-primary-foreground">
                             {saving && <Loader2 className="w-4 h-4 animate-spin mr-2" />} Salvar
                         </Button>
                     </DialogFooter>
@@ -628,7 +628,7 @@ export default function TemasPage() {
             <Dialog open={importModalOpen} onOpenChange={setImportModalOpen}>
                 <DialogContent className="max-w-2xl">
                     <DialogHeader>
-                        <DialogTitle className="flex items-center gap-2 text-emerald-700">
+                        <DialogTitle className="flex items-center gap-2 text-primary">
                             <FileSpreadsheet className="w-5 h-5" /> Importar Planilha de Temas & Subtemas
                         </DialogTitle>
                         <DialogDescription>
@@ -639,7 +639,7 @@ export default function TemasPage() {
                     <div className="space-y-4 py-2">
                         {!importResult ? (
                             <>
-                                <div className="border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-lg p-6 text-center hover:border-emerald-500 transition-colors">
+                                <div className="border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-lg p-6 text-center hover:border-primary transition-colors">
                                     <Upload className="w-10 h-10 mx-auto text-slate-400 mb-2" />
                                     <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
                                         Clique para selecionar o arquivo Excel (.xlsx, .csv)
@@ -660,7 +660,7 @@ export default function TemasPage() {
                                         <div className="max-h-48 overflow-y-auto border rounded divide-y text-xs">
                                             {excelRows.slice(0, 10).map((row, idx) => (
                                                 <div key={idx} className="p-2 grid grid-cols-3 gap-2">
-                                                    <span className="font-medium text-emerald-700">{row.disciplina}</span>
+                                                    <span className="font-medium text-primary">{row.disciplina}</span>
                                                     <span>{row.tema}</span>
                                                     <span className="text-slate-500">{row.subtema || '-'}</span>
                                                 </div>
@@ -675,9 +675,9 @@ export default function TemasPage() {
                                 )}
                             </>
                         ) : (
-                            <div className="bg-emerald-50 dark:bg-emerald-950/40 p-6 rounded-lg text-center space-y-3">
-                                <CheckCircle2 className="w-12 h-12 mx-auto text-emerald-600" />
-                                <h3 className="text-lg font-bold text-emerald-800 dark:text-emerald-300">
+                            <div className="bg-primary/5 dark:bg-primary/10 p-6 rounded-lg text-center space-y-3">
+                                <CheckCircle2 className="w-12 h-12 mx-auto text-primary" />
+                                <h3 className="text-lg font-bold text-primary dark:text-primary">
                                     Importação Concluída com Sucesso!
                                 </h3>
                                 <div className="grid grid-cols-3 gap-2 text-sm max-w-sm mx-auto bg-white dark:bg-slate-900 p-3 rounded-md shadow-sm border">
@@ -706,7 +706,7 @@ export default function TemasPage() {
                             <Button
                                 onClick={handleConfirmImport}
                                 disabled={importing || excelRows.length === 0}
-                                className="bg-emerald-600 text-white gap-2"
+                                className="bg-primary text-primary-foreground gap-2"
                             >
                                 {importing && <Loader2 className="w-4 h-4 animate-spin" />}
                                 Confirmar Importação ({excelRows.length} linhas)
