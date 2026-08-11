@@ -307,7 +307,7 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
 
     setForm({
       title: exam.title,
-      date: dateStr,
+      date: dateStr || '',
       type: exam.type,
       totalQuestions: exam.totalQuestions,
       isPublished: exam.isPublished,
@@ -506,7 +506,7 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
   const groupedQuestions: Record<number, FormQuestion[]> = {};
   form.questions.forEach(q => {
     if (!groupedQuestions[q.questionNumber]) groupedQuestions[q.questionNumber] = [];
-    groupedQuestions[q.questionNumber].push(q);
+    groupedQuestions[q.questionNumber]!.push(q);
   });
   const groupedKeys = Object.keys(groupedQuestions).map(Number).sort((a, b) => a - b);
 
@@ -586,7 +586,8 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
               <Label>Tipo de Prova</Label>
               <Select
                 value={form.type}
-                onValueChange={(val: string) => {
+                onValueChange={(val) => {
+                  if (!val) return;
                   setForm({
                     ...form,
                     type: val,

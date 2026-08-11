@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { useFrequencia, ScheduledClass } from "@/contexts/FrequenciaContext";
 import { formatDate } from "@/lib/utils";
+import { useConfirmModal } from "@/hooks/useConfirmModal";
 
 interface ControleJanelaValidacaoProps {
   janelas: any[];
@@ -147,12 +148,18 @@ export function ControleJanelaValidacao({
     limparFormulario();
   };
 
+  const { showAlert, showConfirm, ConfirmModal } = useConfirmModal();
+
   const handleExcluir = (janela: any) => {
-    if (!window.confirm(`Remover a janela de ${janela.disciplina} (${getLabelDiaSemana(janela.diaSemana as any)})?`)) {
-      return;
-    }
-    onRemoverJanela(janela.id);
-    if (editandoId === janela.id) limparFormulario();
+    showConfirm(
+      "Remover Janela de Validação",
+      `Remover a janela de ${janela.disciplina} (${getLabelDiaSemana(janela.diaSemana as any)})?`,
+      () => {
+        onRemoverJanela(janela.id);
+        if (editandoId === janela.id) limparFormulario();
+      },
+      "danger"
+    );
   };
 
   const handleGenerate = async () => {
@@ -165,7 +172,7 @@ export function ControleJanelaValidacao({
     <div className="w-full space-y-8">
 
       {/* SEÇÃO 1: Grade Padrão (Templates) */}
-      <div className="rounded-none border-y border-border bg-card p-4 md:px-8 md:py-6">
+      <div className="rounded-2xl border border-border shadow-sm bg-card p-4 md:px-8 md:py-6">
         <div className="mb-5 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
           <div>
             <h3 className="text-lg font-bold text-foreground flex items-center gap-2 flex-wrap">
@@ -342,7 +349,7 @@ export function ControleJanelaValidacao({
               const cfg = STATUS_LABEL[status];
               const selecionada = editandoId === janela.id;
 
-              const aulaDaSemana = aulasDaTurma.find(a => a.presenceWindowId === janela.id);
+              const aulaDaSemana = aulasDaTurma.find(a => (a as any).presenceWindowId === janela.id);
               const showCardAtual = aulaDaSemana ? aulaDaSemana.showCard : false;
 
               return (
@@ -378,7 +385,7 @@ export function ControleJanelaValidacao({
                         if (aulaDaSemana) {
                           updateScheduledClass(aulaDaSemana.id, { showCard: !aulaDaSemana.showCard });
                         } else {
-                          alert("Gere as aulas da semana primeiro para poder exibir/ocultar o card.");
+                          showAlert("Aviso", "Gere as aulas da semana primeiro para poder exibir/ocultar o card.", "warning");
                         }
                       }}
                       className={`flex-1 gap-1.5 text-xs font-semibold rounded-md ${showCardAtual ? "bg-blue-600 hover:bg-blue-700 text-white" : ""}`}
@@ -411,6 +418,7 @@ export function ControleJanelaValidacao({
           </div>
         )}
       </div>
+      <ConfirmModal />
     </div>
   );
 }

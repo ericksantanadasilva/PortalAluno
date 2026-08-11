@@ -56,7 +56,10 @@ export function ValidacaoOnline({
   const isPresente = alunoChamada?.status_atual === "Presente";
 
   const getDateLocal = (isoStr: string) => {
-    const [year, month, day] = isoStr.split('T')[0].split('-').map(Number);
+    const parts = (isoStr || '').split('T')[0]?.split('-').map(Number) || [2026, 1, 1];
+    const year = parts[0] || 2026;
+    const month = parts[1] || 1;
+    const day = parts[2] || 1;
     return new Date(year, month - 1, day);
   };
 
@@ -76,18 +79,18 @@ export function ValidacaoOnline({
     const aulasValidas = aulasDaTurma.filter(c => {
       const dataAula = getDateLocal(c.date);
       const [feH, feM] = c.endTime.split(":").map(Number);
-      dataAula.setHours(feH, feM, 0, 0);
+      dataAula.setHours(feH || 0, feM || 0, 0, 0);
 
       // Considera aulas que fecham hoje ou no futuro
       return dataAula.getTime() >= agoraTempo - (24 * 60 * 60 * 1000); // margem de 1 dia para não sumir no dia
     }).sort((a, b) => {
       const dataA = getDateLocal(a.date);
       const [abHa, abMa] = a.startTime.split(":").map(Number);
-      dataA.setHours(abHa, abMa, 0, 0);
+      dataA.setHours(abHa || 0, abMa || 0, 0, 0);
 
       const dataB = getDateLocal(b.date);
       const [abHb, abMb] = b.startTime.split(":").map(Number);
-      dataB.setHours(abHb, abMb, 0, 0);
+      dataB.setHours(abHb || 0, abMb || 0, 0, 0);
 
       return Math.abs(dataA.getTime() - agoraTempo) - Math.abs(dataB.getTime() - agoraTempo);
     });
@@ -100,11 +103,11 @@ export function ValidacaoOnline({
 
     const dataAulaAbertura = getDateLocal(aulaAtual.date);
     const [abH, abM] = aulaAtual.startTime.split(":").map(Number);
-    dataAulaAbertura.setHours(abH, abM, 0, 0);
+    dataAulaAbertura.setHours(abH || 0, abM || 0, 0, 0);
 
     const dataAulaFechamento = getDateLocal(aulaAtual.date);
     const [feH, feM] = aulaAtual.endTime.split(":").map(Number);
-    dataAulaFechamento.setHours(feH, feM, 0, 0);
+    dataAulaFechamento.setHours(feH || 0, feM || 0, 0, 0);
 
     // Se hoje não for o dia da aula, consideramos fora do dia
     if (dataAulaAbertura.toDateString() !== agora.toDateString()) {
@@ -186,7 +189,7 @@ export function ValidacaoOnline({
         return;
       }
 
-      confirmarPresencaOnline(aluno.id, aulaAtual.id, "Presente");
+      confirmarPresencaOnline(aluno.id, aulaAtual.classId, aulaAtual.date, aulaAtual.subjectId || disciplinaAtivaId);
       setFeedback({
         type: "success",
         text: "Presença confirmada! Seu check-in foi registrado na chamada da secretaria.",

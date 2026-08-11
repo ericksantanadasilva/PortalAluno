@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
+import { PageContainer, PageHeader } from '@/components/layout';
+import { useConfirmModal } from '@/hooks/useConfirmModal';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -37,6 +39,7 @@ interface SubmissionItem {
   originalPdfUrl: string;
   correctedPdfUrl?: string;
   totalScore?: number;
+  subjectName?: string;
   student: {
     id: string;
     name: string;
@@ -54,6 +57,7 @@ interface SubmissionItem {
 }
 
 export default function CorrectorAreaPage() {
+  const { showAlert, ConfirmModal } = useConfirmModal();
   const [submissions, setSubmissions] = useState<SubmissionItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [activeSubmission, setActiveSubmission] = useState<SubmissionItem | null>(null);
@@ -119,7 +123,7 @@ export default function CorrectorAreaPage() {
       });
 
       if (!res.ok) {
-        alert('Erro ao gerar arquivo ZIP das suas provas.');
+        showAlert('Erro no Download', 'Erro ao gerar arquivo ZIP das suas provas.', 'danger');
         return;
       }
 
@@ -138,7 +142,7 @@ export default function CorrectorAreaPage() {
       document.body.removeChild(a);
     } catch (e) {
       console.error('Erro ao baixar lote:', e);
-      alert('Erro de conexão ao baixar provas em lote.');
+      showAlert('Erro de Conexão', 'Erro de conexão ao baixar provas em lote.', 'danger');
     } finally {
       setDownloadingBatch(false);
     }
@@ -321,7 +325,7 @@ export default function CorrectorAreaPage() {
                   href={`${pdfUrl}&download=true`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  download={`${activeSubmission.student.name} - ${activeSubmission.exam.title} (${activeSubmission.subject?.subjectName || 'Geral'}).pdf`}
+                  download={`${activeSubmission.student.name} - ${activeSubmission.exam.title}${activeSubmission.subjectName ? ` (${activeSubmission.subjectName})` : ''}.pdf`}
                   className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors shadow-sm"
                   title="Baixar arquivo original PDF"
                 >
@@ -417,7 +421,7 @@ export default function CorrectorAreaPage() {
                   <Input
                     type="file"
                     accept="application/pdf"
-                    onChange={(e) => setCorrectedFile(e.target.files ? e.target.files[0] : null)}
+                    onChange={(e) => setCorrectedFile(e.target.files && e.target.files[0] ? e.target.files[0] : null)}
                     className="text-xs"
                   />
                   {correctedFile && (
@@ -595,6 +599,7 @@ export default function CorrectorAreaPage() {
           )}
         </CardContent>
       </Card>
+      <ConfirmModal />
     </div>
   );
 }

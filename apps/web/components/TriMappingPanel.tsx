@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { UploadCloud, FileSpreadsheet, Loader2, Save, Database } from "lucide-react";
+import { useConfirmModal } from "@/hooks/useConfirmModal";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -32,6 +33,7 @@ const SUBJECTS = ["MATEMATICA", "NATUREZAS", "HUMANAS", "LINGUAGENS"];
 const TIERS = ["principal", "facil", "dificil"];
 
 export function TriMappingPanel() {
+    const { showAlert, ConfirmModal } = useConfirmModal();
     const [file, setFile] = useState<File | null>(null);
     const [year, setYear] = useState(new Date().getFullYear().toString());
     const [previewData, setPreviewData] = useState<PreviewData | null>(null);
@@ -68,7 +70,7 @@ export function TriMappingPanel() {
     });
     const [mappings, setMappings] = useState<Mapping[]>(initialMappings);
 
-    const fetchSavedData = async (targetYear: string) => {
+    const fetchSavedData = async (targetYear: number) => {
         if (!targetYear) return;
         setIsLoadingSaved(true);
         try {
@@ -121,7 +123,7 @@ export function TriMappingPanel() {
             setPreviewData(data);
         } catch (error) {
             console.error(error);
-            alert("Erro ao processar o arquivo. Verifique se é uma planilha válida.");
+            showAlert("Erro", "Erro ao processar o arquivo. Verifique se é uma planilha válida.", "danger");
         } finally {
             setIsUploading(false);
         }
@@ -168,7 +170,7 @@ export function TriMappingPanel() {
             }
 
             const data = await res.json();
-            alert(`Sucesso! ${data.count} linhas processadas e inseridas no banco para o ano ${year}.`);
+            showAlert("Sucesso", `Sucesso! ${data.count} linhas processadas e inseridas no banco para o ano ${year}.`, "success");
             // Reset state
             setFile(null);
             setPreviewData(null);
@@ -178,7 +180,7 @@ export function TriMappingPanel() {
         } catch (error: unknown) {
             console.error(error);
             const msg = error instanceof Error ? error.message : "Erro ao salvar os dados.";
-            alert(msg);
+            showAlert("Erro ao Processar", msg, "danger");
         } finally {
             setIsProcessing(false);
         }
@@ -188,6 +190,7 @@ export function TriMappingPanel() {
 
     return (
         <div className="space-y-6">
+            <ConfirmModal />
             <Card>
                 <CardHeader>
                     <CardTitle>Mapeador Dinâmico de TRI</CardTitle>

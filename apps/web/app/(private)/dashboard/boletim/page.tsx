@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { PageContainer, EmptyState } from "@/components/layout";
 import {
   tenantConfigMock,
   type BoletimData,
@@ -19,7 +20,6 @@ import {
 } from "lucide-react";
 
 import { formatDate } from "@/lib/utils";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Label } from "@/components/ui/label";
@@ -132,7 +132,7 @@ export default function BoletimDetalhado() {
 
   if (isLoading) {
     return (
-      <div className="w-full h-[60vh] flex flex-col items-center justify-center p-12 text-slate-500 gap-3">
+      <div className="w-full h-[60vh] flex flex-col items-center justify-center p-12 text-muted-foreground gap-3">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
         <p className="text-sm font-medium">Carregando informações...</p>
       </div>
@@ -145,24 +145,21 @@ export default function BoletimDetalhado() {
   const ActiveView = COMPONENTES_VIEWS[tipoSimuladoKey] || BoletimEnemView;
 
   return (
-    <div
-      className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 bg-[#F8FAFC] p-4 sm:p-8 rounded-3xl"
-      style={{ "--primary": primaryHSL } as React.CSSProperties}
-    >
+    <PageContainer className="animate-in fade-in slide-in-from-bottom-4 duration-500" style={{ "--primary": primaryHSL } as React.CSSProperties}>
       {["admin", "super_admin", "secretaria"].includes(role || '') && (
         <div className="mb-4 p-5 bg-amber-500/10 border border-amber-500/30 rounded-xl space-y-3">
           <div>
-            <Label className="text-amber-800 font-bold mb-1 flex items-center gap-1.5">
+            <Label className="text-amber-800 dark:text-amber-300 font-bold mb-1 flex items-center gap-1.5">
               <span>Simulação de Acesso (Administrador)</span>
             </Label>
-            <p className="text-xs text-amber-700/80 mb-3">
+            <p className="text-xs text-amber-700/80 dark:text-amber-400/80 mb-3">
               Selecione um aluno para visualizar o Boletim Pedagógico dele.
             </p>
           </div>
           
           <Popover open={alunoPopoverOpen} onOpenChange={setAlunoPopoverOpen}>
             <PopoverTrigger
-              className={cn(buttonVariants({ variant: "outline" }), "justify-between w-[450px] font-normal h-10 bg-white max-w-full")}
+              className={cn(buttonVariants({ variant: "outline" }), "justify-between w-[450px] font-normal h-10 bg-background max-w-full")}
               role="combobox"
               aria-expanded={alunoPopoverOpen}
             >
@@ -207,28 +204,29 @@ export default function BoletimDetalhado() {
       )}
 
       {loadingBoletins ? (
-        <div className="w-full h-64 flex flex-col items-center justify-center p-12 text-slate-500 gap-3">
+        <div className="w-full h-64 flex flex-col items-center justify-center p-12 text-muted-foreground gap-3">
           <Loader2 className="w-8 h-8 animate-spin text-primary" />
           <p className="text-sm font-medium">Buscando boletins do aluno...</p>
         </div>
       ) : !boletimAtivo ? (
-        <div className="max-w-2xl p-12 border border-dashed border-border rounded-xl text-center bg-white shadow-sm mx-auto mt-12">
-          <GraduationCap className="w-12 h-12 mx-auto text-slate-300 mb-4" />
-          <h3 className="text-lg font-semibold text-slate-700">Nenhum boletim disponível</h3>
-          <p className="text-slate-500 text-sm mt-2">
-            {role === "aluno" 
+        <EmptyState
+          icon={GraduationCap}
+          title="Nenhum boletim disponível"
+          description={
+            role === "aluno" 
               ? "Você ainda não participou de nenhum simulado cujos resultados foram liberados." 
-              : "Este aluno não participou de nenhum simulado até o momento."}
-          </p>
-        </div>
+              : "Este aluno não participou de nenhum simulado até o momento."
+          }
+          className="mt-8"
+        />
       ) : (
         <>
           {/* ── Cabeçalho Fixo (Título, Matrícula, Nome e Turma) ── */}
-          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 border-b border-slate-200 pb-8 pt-4">
+          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 border-b border-border pb-8 pt-4">
             <div className="space-y-2">
-              <h1 className="text-3xl font-bold tracking-tight text-foreground">
+              <h2 className="text-3xl font-bold tracking-tight text-foreground">
                 Boletim Pedagógico Avançado
-              </h1>
+              </h2>
               <p className="text-muted-foreground text-lg">{boletimAtivo.simulado.titulo}</p>
               <p className="text-sm text-muted-foreground">
                 Aplicado em {formatDate(boletimAtivo.simulado.data)}
@@ -236,46 +234,46 @@ export default function BoletimDetalhado() {
             </div>
 
             {/* Informações do Aluno */}
-            <div className="flex flex-col sm:flex-row gap-8 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.015)] border border-slate-100 rounded-2xl p-6 shrink-0 w-full lg:w-auto">
-              <div className="space-y-1.5 border-b sm:border-b-0 sm:border-r border-slate-100 pb-4 sm:pb-0 sm:pr-8">
-                <span className="text-xs font-medium text-slate-400 uppercase tracking-wider block">
+            <div className="flex flex-col sm:flex-row gap-8 bg-card shadow-sm border border-border rounded-2xl p-6 shrink-0 w-full lg:w-auto">
+              <div className="space-y-1.5 border-b sm:border-b-0 sm:border-r border-border pb-4 sm:pb-0 sm:pr-8">
+                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider block">
                   Aluno
                 </span>
-                <p className="text-xl font-semibold text-slate-800 tracking-tight">{boletimAtivo.aluno.nome}</p>
+                <p className="text-xl font-semibold text-foreground tracking-tight">{boletimAtivo.aluno.nome}</p>
               </div>
-              <div className="space-y-1.5 border-b sm:border-b-0 sm:border-r border-slate-100 pb-4 sm:pb-0 sm:pr-8">
-                <span className="text-xs font-medium text-slate-400 uppercase tracking-wider block">
+              <div className="space-y-1.5 border-b sm:border-b-0 sm:border-r border-border pb-4 sm:pb-0 sm:pr-8">
+                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider block">
                   Matrícula
                 </span>
-                <p className="text-lg font-medium text-slate-700 tabular-nums">
+                <p className="text-lg font-medium text-foreground tabular-nums">
                   {boletimAtivo.aluno.matricula}
                 </p>
               </div>
               <div className="space-y-1.5">
-                <span className="text-xs font-medium text-slate-400 uppercase tracking-wider block">
+                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider block">
                   Turma
                 </span>
-                <p className="text-lg font-medium text-slate-700">{boletimAtivo.aluno.turma}</p>
+                <p className="text-lg font-medium text-foreground">{boletimAtivo.aluno.turma}</p>
               </div>
             </div>
           </div>
 
           {/* ── Seletor de Versões ── */}
-          <div className="flex flex-wrap items-center gap-3 bg-white p-3 rounded-xl border border-slate-100 shadow-sm w-fit">
+          <div className="flex flex-wrap items-center gap-3 bg-card p-3 rounded-xl border border-border shadow-sm w-fit">
             <label
               htmlFor="tipo-simulado-select"
-              className="text-sm font-semibold text-slate-600 whitespace-nowrap pl-2"
+              className="text-sm font-semibold text-muted-foreground whitespace-nowrap pl-2"
             >
               Simulado Realizado:
             </label>
             <div className="relative">
               <select
                 id="tipo-simulado-select"
-                value={examAtivoId}
+                value={examAtivoId || ''}
                 onChange={(e) => {
                   setExamAtivoId(e.target.value);
                 }}
-                className="appearance-none bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 pr-10 text-sm font-bold text-primary cursor-pointer transition-all hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1"
+                className="appearance-none bg-background border border-border rounded-lg px-4 py-2 pr-10 text-sm font-bold text-primary cursor-pointer transition-all hover:bg-accent focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1"
               >
                 {boletins.map((bol) => (
                   <option key={bol.id} value={bol.id}>
@@ -298,6 +296,6 @@ export default function BoletimDetalhado() {
           <ActiveView data={boletimAtivo} />
         </>
       )}
-    </div>
+    </PageContainer>
   );
 }

@@ -18,6 +18,8 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 
+import { useConfirmModal } from '@/hooks/useConfirmModal';
+
 const API_URL = "/api";
 
 interface Employee {
@@ -29,6 +31,7 @@ interface Employee {
 }
 
 export function EmployeesTab() {
+  const { showAlert, showConfirm, ConfirmModal } = useConfirmModal();
   const [loading, setLoading] = useState(true);
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -78,7 +81,7 @@ export function EmployeesTab() {
 
   const handleConvidar = async () => {
     if (!formName || !formEmail || !formDepartment) {
-      alert("Preencha todos os campos.");
+      showAlert("Campos Obrigatórios", "Preencha todos os campos para convidar o funcionário.", "warning");
       return;
     }
 
@@ -111,32 +114,37 @@ export function EmployeesTab() {
         setFormDepartment('');
       } else {
         const errData = await res.json();
-        alert(errData.error || "Erro ao convidar funcionário.");
+        showAlert("Erro ao Convidar", errData.error || "Erro ao convidar funcionário.", "danger");
       }
     } catch (err) {
       console.error(err);
-      alert("Erro de conexão ao convidar funcionário.");
+      showAlert("Erro de Conexão", "Erro de conexão ao convidar funcionário.", "danger");
     }
   };
 
-  const handleRemover = async (id: string) => {
-    if (!confirm("Tem certeza que deseja remover este funcionário? O acesso dele será revogado.")) return;
+  const handleRemover = (id: string) => {
+    showConfirm(
+      "Remover Funcionário",
+      "Tem certeza que deseja remover este funcionário? O acesso dele será revogado.",
+      async () => {
+        try {
+          const res = await fetch(`${API_URL}/employees/${id}`, {
+            method: 'DELETE',
+            headers: getHeaders()
+          });
 
-    try {
-      const res = await fetch(`${API_URL}/employees/${id}`, {
-        method: 'DELETE',
-        headers: getHeaders()
-      });
-
-      if (res.ok) {
-        setEmployees(prev => prev.filter(e => e.id !== id));
-      } else {
-        const errData = await res.json();
-        alert(errData.error || "Erro ao remover funcionário.");
-      }
-    } catch (err) {
-      console.error(err);
-    }
+          if (res.ok) {
+            setEmployees(prev => prev.filter(e => e.id !== id));
+          } else {
+            const errData = await res.json();
+            showAlert("Erro ao Remover", errData.error || "Erro ao remover funcionário.", "danger");
+          }
+        } catch (err) {
+          console.error(err);
+        }
+      },
+      "danger"
+    );
   };
 
   const filteredEmployees = employees.filter(emp => {
@@ -324,7 +332,7 @@ export function EmployeesTab() {
             </div>
             <Button size="sm" className="px-3" onClick={() => {
               navigator.clipboard.writeText(generatedPassword);
-              alert("Copiado!");
+              showAlert("Copiado", "Senha copiada para a área de transferência!", "success");
             }}>
               <span className="sr-only">Copy</span>
               Copiar
@@ -337,6 +345,7 @@ export function EmployeesTab() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      <ConfirmModal />
     </div>
   );
 }

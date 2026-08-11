@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { PageContainer, PageHeader, EmptyState } from '@/components/layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -66,13 +67,11 @@ export default function SimuladosStudentPage() {
   const objectiveExams = exams.filter(e => e.type?.toLowerCase() !== 'discursivo');
 
   return (
-    <div className="w-full max-w-7xl mx-auto space-y-8 p-4 md:p-8 overflow-x-hidden">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight text-slate-800">Meus Simulados</h1>
-        <p className="text-muted-foreground mt-2">
-          Aqui você encontra os simulados objetivos e discursivos disponíveis. Envie suas resoluções ou preencha o cartão-resposta digital.
-        </p>
-      </div>
+    <PageContainer>
+      <PageHeader
+        title="Meus Simulados"
+        description="Aqui você encontra os simulados objetivos e discursivos disponíveis. Envie suas resoluções ou preencha o cartão-resposta digital."
+      />
 
       {loading ? (
         <div className="flex flex-col items-center justify-center p-20 text-muted-foreground">
@@ -97,11 +96,11 @@ export default function SimuladosStudentPage() {
           {/* TAB: DISCURSIVOS */}
           <TabsContent value="discursive" className="space-y-6">
             {discursiveExams.length === 0 ? (
-              <div className="text-center p-12 bg-white border border-dashed rounded-xl shadow-sm">
-                <FileText className="w-12 h-12 mx-auto text-slate-300 mb-4" />
-                <h3 className="text-lg font-semibold text-slate-700">Nenhum simulado discursivo pendente</h3>
-                <p className="text-muted-foreground mt-1">Os simulados discursivos para envio de PDF aparecerão aqui.</p>
-              </div>
+              <EmptyState
+                icon={FileText}
+                title="Nenhum simulado discursivo pendente"
+                description="Os simulados discursivos para envio de PDF aparecerão aqui."
+              />
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {discursiveExams.map((discExam) => (
@@ -118,11 +117,11 @@ export default function SimuladosStudentPage() {
           {/* TAB: OBJETIVOS */}
           <TabsContent value="objective" className="space-y-6">
             {objectiveExams.length === 0 ? (
-              <div className="text-center p-12 bg-white border border-dashed rounded-xl shadow-sm">
-                <FileSignature className="w-12 h-12 mx-auto text-slate-300 mb-4" />
-                <h3 className="text-lg font-semibold text-slate-700">Nenhum simulado objetivo no momento</h3>
-                <p className="text-muted-foreground mt-1">Os simulados objetivas com cartão-resposta aparecerão aqui assim que forem liberados.</p>
-              </div>
+              <EmptyState
+                icon={FileSignature}
+                title="Nenhum simulado objetivo no momento"
+                description="Os simulados objetivas com cartão-resposta aparecerão aqui assim que forem liberados."
+              />
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {objectiveExams.map((exam) => {
@@ -239,6 +238,6 @@ export default function SimuladosStudentPage() {
           </TabsContent>
         </Tabs>
       )}
-    </div>
+    </PageContainer>
   );
 }

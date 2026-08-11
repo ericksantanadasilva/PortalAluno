@@ -58,7 +58,7 @@ export function OmrImportTab() {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      setFile(e.target.files[0]);
+      setFile(e.target.files[0] || null);
     }
   };
 
@@ -138,7 +138,7 @@ export function OmrImportTab() {
               {loadingExams ? (
                 <div className="h-10 flex items-center text-sm text-muted-foreground"><Loader2 className="w-4 h-4 animate-spin mr-2"/> Carregando...</div>
               ) : (
-                <Select value={selectedExamId} onValueChange={setSelectedExamId}>
+                <Select value={selectedExamId} onValueChange={(val) => val && setSelectedExamId(val)}>
                   <SelectTrigger className="bg-white w-full md:w-[350px]">
                     <span className="truncate">
                       {selectedExam ? `${selectedExam.title} (${selectedExam.type})` : <SelectValue placeholder="Selecione um simulado" />}
@@ -158,7 +158,7 @@ export function OmrImportTab() {
             {selectedExam?.isEnemFull && (
               <div className="space-y-2 animate-in fade-in slide-in-from-top-2">
                 <Label>Qual dia deseja importar?</Label>
-                <Select value={dayNumber} onValueChange={setDayNumber}>
+                <Select value={dayNumber} onValueChange={(val) => val && setDayNumber(val)}>
                   <SelectTrigger className="bg-white w-full md:w-[300px]">
                     <span className="truncate">
                       {dayNumber === '1' ? 'Dia 1 (Linguagens e Humanas)' : (dayNumber === '2' ? 'Dia 2 (Natureza e Matemática)' : <SelectValue placeholder="Selecione o dia" />)}

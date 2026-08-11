@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { AlertTriangle, CheckCircle2, Save, Loader2 } from 'lucide-react';
+import { useConfirmModal } from '@/hooks/useConfirmModal';
 
 const API_URL = "/api";
 
@@ -130,17 +131,26 @@ export function AnswerKeysManager({ updateTrigger }: { onUpdate?: () => void, up
     }));
   };
 
+  const { showAlert, showConfirm, ConfirmModal } = useConfirmModal();
+
   const handleSaveAnswerKey = async () => {
     if (!selectedExamId) return;
     
     const unanswered = questions.filter(q => !q.correctAlternative && !q.isAnnulled);
     if (unanswered.length > 0) {
-      if (!confirm(`Existem ${unanswered.length} questões sem resposta ou não anuladas. Deseja salvar mesmo assim?`)) {
-        return;
-      }
+      showConfirm(
+        'Questões sem Resposta',
+        `Existem ${unanswered.length} questões sem resposta ou não anuladas. Deseja salvar mesmo assim?`,
+        () => executeSave(),
+        'warning'
+      );
+      return;
     }
     
-    // Send all questions that we have in state, as we are also saving subjectId, theme, language
+    executeSave();
+  };
+
+  const executeSave = async () => {
     setSaving(true);
     try {
       const token = localStorage.getItem('token');
@@ -154,13 +164,13 @@ export function AnswerKeysManager({ updateTrigger }: { onUpdate?: () => void, up
       });
       
       if (res.ok) {
-        alert('Gabarito salvo com sucesso!');
+        showAlert('Sucesso', 'Gabarito salvo com sucesso!', 'success');
       } else {
-        alert('Erro ao salvar gabarito.');
+        showAlert('Erro', 'Erro ao salvar gabarito.', 'danger');
       }
     } catch (error) {
       console.error(error);
-      alert('Erro interno.');
+      showAlert('Erro Interno', 'Erro ao processar requisição no servidor.', 'danger');
     } finally {
       setSaving(false);
     }
@@ -177,7 +187,7 @@ export function AnswerKeysManager({ updateTrigger }: { onUpdate?: () => void, up
         </CardHeader>
         <CardContent className="space-y-8 pt-8">
           <div className="max-w-md">
-            <Select value={selectedExamId} onValueChange={setSelectedExamId} disabled={loadingExams}>
+            <Select value={selectedExamId} onValueChange={(val) => val && setSelectedExamId(val)} disabled={loadingExams}>
               <SelectTrigger>
                 <SelectValue placeholder={loadingExams ? "Carregando..." : "Selecione um Simulado Cadastrado..."}>
                   {selectedExamId ? exams.find(e => e.id === selectedExamId)?.title : null}
@@ -278,6 +288,7 @@ export function AnswerKeysManager({ updateTrigger }: { onUpdate?: () => void, up
           </Button>
         </CardFooter>
       </Card>
+      <ConfirmModal />
     </div>
   );
 }

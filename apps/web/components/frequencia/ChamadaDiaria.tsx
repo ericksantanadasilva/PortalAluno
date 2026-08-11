@@ -132,16 +132,7 @@ export function ChamadaDiaria({
   const aulaAtual = aulas.find((a) => a.id === aulaSelecionada);
 
   return (
-    <div className="w-full rounded-2xl border-none shadow-[0_8px_30px_rgb(0,0,0,0.02)] bg-white overflow-hidden">
-
-      <div className="px-4 md:px-8 py-4 md:py-5 border-b border-border">
-        <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">
-          Frequência & Abonos
-        </h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          {formatDate(dataSelecionada)}
-        </p>
-      </div>
+    <div className="w-full rounded-2xl border border-border shadow-sm bg-card overflow-hidden">
       {/* Barra de filtros integrada ao painel */}
       <div className="flex flex-col sm:flex-row sm:items-end gap-4 p-4 md:px-8 md:py-5 border-b border-slate-100 bg-primary/5">
         <div className="flex-1 min-w-0 space-y-1.5">

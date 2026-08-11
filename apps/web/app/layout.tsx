@@ -33,7 +33,7 @@ export default async function RootLayout({
   const slug = headersList.get('x-tenant-slug') || '';
 
   // Busca a configuração do Tenant da API pública
-  let tenantConfig = { ...tenantConfigMock, slug };
+  let tenantConfig: Record<string, any> = { ...tenantConfigMock, slug };
   const backendUrl = process.env.API_BASE_URL || 'http://localhost:3001';
   
   try {
@@ -63,7 +63,7 @@ export default async function RootLayout({
         logo_url: data.logoUrl ? data.logoUrl.replace(backendUrl, '') : fallbackLogo,
         background_login: data.loginUrl ? data.loginUrl.replace(backendUrl, '') : tenantConfigMock.background_login,
         nome: tenantName,
-        allowedReportTemplates: data.allowedReportTemplates || tenantConfigMock.allowedReportTemplates || ["ENEM", "UERJ", "ENEM_PARCIAL", "DISCURSIVO"]
+        allowedReportTemplates: data.allowedReportTemplates || (tenantConfigMock as any).allowedReportTemplates || ["ENEM", "UERJ", "ENEM_PARCIAL", "DISCURSIVO"]
       };
     }
   } catch (error) {
@@ -78,7 +78,7 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-background`}
         suppressHydrationWarning
       >
-        <TenantProvider tenantConfig={tenantConfig}>
+        <TenantProvider tenantConfig={tenantConfig as any}>
           {children}
         </TenantProvider>
       </body>

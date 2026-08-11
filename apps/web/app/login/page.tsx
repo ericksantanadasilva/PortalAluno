@@ -1,15 +1,17 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useTenant } from "@/components/TenantProvider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2, ArrowLeft, Eye, EyeOff } from "lucide-react";
+import { Loader2, ArrowLeft, Eye, EyeOff, ShieldCheck, UserCheck, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useConfirmModal } from '@/hooks/useConfirmModal';
 
 export default function LoginPage() {
+  const { showAlert, ConfirmModal } = useConfirmModal();
   const router = useRouter();
   const tenantConfig = useTenant();
   const [isLoading, setIsLoading] = useState(false);
@@ -101,7 +103,7 @@ export default function LoginPage() {
 
       setMustReset(false);
       setLoginForm({ identifier: savedCredentials.identifier, password: newPassword });
-      alert("Senha atualizada com sucesso! Insira sua nova senha para entrar.");
+      showAlert("Senha Atualizada", "Senha atualizada com sucesso! Insira sua nova senha para entrar.", "success");
     } catch (err) {
       setError((err as Error).message);
     } finally {
@@ -258,6 +260,7 @@ export default function LoginPage() {
         <div className="absolute inset-0 bg-primary/20 mix-blend-multiply" />
         <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
       </div>
+      <ConfirmModal />
     </div>
   );
 }

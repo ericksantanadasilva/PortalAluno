@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { useConfirmModal } from '@/hooks/useConfirmModal';
 import { FileUp, CheckCircle2, Clock, FileText, Loader2, AlertCircle } from 'lucide-react';
 
 export type DiscursiveSubject = {
@@ -113,6 +114,8 @@ export function DiscursiveExamCard({ exam, onSubmissionSuccess }: DiscursiveExam
     }
   };
 
+  const { showAlert, ConfirmModal } = useConfirmModal();
+
   const handleViewPdf = async (submissionId: string) => {
     try {
       setViewingSubmissionId(submissionId);
@@ -124,7 +127,7 @@ export function DiscursiveExamCard({ exam, onSubmissionSuccess }: DiscursiveExam
       });
 
       if (!res.ok) {
-        alert('Erro ao carregar o PDF enviado.');
+        showAlert('Erro no PDF', 'Erro ao carregar o PDF enviado.', 'danger');
         return;
       }
 
@@ -136,7 +139,7 @@ export function DiscursiveExamCard({ exam, onSubmissionSuccess }: DiscursiveExam
       setTimeout(() => window.URL.revokeObjectURL(url), 60000);
     } catch (error) {
       console.error('Erro ao visualizar PDF:', error);
-      alert('Erro ao carregar o PDF enviado.');
+      showAlert('Erro no PDF', 'Erro ao carregar o PDF enviado.', 'danger');
     } finally {
       setViewingSubmissionId(null);
     }
@@ -324,6 +327,7 @@ export function DiscursiveExamCard({ exam, onSubmissionSuccess }: DiscursiveExam
           })}
         </div>
       </CardContent>
+      <ConfirmModal />
     </Card>
   );
 }

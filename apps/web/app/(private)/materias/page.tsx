@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { PageContainer, PageHeader, ContentCard } from '@/components/layout';
+import { useConfirmModal } from '@/hooks/useConfirmModal';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -21,6 +23,7 @@ type Subject = {
 };
 
 export default function SubjectsPage() {
+  const { showAlert, showConfirm, ConfirmModal } = useConfirmModal();
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [loading, setLoading] = useState(true);
   
@@ -70,7 +73,7 @@ export default function SubjectsPage() {
 
   const handleSave = async () => {
     if (!subjectName.trim()) {
-      alert('O nome da disciplina é obrigatório.');
+      showAlert('Campo Obrigatório', 'O nome da disciplina é obrigatório.', 'warning');
       return;
     }
     
@@ -104,14 +107,21 @@ export default function SubjectsPage() {
       fetchSubjects();
     } catch (error: any) {
       console.error(error);
-      alert(error.message || 'Erro interno.');
+      showAlert('Erro ao Salvar', error.message || 'Erro interno.', 'danger');
     } finally {
       setSaving(false);
     }
   };
 
+  const confirmDelete = (id: string, force = false) => {
+    const msg = force
+      ? 'Deseja forçar a exclusão? As questões associadas perderão seus temas e ficarão marcadas como "Sem Tema".'
+      : 'Deseja realmente excluir esta disciplina? (Seus temas e subtemas vinculados também serão removidos)';
+
+    showConfirm('Excluir Disciplina', msg, () => handleDelete(id, force), 'danger');
+  };
+
   const handleDelete = async (id: string, force = false) => {
-    if (!force && !confirm('Deseja realmente excluir esta disciplina? (Seus temas e subtemas vinculados também serão removidos)')) return;
     try {
       const token = localStorage.getItem('token');
       const url = force ? `${API_URL}/subjects/${id}?force=true` : `${API_URL}/subjects/${id}`;
@@ -123,9 +133,7 @@ export default function SubjectsPage() {
       if (!res.ok) {
         const errData = await res.json();
         if (errData.canForce) {
-          if (confirm(`${errData.error}\nDeseja forçar a exclusão? As questões associadas perderão seus temas e ficarão marcadas como "Sem Tema".`)) {
-            return handleDelete(id, true);
-          }
+          confirmDelete(id, true);
           return;
         }
         throw new Error(errData.error || 'Erro ao excluir disciplina');
@@ -134,90 +142,85 @@ export default function SubjectsPage() {
       setSubjects(subjects.filter(s => s.id !== id));
     } catch (error: any) {
       console.error('Erro ao excluir', error);
-      alert(error.message || 'Erro ao excluir disciplina');
+      showAlert('Erro ao Excluir', error.message || 'Erro ao excluir disciplina', 'danger');
     }
   };
 
   return (
-    <div className="w-full max-w-7xl mx-auto space-y-8 p-4 md:p-8">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Disciplinas</h1>
-          <p className="text-muted-foreground mt-2">
-            Gerencie as matérias (disciplinas) oferecidas na sua unidade. Elas serão utilizadas nas avaliações e relatórios.
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <Link href="/materias/temas">
-            <Button variant="outline" className="gap-2 border-emerald-600 text-emerald-700 hover:bg-emerald-50 dark:border-emerald-500 dark:text-emerald-400">
-              <Layers className="w-4 h-4" /> Temas e Subtemas (Caça Gaps)
+    <PageContainer>
+      <PageHeader
+        title="Disciplinas"
+        description="Gerencie as matérias (disciplinas) oferecidas na sua unidade. Elas serão utilizadas nas avaliações e relatórios."
+        actions={
+          <>
+            <Link href="/materias/temas">
+              <Button variant="outline" className="gap-2 border-emerald-600 text-emerald-700 hover:bg-emerald-50 dark:border-emerald-500 dark:text-emerald-400">
+                <Layers className="w-4 h-4" /> Temas e Subtemas (Caça Gaps)
+              </Button>
+            </Link>
+            <Button onClick={() => openModal()} className="gap-2">
+              <Plus className="w-4 h-4" /> Nova Disciplina
             </Button>
-          </Link>
-          <Button onClick={() => openModal()} className="gap-2">
-            <Plus className="w-4 h-4" /> Nova Disciplina
-          </Button>
-        </div>
-      </div>
+          </>
+        }
+      />
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Disciplinas Cadastradas</CardTitle>
-          <CardDescription>Lista completa de todas as disciplinas ativas no sistema.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
+      <ContentCard
+        title="Disciplinas Cadastradas"
+        description="Lista completa de todas as disciplinas ativas no sistema."
+      >
+        <div className="rounded-md border">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Nome da Disciplina</TableHead>
+                <TableHead>Data de Criação</TableHead>
+                <TableHead className="w-[120px] text-right">Ações</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {loading ? (
                 <TableRow>
-                  <TableHead>Nome da Disciplina</TableHead>
-                  <TableHead>Data de Criação</TableHead>
-                  <TableHead className="w-[120px] text-right">Ações</TableHead>
+                  <TableCell colSpan={3} className="text-center py-8 text-muted-foreground">
+                    <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2" />
+                    Carregando...
+                  </TableCell>
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {loading ? (
-                  <TableRow>
-                    <TableCell colSpan={3} className="text-center py-8 text-muted-foreground">
-                      <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2" />
-                      Carregando...
+              ) : subjects.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={3} className="text-center py-8 text-muted-foreground">
+                    Nenhuma disciplina cadastrada ainda.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                subjects.map((subject) => (
+                  <TableRow key={subject.id}>
+                    <TableCell className="font-medium">
+                      {subject.name}
+                      {!subject.isAttendanceSubject && (
+                        <span className="ml-2 inline-flex items-center rounded-md bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
+                          Não lista na chamada
+                        </span>
+                      )}
+                    </TableCell>
+                    <TableCell>{new Date(subject.createdAt).toLocaleDateString('pt-BR')}</TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex items-center justify-end gap-1">
+                        <Button variant="ghost" size="icon" onClick={() => openModal(subject)} className="text-slate-500 hover:text-primary">
+                          <Edit2 className="w-4 h-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10 hover:text-destructive" onClick={() => confirmDelete(subject.id)}>
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
-                ) : subjects.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={3} className="text-center py-8 text-muted-foreground">
-                      Nenhuma disciplina cadastrada ainda.
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  subjects.map((subject) => (
-                    <TableRow key={subject.id}>
-                      <TableCell className="font-medium">
-                        {subject.name}
-                        {!subject.isAttendanceSubject && (
-                          <span className="ml-2 inline-flex items-center rounded-md bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
-                            Não lista na chamada
-                          </span>
-                        )}
-                      </TableCell>
-                      <TableCell>{new Date(subject.createdAt).toLocaleDateString('pt-BR')}</TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex items-center justify-end gap-1">
-                          <Button variant="ghost" size="icon" onClick={() => openModal(subject)} className="text-slate-500 hover:text-primary">
-                            <Edit2 className="w-4 h-4" />
-                          </Button>
-                          <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10 hover:text-destructive" onClick={() => handleDelete(subject.id)}>
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </div>
-        </CardContent>
-      </Card>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      </ContentCard>
 
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent>
@@ -261,6 +264,7 @@ export default function SubjectsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+      <ConfirmModal />
+    </PageContainer>
   );
 }

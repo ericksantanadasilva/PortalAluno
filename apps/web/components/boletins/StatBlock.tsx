@@ -9,6 +9,7 @@ interface StatBlockProps {
   accent?: boolean;
   highlight?: boolean;
   className?: string;
+  valueClassName?: string;
 }
 
 export function StatBlock({
@@ -19,6 +20,7 @@ export function StatBlock({
   accent,
   highlight,
   className,
+  valueClassName,
 }: StatBlockProps) {
   return (
     <div className={cn("flex flex-col items-center justify-center text-center space-y-1.5 w-full", className)}>
@@ -27,12 +29,15 @@ export function StatBlock({
         <span className="text-xs font-medium uppercase tracking-wide">{label}</span>
       </div>
       <p
-        className={cn(`text-2xl font-bold tracking-tight ${accent
-          ? ""
-          : highlight
-            ? "text-emerald-600 dark:text-emerald-400"
-            : "text-foreground"
-          }`, className)}
+        className={cn(
+          "text-2xl font-bold tracking-tight",
+          accent
+            ? ""
+            : highlight
+              ? "text-emerald-600 dark:text-emerald-400"
+              : "text-foreground",
+          valueClassName
+        )}
         style={accent ? { color: "hsl(var(--primary))" } : undefined}
       >
         {value}

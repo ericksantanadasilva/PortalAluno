@@ -8,6 +8,7 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { useConfirmModal } from '@/hooks/useConfirmModal';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -177,20 +178,28 @@ export function DiscursiveSubmissionsManager() {
     }
   };
 
-  const handleDeleteExam = async (examId: string) => {
-    if (!confirm('Tem certeza que deseja excluir este simulado discursivo e todas as suas submissões?')) return;
-    try {
-      const token = localStorage.getItem('token');
-      const res = await fetch(`/api/discursive/admin/exams/${examId}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      if (res.ok) {
-        fetchExams();
-      }
-    } catch (e) {
-      console.error('Erro ao excluir simulado:', e);
-    }
+  const { showAlert, showConfirm, ConfirmModal } = useConfirmModal();
+
+  const handleDeleteExam = (examId: string) => {
+    showConfirm(
+      'Excluir Simulado Discursivo',
+      'Tem certeza que deseja excluir este simulado discursivo e todas as suas submissões?',
+      async () => {
+        try {
+          const token = localStorage.getItem('token');
+          const res = await fetch(`/api/discursive/admin/exams/${examId}`, {
+            method: 'DELETE',
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          if (res.ok) {
+            fetchExams();
+          }
+        } catch (e) {
+          console.error('Erro ao excluir simulado:', e);
+        }
+      },
+      'danger'
+    );
   };
 
   const filteredSubmissions = submissions.filter(sub => {
@@ -226,7 +235,7 @@ export function DiscursiveSubmissionsManager() {
       });
 
       if (!res.ok) {
-        alert('Erro ao realizar o download do PDF.');
+        showAlert('Erro no Download', 'Erro ao realizar o download do PDF.', 'danger');
         return;
       }
 
@@ -260,7 +269,7 @@ export function DiscursiveSubmissionsManager() {
       });
 
       if (!res.ok) {
-        alert('Erro ao gerar arquivo ZIP das submissões.');
+        showAlert('Erro no Download', 'Erro ao gerar arquivo ZIP das submissões.', 'danger');
         return;
       }
 
@@ -479,6 +488,7 @@ export function DiscursiveSubmissionsManager() {
           )}
         </CardContent>
       </Card>
+      <ConfirmModal />
     </div>
   );
 }

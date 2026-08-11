@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { PageContainer, PageHeader } from '@/components/layout';
+import { useConfirmModal } from '@/hooks/useConfirmModal';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -89,6 +91,8 @@ export default function TemasPage() {
         setExpandedThemes(prev => ({ ...prev, [id]: !prev[id] }));
     };
 
+    const { showAlert, showConfirm, ConfirmModal } = useConfirmModal();
+
     // --- MANAGE THEME ---
     const openThemeModal = (subjectId?: string, theme?: Theme) => {
         if (theme) {
@@ -105,7 +109,7 @@ export default function TemasPage() {
 
     const handleSaveTheme = async () => {
         if (!themeName.trim() || !selectedSubjectId) {
-            alert('Preencha a disciplina e o nome do tema.');
+            showAlert('Campos Obrigatórios', 'Preencha a disciplina e o nome do tema.', 'warning');
             return;
         }
 
@@ -135,28 +139,34 @@ export default function TemasPage() {
             setThemeModalOpen(false);
             fetchTree();
         } catch (error: any) {
-            alert(error.message || 'Erro ao salvar tema');
+            showAlert('Erro ao Salvar', error.message || 'Erro ao salvar tema', 'danger');
         } finally {
             setSaving(false);
         }
     };
 
-    const handleDeleteTheme = async (id: string) => {
-        if (!confirm('Excluir este tema removerá também todos os subtemas vinculados a ele. Continuar?')) return;
-        try {
-            const token = localStorage.getItem('token');
-            const res = await fetch(`${API_URL}/themes/${id}`, {
-                method: 'DELETE',
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            if (!res.ok) {
-                const errData = await res.json();
-                throw new Error(errData.error || 'Erro ao excluir tema');
-            }
-            fetchTree();
-        } catch (error: any) {
-            alert(error.message || 'Erro ao excluir tema');
-        }
+    const handleDeleteTheme = (id: string) => {
+        showConfirm(
+            'Excluir Tema',
+            'Excluir este tema removerá também todos os subtemas vinculados a ele. Continuar?',
+            async () => {
+                try {
+                    const token = localStorage.getItem('token');
+                    const res = await fetch(`${API_URL}/themes/${id}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (!res.ok) {
+                        const errData = await res.json();
+                        throw new Error(errData.error || 'Erro ao excluir tema');
+                    }
+                    fetchTree();
+                } catch (error: any) {
+                    showAlert('Erro ao Excluir', error.message || 'Erro ao excluir tema', 'danger');
+                }
+            },
+            'danger'
+        );
     };
 
     // --- MANAGE SUBTHEME ---
@@ -174,7 +184,7 @@ export default function TemasPage() {
 
     const handleSaveSubtheme = async () => {
         if (!subthemeName.trim() || !selectedThemeId) {
-            alert('Preencha o nome do subtema.');
+            showAlert('Campo Obrigatório', 'Preencha o nome do subtema.', 'warning');
             return;
         }
 
@@ -204,28 +214,34 @@ export default function TemasPage() {
             setSubthemeModalOpen(false);
             fetchTree();
         } catch (error: any) {
-            alert(error.message || 'Erro ao salvar subtema');
+            showAlert('Erro ao Salvar', error.message || 'Erro ao salvar subtema', 'danger');
         } finally {
             setSaving(false);
         }
     };
 
-    const handleDeleteSubtheme = async (id: string) => {
-        if (!confirm('Excluir este subtema?')) return;
-        try {
-            const token = localStorage.getItem('token');
-            const res = await fetch(`${API_URL}/themes/subthemes/${id}`, {
-                method: 'DELETE',
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            if (!res.ok) {
-                const errData = await res.json();
-                throw new Error(errData.error || 'Erro ao excluir subtema');
-            }
-            fetchTree();
-        } catch (error: any) {
-            alert(error.message || 'Erro ao excluir subtema');
-        }
+    const handleDeleteSubtheme = (id: string) => {
+        showConfirm(
+            'Excluir Subtema',
+            'Deseja realmente excluir este subtema?',
+            async () => {
+                try {
+                    const token = localStorage.getItem('token');
+                    const res = await fetch(`${API_URL}/themes/subthemes/${id}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (!res.ok) {
+                        const errData = await res.json();
+                        throw new Error(errData.error || 'Erro ao excluir subtema');
+                    }
+                    fetchTree();
+                } catch (error: any) {
+                    showAlert('Erro ao Excluir', error.message || 'Erro ao excluir subtema', 'danger');
+                }
+            },
+            'danger'
+        );
     };
 
     // --- IMPORT EXCEL ---
@@ -245,7 +261,7 @@ export default function TemasPage() {
                 const data = XLSX.utils.sheet_to_json<any>(ws, { header: 1 });
 
                 if (data.length < 2) {
-                    alert('A planilha precisa conter pelo menos um cabeçalho e dados.');
+                    showAlert('Planilha Inválida', 'A planilha precisa conter pelo menos um cabeçalho e dados.', 'warning');
                     return;
                 }
 
@@ -278,7 +294,7 @@ export default function TemasPage() {
                 setImportResult(null);
             } catch (err) {
                 console.error('Erro ao ler Excel', err);
-                alert('Formato de arquivo inválido. Por favor envie um arquivo .xlsx ou .csv.');
+                showAlert('Arquivo Inválido', 'Formato de arquivo inválido. Por favor envie um arquivo .xlsx ou .csv.', 'danger');
             }
         };
         reader.readAsBinaryString(file);
@@ -312,7 +328,7 @@ export default function TemasPage() {
             setImportResult(data.stats);
             fetchTree();
         } catch (error: any) {
-            alert(error.message || 'Erro ao executar importação');
+            showAlert('Erro na Importação', error.message || 'Erro ao executar importação', 'danger');
         } finally {
             setImporting(false);
         }
@@ -346,34 +362,31 @@ export default function TemasPage() {
     }).filter(Boolean) as SubjectTree[];
 
     return (
-        <div className="w-full max-w-7xl mx-auto space-y-8 p-4 md:p-8">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div>
-                    <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100 flex items-center gap-3">
-                        <Layers className="w-8 h-8 text-primary" /> Temas e Subtemas (Caça Gaps)
-                    </h1>
-                    <p className="text-slate-500 dark:text-slate-400 mt-2">
-                        Cadastre e organize os conteúdos cobrados nos simulados por Disciplina, Tema e Subtema.
-                    </p>
-                </div>
-                <div className="flex flex-wrap items-center gap-3">
-                    <Button
-                        variant="outline"
-                        onClick={() => {
-                            setExcelRows([]);
-                            setImportResult(null);
-                            setImportModalOpen(true);
-                        }}
-                        className="gap-2 border-primary text-primary hover:bg-primary/5 dark:border-primary dark:text-primary"
-                    >
-                        <FileSpreadsheet className="w-4 h-4" /> Importar Planilha (.xlsx)
-                    </Button>
+        <PageContainer>
+            <PageHeader
+                title="Temas e Subtemas (Caça Gaps)"
+                description="Cadastre e organize os conteúdos cobrados nos simulados por Disciplina, Tema e Subtema."
+                icon={<Layers />}
+                actions={
+                    <>
+                        <Button
+                            variant="outline"
+                            onClick={() => {
+                                setExcelRows([]);
+                                setImportResult(null);
+                                setImportModalOpen(true);
+                            }}
+                            className="gap-2 border-primary text-primary hover:bg-primary/5 dark:border-primary dark:text-primary"
+                        >
+                            <FileSpreadsheet className="w-4 h-4" /> Importar Planilha (.xlsx)
+                        </Button>
 
-                    <Button onClick={() => openThemeModal()} className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground">
-                        <Plus className="w-4 h-4" /> Novo Tema
-                    </Button>
-                </div>
-            </div>
+                        <Button onClick={() => openThemeModal()} className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground">
+                            <Plus className="w-4 h-4" /> Novo Tema
+                        </Button>
+                    </>
+                }
+            />
 
             {/* Barra de Pesquisa */}
             <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
@@ -715,6 +728,7 @@ export default function TemasPage() {
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
-        </div>
+            <ConfirmModal />
+        </PageContainer>
     );
 }

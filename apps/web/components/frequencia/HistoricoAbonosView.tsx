@@ -8,6 +8,7 @@ import {
   type HistoricoAbono,
   type TipoAbonoSaaS,
 } from "@repo/database-mocks";
+import { useConfirmModal } from "@/hooks/useConfirmModal";
 import {
   Card,
   CardContent,
@@ -155,6 +156,19 @@ export function HistoricoAbonosView({
       merito: abonos.filter((a) => a.tipo === "Mérito").length,
     };
   }, [abonos, dataReferencia]);
+
+  const { showConfirm, ConfirmModal } = useConfirmModal();
+
+  const handleConfirmDelete = (id: string) => {
+    showConfirm(
+      "Remover Abono",
+      "Deseja realmente remover este abono?",
+      () => {
+        onDeleteAbono && onDeleteAbono(id);
+      },
+      "danger"
+    );
+  };
 
   return (
     <div className="w-full space-y-6">
@@ -382,11 +396,7 @@ export function HistoricoAbonosView({
                           <Button variant="ghost" size="icon" onClick={() => handleOpenEdit(abono)} className="h-8 w-8 text-slate-500 hover:text-primary">
                             <Edit2 className="w-4 h-4" />
                           </Button>
-                          <Button variant="ghost" size="icon" onClick={() => {
-                            if (window.confirm("Deseja realmente remover este abono?")) {
-                              onDeleteAbono && onDeleteAbono(abono.id);
-                            }
-                          }} className="h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive">
+                          <Button variant="ghost" size="icon" onClick={() => handleConfirmDelete(abono.id)} className="h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive">
                             <Trash2 className="w-4 h-4" />
                           </Button>
                         </div>
@@ -478,11 +488,7 @@ export function HistoricoAbonosView({
                   <Button variant="ghost" size="sm" onClick={() => handleOpenEdit(abono)} className="text-slate-500 hover:text-primary gap-1">
                     <Edit2 className="w-3.5 h-3.5" /> Editar
                   </Button>
-                  <Button variant="ghost" size="sm" onClick={() => {
-                    if (window.confirm("Deseja realmente remover este abono?")) {
-                      onDeleteAbono && onDeleteAbono(abono.id);
-                    }
-                  }} className="text-destructive hover:bg-destructive/10 hover:text-destructive gap-1">
+                  <Button variant="ghost" size="sm" onClick={() => handleConfirmDelete(abono.id)} className="text-destructive hover:bg-destructive/10 hover:text-destructive gap-1">
                     <Trash2 className="w-3.5 h-3.5" /> Remover
                   </Button>
                 </div>
@@ -491,6 +497,7 @@ export function HistoricoAbonosView({
           })
         )}
       </div>
+      <ConfirmModal />
 
       {/* FAB (Mobile) */}
       <button onClick={handleOpenNew} className="md:hidden fixed bottom-6 right-6 w-14 h-14 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full shadow-lg flex items-center justify-center transition-transform active:scale-95 z-50">

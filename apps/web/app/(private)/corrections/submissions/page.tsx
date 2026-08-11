@@ -280,11 +280,10 @@ export default function SubmissionsOverviewPage() {
       {/* Alertas globais de ação */}
       {actionMessage && (
         <div
-          className={`p-4 rounded-xl border flex items-center justify-between gap-3 ${
-            actionMessage.type === 'success'
+          className={`p-4 rounded-xl border flex items-center justify-between gap-3 ${actionMessage.type === 'success'
               ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-700 dark:text-emerald-300'
               : 'bg-rose-500/15 border-rose-500/30 text-rose-700 dark:text-rose-300'
-          }`}
+            }`}
         >
           <div className="flex items-center gap-2 text-sm font-semibold">
             {actionMessage.type === 'success' ? <CheckCircle2 className="size-5 shrink-0" /> : <AlertCircle className="size-5 shrink-0" />}
@@ -309,7 +308,7 @@ export default function SubmissionsOverviewPage() {
             size="sm"
             onClick={fetchSubmissions}
             disabled={loading}
-            className="gap-2 shrink-0"
+            className="gap-2 shrink-0 rounded-md"
           >
             {loading ? <Loader2 className="size-4 animate-spin" /> : <RefreshCw className="size-4" />}
             <span>Atualizar Lista</span>
@@ -322,7 +321,7 @@ export default function SubmissionsOverviewPage() {
               <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground block mb-1">
                 Simulado
               </label>
-              <Select value={filterExamId} onValueChange={setFilterExamId}>
+              <Select value={filterExamId} onValueChange={(val) => val && setFilterExamId(val)}>
                 <SelectTrigger className="w-full h-10 truncate">
                   <SelectValue placeholder="Todos os Simulados">
                     {filterExamId === 'all'
@@ -343,7 +342,7 @@ export default function SubmissionsOverviewPage() {
               <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground block mb-1">
                 Status de Correção
               </label>
-              <Select value={filterStatus} onValueChange={setFilterStatus}>
+              <Select value={filterStatus} onValueChange={(val) => val && setFilterStatus(val)}>
                 <SelectTrigger className="w-full h-10 truncate">
                   <SelectValue placeholder="Todos os Status">
                     {filterStatus === 'all'
@@ -368,7 +367,7 @@ export default function SubmissionsOverviewPage() {
               <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground block mb-1">
                 Modalidade
               </label>
-              <Select value={filterType} onValueChange={setFilterType}>
+              <Select value={filterType} onValueChange={(val) => val && setFilterType(val)}>
                 <SelectTrigger className="w-full h-10 truncate">
                   <SelectValue placeholder="Ambas Modalidades">
                     {filterType === 'all'
@@ -624,8 +623,8 @@ export default function SubmissionsOverviewPage() {
                   {adminEditModal.submission.status === 'CORRECTED'
                     ? 'Corrigida'
                     : adminEditModal.submission.status === 'UNDER_CORRECTION'
-                    ? 'Em Correção'
-                    : 'Aguardando Lote'}
+                      ? 'Em Correção'
+                      : 'Aguardando Lote'}
                 </div>
               </div>
 
@@ -696,7 +695,7 @@ export default function SubmissionsOverviewPage() {
                   <Input
                     type="file"
                     accept="application/pdf"
-                    onChange={(e) => setAdminReplacementFile(e.target.files ? e.target.files[0] : null)}
+                    onChange={(e) => setAdminReplacementFile(e.target.files && e.target.files[0] ? e.target.files[0] : null)}
                     className="text-xs"
                   />
                   <p className="text-[11px] text-muted-foreground">

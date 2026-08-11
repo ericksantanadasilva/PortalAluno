@@ -1,8 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { PageContainer, PageHeader, SubNav } from '@/components/layout';
 import { ExamsManager } from '@/components/simulados/ExamsManager';
 import { AnswerKeysManager } from '@/components/simulados/AnswerKeysManager';
 import { DiscursiveSubmissionsManager } from '@/components/simulados/DiscursiveSubmissionsManager';
@@ -23,73 +22,26 @@ export default function SimuladosPage() {
   };
 
   return (
-    <div className="w-full max-w-7xl mx-auto space-y-8 p-4 md:p-8">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Simulados e Avaliações</h1>
-        <p className="text-muted-foreground mt-2">
-          Gerencie os simulados, crie provas e importe os gabaritos dos seus alunos.
-        </p>
-      </div>
+    <PageContainer>
+      <PageHeader
+        title="Simulados e Avaliações"
+        description="Gerencie os simulados, crie provas e importe os gabaritos dos seus alunos."
+      />
 
-      <div className="flex flex-col space-y-6">
-        {/* Mobile Navigation (Select) */}
-        <div className="md:hidden">
-          <Select value={activeTab} onValueChange={(val) => { if (val) setActiveTab(val); }}>
-            <SelectTrigger className="w-full h-12 bg-background">
-              <SelectValue placeholder="Navegar...">
-                {TABS.find(t => t.id === activeTab)?.label}
-              </SelectValue>
-            </SelectTrigger>
-            <SelectContent>
-              {TABS.map((tab) => {
-                const Icon = tab.icon;
-                return (
-                  <SelectItem key={tab.id} value={tab.id}>
-                    <div className="flex items-center gap-2">
-                      <Icon className="w-4 h-4 text-muted-foreground" />
-                      {tab.label}
-                    </div>
-                  </SelectItem>
-                );
-              })}
-            </SelectContent>
-          </Select>
-        </div>
+      <SubNav
+        tabs={TABS}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+      />
 
-        {/* Desktop Navigation (Tabs) */}
-        <Tabs 
-          value={activeTab} 
-          onValueChange={setActiveTab} 
-          className="hidden md:block w-full"
-        >
-          <div className="flex justify-center w-full">
-            <TabsList className="inline-flex h-11 items-center justify-center rounded-xl bg-slate-100 p-1 border border-slate-200">
-              {TABS.map((tab) => {
-                const Icon = tab.icon;
-                return (
-                  <TabsTrigger 
-                    key={tab.id} 
-                    value={tab.id}
-                    className="px-6 py-2 font-semibold rounded-lg data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm transition-all"
-                  >
-                    <Icon className="w-4 h-4 mr-2" />
-                    {tab.label}
-                  </TabsTrigger>
-                );
-              })}
-            </TabsList>
+      {/* Tab Content Container */}
+      <div className="mt-2">
+        {TABS.map((tab) => (
+          <div key={tab.id} className={activeTab === tab.id ? 'block animate-in fade-in slide-in-from-bottom-2 duration-300' : 'hidden'}>
+            <tab.component onUpdate={handleUpdate} updateTrigger={updateTrigger} />
           </div>
-        </Tabs>
-
-        {/* Tab Content Container */}
-        <div className="mt-6">
-          {TABS.map((tab) => (
-            <div key={tab.id} className={activeTab === tab.id ? 'block animate-in fade-in slide-in-from-bottom-2 duration-300' : 'hidden'}>
-              <tab.component onUpdate={handleUpdate} updateTrigger={updateTrigger} />
-            </div>
-          ))}
-        </div>
+        ))}
       </div>
-    </div>
+    </PageContainer>
   );
 }

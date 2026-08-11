@@ -10,15 +10,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from '@/components/ui/badge';
 import { Download, UploadCloud, Plus, FileSpreadsheet, Search, X, Trash2, ShieldAlert } from 'lucide-react';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { AlunoForm } from '../types/workspace-settings.types';
+import { useConfirmModal } from '@/hooks/useConfirmModal';
 
 
 // URL base do seu servidor Express no Monorepo
@@ -52,6 +46,7 @@ interface Student {
 }
 
 export function StudentsTab() {
+  const { showAlert, showConfirm, ConfirmModal } = useConfirmModal();
   const [dragActive, setDragActive] = useState(false);
   const [csvPreview, setCsvPreview] = useState<{ nome: string; email: string; turma: string }[]>([]);
   const [loading, setLoading] = useState(true);
@@ -150,7 +145,7 @@ export function StudentsTab() {
 
     const totalPossivel = max - min + 1;
     if (ocupadasNoRange >= totalPossivel) {
-      if (showUserAlert) alert("Atenção: O intervalo configurado não possui mais matrículas disponíveis.");
+      if (showUserAlert) showAlert("Intervalo Esgotado", "Atenção: O intervalo configurado não possui mais matrículas disponíveis.", "warning");
       return;
     }
 
@@ -163,9 +158,10 @@ export function StudentsTab() {
   };
 
   // 2. SALVAR MATRÍCULA VIA FETCH
-  const handleCadastrarAluno = async () => {
-    if (!alunoForm.nome || !alunoForm.matricula || !alunoForm.email || !alunoForm.turma) {
-      alert("Preencha todos os campos obrigatórios para cadastrar o aluno.");
+  const handleCadastrarAluno = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!alunoForm.nome || !alunoForm.email || !alunoForm.turma) {
+      showAlert("Campos Obrigatórios", "Por favor, preencha nome, e-mail e turma do aluno.", "warning");
       return;
     }
 
@@ -176,54 +172,55 @@ export function StudentsTab() {
         body: JSON.stringify({
           name: alunoForm.nome,
           email: alunoForm.email,
-          registration: alunoForm.matricula,
-          classId: alunoForm.turma
+          registrationNumber: alunoForm.matricula || `MAT-${Date.now().toString().slice(-4)}`,
+          classId: alunoForm.turma,
         })
       });
 
       if (res.ok) {
         const data = await res.json();
-        setAlunosList(prev => [data.student, ...prev]);
-
-        setTempStudentName(data.student.name);
-        setGeneratedPassword(data.tempPassword);
-        setIsDialogOpen(true);
-
+        carregarDadosDoPainel();
         setAlunoForm({
           nome: '',
           email: '',
-          turma: '',
+          turma: turmas[0]?.id || '',
           modalidade: modalidades[0]?.id || '',
           matricula: ''
         });
+        showAlert("Sucesso", "Aluno cadastrado com sucesso!", "success");
       } else {
         const errData = await res.json();
-        alert(errData.error || "Falha ao registrar aluno no servidor.");
+        showAlert("Erro", errData.error || "Falha ao registrar aluno no servidor.", "danger");
       }
     } catch (error) {
       console.error(error);
-      alert("Erro de conexão ao cadastrar aluno.");
+      showAlert("Erro", "Erro de conexão ao cadastrar aluno.", "danger");
     }
   };
 
-  const handleRemoverAluno = async (id: string) => {
-    if (!confirm("Tem certeza que deseja remover este aluno? Todos os seus dados serão apagados.")) return;
+  const handleRemoverAluno = (id: string) => {
+    showConfirm(
+      "Remover Aluno",
+      "Tem certeza que deseja remover este aluno? Todos os seus dados serão apagados.",
+      async () => {
+        try {
+          const res = await fetch(`${API_URL}/students/${id}`, {
+            method: 'DELETE',
+            headers: getHeaders()
+          });
 
-    try {
-      const res = await fetch(`${API_URL}/students/${id}`, {
-        method: 'DELETE',
-        headers: getHeaders()
-      });
-
-      if (res.ok) {
-        setAlunosList(prev => prev.filter(s => s.id !== id));
-      } else {
-        const errData = await res.json();
-        alert(errData.error || "Erro ao remover aluno.");
-      }
-    } catch (err) {
-      console.error(err);
-    }
+          if (res.ok) {
+            setAlunosList(prev => prev.filter(s => s.id !== id));
+          } else {
+            const errData = await res.json();
+            showAlert("Erro", errData.error || "Erro ao remover aluno.", "danger");
+          }
+        } catch (err) {
+          console.error(err);
+        }
+      },
+      "danger"
+    );
   };
 
   const handleDrag = (e: React.DragEvent) => {
@@ -271,27 +268,33 @@ export function StudentsTab() {
     }
   };
 
-  const removerModalidade = async (id: string) => {
-    if (!confirm("Remover esta modalidade apagará as turmas associadas. Confirma?")) return;
-    try {
-      const res = await fetch(`${API_URL}/modalities/${id}`, {
-        method: 'DELETE',
-        headers: getHeaders()
-      });
+  const removerModalidade = (id: string) => {
+    showConfirm(
+      "Remover Modalidade",
+      "Remover esta modalidade apagará as turmas associadas. Confirma?",
+      async () => {
+        try {
+          const res = await fetch(`${API_URL}/modalities/${id}`, {
+            method: 'DELETE',
+            headers: getHeaders()
+          });
 
-      if (res.ok) {
-        setModalidades(prev => prev.filter(m => m.id !== id));
-        setTurmas(prev => prev.filter(t => t.modalityId !== id));
-      }
-    } catch (error) {
-      console.error(error);
-    }
+          if (res.ok) {
+            setModalidades(prev => prev.filter(m => m.id !== id));
+            setTurmas(prev => prev.filter(t => t.modalityId !== id));
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      },
+      "danger"
+    );
   };
 
   // 4. PERSISTIR TURMA (CLASS) VIA FETCH
   const adicionarTurma = async () => {
     if (!modalidadeSelecionadaParaTurma || !novaTurma.trim()) {
-      alert("Por favor, preencha o nome da turma e selecione uma modalidade.");
+      showAlert("Campos Obrigatórios", "Por favor, preencha o nome da turma e selecione uma modalidade.", "warning");
       return;
     }
 
@@ -316,24 +319,31 @@ export function StudentsTab() {
     }
   };
 
-  const removerTurma = async (id: string) => {
-    if (!confirm("Deseja realmente excluir esta turma?")) return;
-    try {
-      const res = await fetch(`${API_URL}/classes/${id}`, {
-        method: 'DELETE',
-        headers: getHeaders()
-      });
+  const removerTurma = (id: string) => {
+    showConfirm(
+      "Excluir Turma",
+      "Deseja realmente excluir esta turma?",
+      async () => {
+        try {
+          const res = await fetch(`${API_URL}/classes/${id}`, {
+            method: 'DELETE',
+            headers: getHeaders()
+          });
 
-      if (res.ok) {
-        setTurmas(prev => prev.filter(t => t.id !== id));
-      }
-    } catch (error) {
-      console.error(error);
-    }
+          if (res.ok) {
+            setTurmas(prev => prev.filter(t => t.id !== id));
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      },
+      "danger"
+    );
   };
 
   return (
     <div className="space-y-6">
+      <ConfirmModal />
       <Tabs defaultValue="lista" className="w-full flex flex-col space-y-6">
         {userRole !== 'professor' && (
           <div className="flex justify-center w-full">
@@ -793,7 +803,7 @@ export function StudentsTab() {
             </div>
             <Button size="sm" className="px-3" onClick={() => {
               navigator.clipboard.writeText(generatedPassword);
-              alert("Copiado!");
+              showAlert("Copiado", "Senha copiada para a área de transferência!", "success");
             }}>
               <span className="sr-only">Copy</span>
               Copiar

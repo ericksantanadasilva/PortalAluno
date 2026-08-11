@@ -1,13 +1,12 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { tenantConfigMock } from "@repo/database-mocks";
+import { PageContainer, PageHeader, EmptyState } from "@/components/layout";
 import { ValidacaoOnline } from "@/components/frequencia/ValidacaoOnline";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Label } from "@/components/ui/label";
-import { Loader2, Check, ChevronsUpDown } from "lucide-react";
+import { Loader2, Check, ChevronsUpDown, Laptop } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -62,7 +61,7 @@ export default function PresencaOnlinePage() {
 
   if (isLoading) {
     return (
-      <div className="w-full h-full flex flex-col items-center justify-center p-12 text-slate-500 gap-3">
+      <div className="w-full h-full flex flex-col items-center justify-center p-12 text-muted-foreground gap-3">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
         <p className="text-sm font-medium">Carregando informações...</p>
       </div>
@@ -87,30 +86,26 @@ export default function PresencaOnlinePage() {
   }
 
   return (
-    <div className="w-full py-6">
-      <div className="mb-6 space-y-1">
-        <h1 className="text-2xl font-bold tracking-tight text-foreground">
-          Confirmar Presença
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          Valide sua presença online no dia e horário semanal definidos pela secretaria.
-        </p>
-      </div>
+    <PageContainer>
+      <PageHeader
+        title="Confirmar Presença"
+        description="Valide sua presença online no dia e horário semanal definidos pela secretaria."
+      />
 
       {["admin", "super_admin", "secretaria"].includes(role || '') && (
-        <div className="mb-8 p-5 bg-amber-500/10 border border-amber-500/30 rounded-xl space-y-3 max-w-xl mx-auto">
+        <div className="p-5 bg-amber-500/10 border border-amber-500/30 rounded-xl space-y-3 max-w-xl mx-auto">
           <div>
-            <Label className="text-amber-800 font-bold mb-1 flex items-center gap-1.5">
+            <Label className="text-amber-800 dark:text-amber-300 font-bold mb-1 flex items-center gap-1.5">
               <span>Simulação de Acesso (Administrador)</span>
             </Label>
-            <p className="text-xs text-amber-700/80 mb-3">
+            <p className="text-xs text-amber-700/80 dark:text-amber-400/80 mb-3">
               Como administrador, você pode selecionar um aluno para visualizar as janelas e simular a tela exatamente como o aluno vê.
             </p>
           </div>
           
           <Popover open={alunoPopoverOpen} onOpenChange={setAlunoPopoverOpen}>
             <PopoverTrigger
-              className={cn(buttonVariants({ variant: "outline" }), "justify-between w-full font-normal h-10 bg-white")}
+              className={cn(buttonVariants({ variant: "outline" }), "justify-between w-full font-normal h-10 bg-background")}
               role="combobox"
               aria-expanded={alunoPopoverOpen}
             >
@@ -166,14 +161,16 @@ export default function PresencaOnlinePage() {
           disciplinaAtivaNome="Todas as Disciplinas" 
         />
       ) : (
-        <div className="max-w-xl mx-auto p-8 border border-dashed border-border rounded-xl text-center">
-          <p className="text-slate-500 text-sm">
-            {role === "aluno" 
+        <EmptyState
+          icon={Laptop}
+          title={role === "aluno" ? "Dados não encontrados" : "Aguardando Seleção"}
+          description={
+            role === "aluno" 
               ? "Não foi possível carregar os seus dados de aluno." 
-              : "Selecione um aluno acima para visualizar a tela de presença online."}
-          </p>
-        </div>
+              : "Selecione um aluno acima para visualizar a tela de presença online."
+          }
+        />
       )}
-    </div>
+    </PageContainer>
   );
 }

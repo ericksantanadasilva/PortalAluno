@@ -203,7 +203,7 @@ export default function SimuladoAnswerPage() {
                   <AlertDescription className="text-blue-700 mt-2 flex flex-col md:flex-row md:items-center gap-4">
                     <p>Esta prova possui questões de língua estrangeira. Selecione o idioma que você escolheu para realizar a prova:</p>
                     <div className="w-48 shrink-0">
-                      <Select value={selectedLanguage} onValueChange={setSelectedLanguage}>
+                      <Select value={selectedLanguage} onValueChange={(val) => val && setSelectedLanguage(val)}>
                         <SelectTrigger className="bg-white border-blue-200">
                           <SelectValue placeholder="Selecione..." />
                         </SelectTrigger>

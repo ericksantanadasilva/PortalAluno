@@ -176,7 +176,7 @@ export default function ResultsAndBulletinPage() {
               <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground block mb-1">
                 Simulado
               </label>
-              <Select value={filterExamId} onValueChange={setFilterExamId}>
+              <Select value={filterExamId} onValueChange={(val) => val && setFilterExamId(val)}>
                 <SelectTrigger className="w-full h-10 truncate rounded-xl">
                   <SelectValue placeholder="Todos os Simulados">
                     {filterExamId === "all"
@@ -197,7 +197,7 @@ export default function ResultsAndBulletinPage() {
               <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground block mb-1">
                 Status na Planilha
               </label>
-              <Select value={filterStatus} onValueChange={setFilterStatus}>
+              <Select value={filterStatus} onValueChange={(val) => val && setFilterStatus(val)}>
                 <SelectTrigger className="w-full h-10 truncate rounded-xl">
                   <SelectValue placeholder="Status...">
                     {filterStatus === "CORRECTED"

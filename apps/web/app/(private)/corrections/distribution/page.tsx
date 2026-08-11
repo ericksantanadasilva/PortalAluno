@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { PageContainer, PageHeader, ContentCard } from '@/components/layout';
+import { useConfirmModal } from '@/hooks/useConfirmModal';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -40,6 +42,7 @@ interface BatchItem {
 }
 
 export default function DistributionPage() {
+  const { showAlert, ConfirmModal } = useConfirmModal();
   const [exams, setExams] = useState<ExamItem[]>([]);
   const [correctors, setCorrectors] = useState<CorrectorItem[]>([]);
   const [batches, setBatches] = useState<BatchItem[]>([]);
@@ -62,7 +65,7 @@ export default function DistributionPage() {
   const openGranularModal = async (examId?: string, filterByCorrectorId?: string) => {
     const targetExamId = examId || selectedExamId || (exams[0]?.id || '');
     if (!targetExamId) {
-      alert('Nenhum simulado disponível para inspecionar.');
+      showAlert('Aviso', 'Nenhum simulado disponível para inspecionar.', 'warning');
       return;
     }
     setModalExamId(targetExamId);
@@ -145,11 +148,11 @@ export default function DistributionPage() {
 
   const handleExecuteReassign = async () => {
     if (selectedSubIds.length === 0) {
-      alert('Selecione pelo menos uma prova na lista.');
+      showAlert('Seleção Vazia', 'Selecione pelo menos uma prova na lista.', 'warning');
       return;
     }
     if (targetMode === 'corrector' && selectedTargetCorrectors.length === 0) {
-      alert('Selecione ao menos 1 corretor de destino ou escolha devolver para a fila.');
+      showAlert('Seleção Vazia', 'Selecione ao menos 1 corretor de destino ou escolha devolver para a fila.', 'warning');
       return;
     }
 
@@ -172,15 +175,15 @@ export default function DistributionPage() {
 
       const data = await res.json();
       if (res.ok) {
-        alert(data.message || 'Reatribuição realizada com sucesso!');
+        showAlert('Sucesso', data.message || 'Reatribuição realizada com sucesso!', 'success');
         setIsReassignOpen(false);
         fetchData();
       } else {
-        alert(data.error || 'Erro ao reatribuir provas.');
+        showAlert('Erro', data.error || 'Erro ao reatribuir provas.', 'danger');
       }
     } catch (err) {
       console.error('Erro na reatribuição granular:', err);
-      alert('Erro de conexão ao reatribuir provas.');
+      showAlert('Erro de Conexão', 'Erro de conexão ao reatribuir provas.', 'danger');
     } finally {
       setSubmittingReassign(false);
     }
@@ -282,14 +285,14 @@ export default function DistributionPage() {
 
       const data = await res.json();
       if (res.ok) {
-        alert(data.message || 'Lote criado com sucesso!');
+        showAlert('Sucesso', data.message || 'Lote criado com sucesso!', 'success');
         fetchData();
       } else {
-        alert(data.error || 'Erro ao gerar lote.');
+        showAlert('Erro', data.error || 'Erro ao gerar lote.', 'danger');
       }
     } catch (err) {
       console.error('Erro ao distribuir lote:', err);
-      alert('Erro ao conectar com o servidor.');
+      showAlert('Erro de Conexão', 'Erro ao conectar com o servidor.', 'danger');
     } finally {
       setDistributing(false);
     }
@@ -316,7 +319,7 @@ export default function DistributionPage() {
               <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground block mb-1.5">
                 1. Simulado Discursivo
               </Label>
-              <Select value={selectedExamId} onValueChange={setSelectedExamId}>
+              <Select value={selectedExamId} onValueChange={(val) => val && setSelectedExamId(val)}>
                 <SelectTrigger className="w-full h-11 truncate rounded-xl border-border/80 shadow-sm">
                   <SelectValue placeholder="Selecione o Simulado...">
                     {exams.find((ex) => ex.id === selectedExamId)?.title || "Selecione o Simulado..."}
@@ -337,7 +340,7 @@ export default function DistributionPage() {
               <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground block mb-1.5">
                 2. Disciplina / Matéria
               </Label>
-              <Select value={selectedSubject} onValueChange={setSelectedSubject}>
+              <Select value={selectedSubject} onValueChange={(val) => val && setSelectedSubject(val)}>
                 <SelectTrigger className="w-full h-11 truncate rounded-xl border-border/80 shadow-sm">
                   <SelectValue placeholder="Selecione a Matéria...">
                     {selectedSubject}
@@ -379,7 +382,7 @@ export default function DistributionPage() {
               <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground block mb-1.5">
                 3. Corretor Responsável
               </Label>
-              <Select value={selectedCorrectorId} onValueChange={setSelectedCorrectorId}>
+              <Select value={selectedCorrectorId} onValueChange={(val) => val && setSelectedCorrectorId(val)}>
                 <SelectTrigger className="w-full h-11 truncate rounded-xl border-border/80 shadow-sm">
                   <SelectValue placeholder="Selecione o Professor/Corretor...">
                     {(() => {
@@ -606,7 +609,7 @@ export default function DistributionPage() {
                   />
                 </div>
                 <div className="sm:col-span-3">
-                  <Select value={filterSubject} onValueChange={setFilterSubject}>
+                  <Select value={filterSubject} onValueChange={(val) => val && setFilterSubject(val)}>
                     <SelectTrigger className="w-full h-10 text-sm rounded-xl border-border/80 shadow-sm">
                       <SelectValue placeholder="Disciplina" />
                     </SelectTrigger>
@@ -619,7 +622,7 @@ export default function DistributionPage() {
                   </Select>
                 </div>
                 <div className="sm:col-span-3">
-                  <Select value={filterStatus} onValueChange={setFilterStatus}>
+                  <Select value={filterStatus} onValueChange={(val) => val && setFilterStatus(val)}>
                     <SelectTrigger className="w-full h-10 text-sm rounded-xl border-border/80 shadow-sm">
                       <SelectValue placeholder="Status" />
                     </SelectTrigger>
@@ -860,6 +863,7 @@ export default function DistributionPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      <ConfirmModal />
     </div>
   );
 }

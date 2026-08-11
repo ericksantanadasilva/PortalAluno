@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { PageContainer, PageHeader, ContentCard } from '@/components/layout';
+import { useConfirmModal } from '@/hooks/useConfirmModal';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -14,6 +16,7 @@ interface ExamItem {
   date: string;
   totalQuestionsCount: number;
   totalSubmissionsCount: number;
+  subjects?: string[];
 }
 
 interface UploadResultItem {
@@ -26,6 +29,7 @@ interface UploadResultItem {
 }
 
 export default function PresentialUploadPage() {
+  const { showAlert, ConfirmModal } = useConfirmModal();
   const [exams, setExams] = useState<ExamItem[]>([]);
   const [selectedExamId, setSelectedExamId] = useState<string>('');
   const [files, setFiles] = useState<File[]>([]);
@@ -52,7 +56,7 @@ export default function PresentialUploadPage() {
 
   useEffect(() => {
     if (availableSubjects.length > 0 && !availableSubjects.includes(selectedSubject)) {
-      setSelectedSubject(availableSubjects[0]);
+      setSelectedSubject(availableSubjects[0] || 'Geral');
     }
   }, [selectedExamId, exams]);
 
@@ -111,11 +115,11 @@ export default function PresentialUploadPage() {
       if (res.ok) {
         setResults(data);
       } else {
-        alert(data.error || 'Erro ao processar lote.');
+        showAlert('Erro no Processamento', data.error || 'Erro ao processar lote.', 'danger');
       }
     } catch (err) {
       console.error('Erro no upload de lote:', err);
-      alert('Erro de conexão ao enviar lote de discursivas.');
+      showAlert('Erro de Conexão', 'Erro de conexão ao enviar lote de discursivas.', 'danger');
     } finally {
       setUploading(false);
     }
@@ -123,6 +127,7 @@ export default function PresentialUploadPage() {
 
   return (
     <div className="space-y-6">
+      <ConfirmModal />
       {/* Aviso Exclusivo Google Drive */}
       {/*<div className="flex items-center gap-3 p-4 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400">
         <Cloud className="size-5 shrink-0" />
@@ -148,7 +153,7 @@ export default function PresentialUploadPage() {
               <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground block mb-1.5">
                 Simulado Alvo
               </label>
-              <Select value={selectedExamId} onValueChange={setSelectedExamId}>
+              <Select value={selectedExamId} onValueChange={(val) => val && setSelectedExamId(val)}>
                 <SelectTrigger className="w-full h-10 truncate">
                   <SelectValue placeholder="Selecione o Simulado...">
                     {exams.find((ex) => ex.id === selectedExamId)?.title || "Selecione o Simulado..."}
@@ -168,7 +173,7 @@ export default function PresentialUploadPage() {
               <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground block mb-1.5">
                 Disciplina / Matéria
               </label>
-              <Select value={selectedSubject} onValueChange={setSelectedSubject}>
+              <Select value={selectedSubject} onValueChange={(val) => val && setSelectedSubject(val)}>
                 <SelectTrigger className="w-full h-10 truncate">
                   <SelectValue placeholder="Selecione a Disciplina..." />
                 </SelectTrigger>
