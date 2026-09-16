@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import * as archiver from 'archiver';
+import archiver from 'archiver';
 import path from 'path';
 import { prisma } from '@repo/database';
 import { requireAuth, requireAdmin } from '../../middlewares/auth.middleware';

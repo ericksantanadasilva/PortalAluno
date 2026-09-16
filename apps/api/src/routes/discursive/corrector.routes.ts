@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import * as archiver from 'archiver';
+import archiver from 'archiver';
 import { prisma } from '@repo/database';
 import { requireAuth } from '../../middlewares/auth.middleware';
 import { uploadToDrive, getDriveFileStream, extractDriveFileId, getDiscursiveFolderId } from '../../services/drive.service';
