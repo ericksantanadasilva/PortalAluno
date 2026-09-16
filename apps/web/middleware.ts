@@ -20,7 +20,7 @@ export async function middleware(request: NextRequest) {
     !hostname.includes('githubpreview.dev')
   ) {
     const parts = hostname.split('.');
-    if (parts.length >= 2 && parts[0] !== 'www') {
+    if (parts.length >= 2 && parts[0] && parts[0] !== 'www') {
       slug = parts[0];
     }
   }

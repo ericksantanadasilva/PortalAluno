@@ -836,10 +836,12 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
                     <tbody>
                       {groupedKeys.map((numStr) => {
                         const qs = groupedQuestions[numStr];
+                        if (!qs || qs.length === 0) return null;
                         const isForeign = qs.length === 2 && qs.some(q => q.language === 'ingles');
 
                         if (!isForeign) {
                           const q = qs[0];
+                          if (!q) return null;
                           return (
                             <tr key={`${q.questionNumber}-none`} className="border-b last:border-0 hover:bg-muted/30">
                               <td className="px-4 py-2 text-center font-medium">{q.questionNumber}</td>
@@ -852,7 +854,7 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
                                 />
                               </td>
                               <td className="px-4 py-2">
-                                <Select value={q.subjectId || undefined} onValueChange={(v) => updateQ(q.questionNumber, 'none', 'subjectId', v)}>
+                                <Select value={q.subjectId || undefined} onValueChange={(v) => updateQ(q.questionNumber, 'none', 'subjectId', v || '')}>
                                   <SelectTrigger className="h-8 w-full border-slate-200">
                                     <SelectValue placeholder={subjects.length === 0 ? "Carregando..." : "Selecione a Disciplina"}>
                                       {q.subjectId ? subjects.find(s => s.id === q.subjectId)?.name : null}

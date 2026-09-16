@@ -25,7 +25,7 @@ COPY packages/eslint-config/package*.json ./packages/eslint-config/
 COPY packages/ui/package*.json ./packages/ui/
 
 # Instala dependências do monorepo
-RUN npm install
+RUN npm install --ignore-scripts
 
 # Copia todo o código-fonte
 COPY . .

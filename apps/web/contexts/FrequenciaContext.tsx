@@ -42,7 +42,7 @@ type FrequenciaContextValue = {
   loadScheduledClasses: (classId?: string, startDate?: string, endDate?: string) => Promise<void>;
   generateScheduledClasses: (date?: string) => Promise<boolean>;
   updateScheduledClass: (id: string, data: any) => Promise<boolean>;
-  updateStatus: (studentId: string, lessonId: string, status: StatusChamada) => Promise<void>;
+  updateStatus: (studentId: string, lessonId: string, status: StatusChamada, modality?: 'presencial' | 'online') => Promise<void>;
   addAbono: (abono: any) => Promise<void>;
   updateAbono: (id: string, abono: any) => Promise<void>;
   deleteAbono: (id: string) => Promise<void>;
@@ -199,7 +199,7 @@ export function FrequenciaProvider({ children }: { children: React.ReactNode }) 
     return false;
   }, [loadScheduledClasses]);
 
-  const updateStatus = useCallback(async (studentId: string, lessonId: string, status: StatusChamada) => {
+  const updateStatus = useCallback(async (studentId: string, lessonId: string, status: StatusChamada, modality: 'presencial' | 'online' = 'presencial') => {
     const token = getToken();
     if (!token || !lessonId) return;
     
@@ -217,7 +217,7 @@ export function FrequenciaProvider({ children }: { children: React.ReactNode }) 
           lessonId,
           studentId,
           status: status === 'Presente' ? 'presente' : 'falta',
-          modality: 'presencial' // Simplificação para chamada manual
+          modality
         })
       });
       if (!res.ok) throw new Error("Erro na API");
@@ -377,8 +377,13 @@ export function FrequenciaProvider({ children }: { children: React.ReactNode }) 
   }, [loadJanelas]);
 
   const confirmarPresencaOnline = useCallback(async (studentId: string, classId: string, date: string, subjectId: string) => {
-    updateStatus(studentId, classId, date, subjectId, 'Presente');
-  }, [updateStatus]);
+    const target = scheduledClasses.find(c =>
+      c.id === classId ||
+      (c.classId === classId && c.date.startsWith(date) && (!subjectId || c.subjectId === subjectId))
+    );
+    const lessonId = target ? target.id : classId;
+    await updateStatus(studentId, lessonId, 'Presente', 'online');
+  }, [scheduledClasses, updateStatus]);
 
   useEffect(() => {
     loadClassesAndSubjects();

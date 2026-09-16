@@ -10,6 +10,7 @@ export type TenantConfig = {
   cor_primaria: string;   // HSL para Tailwind (ex: "22 80% 30%")
   cor_secundaria: string; // HSL para Tailwind
   background_login: string;
+  allowedReportTemplates?: string[];
 };
 
 // ── Aluno ─────────────────────────────────────────────────
@@ -66,7 +67,7 @@ export interface RaioXQuestao {
 }
 
 export interface BoletimData {
-  id: string;
+  id?: string;
   tenantColor?: string;
   aluno: {
     nome: string;
@@ -211,6 +212,7 @@ function gerarRaioXParcial(): RaioXQuestao[] {
 export const mockBoletins: Record<TipoSimulado, BoletimData> = {
   // ── 1) UERJ — Exame de Qualificação (conceito B, 38/60) ──
   UERJ: {
+    id: "mock-uerj",
     aluno: {
       nome: "Ágatha Maria Silva de Oliveira",
       matricula: "3402",
@@ -274,6 +276,7 @@ export const mockBoletins: Record<TipoSimulado, BoletimData> = {
 
   // ── 2) ENEM — Notas TRI altas de medicina ────────────────
   ENEM: {
+    id: "mock-enem",
     aluno: {
       nome: "Ágatha Maria Silva de Oliveira",
       matricula: "3402",
@@ -325,6 +328,7 @@ export const mockBoletins: Record<TipoSimulado, BoletimData> = {
 
   // ── 3) ENEM PARCIAL — Só dia 1, sem raio-x ───────────────
   ENEM_PARCIAL: {
+    id: "mock-enem-parcial",
     aluno: {
       nome: "Ágatha Maria Silva de Oliveira",
       matricula: "3402",
@@ -371,6 +375,7 @@ export const mockBoletins: Record<TipoSimulado, BoletimData> = {
 
   // ── 4) DISCURSIVO — Nota decimal 16.5 ─────────────────────
   DISCURSIVO: {
+    id: "mock-discursivo",
     aluno: {
       nome: "Ágatha Maria Silva de Oliveira",
       matricula: "3402",

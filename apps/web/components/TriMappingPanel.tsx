@@ -90,7 +90,7 @@ export function TriMappingPanel() {
     };
 
     useEffect(() => {
-        fetchSavedData(viewerYear);
+        fetchSavedData(Number(viewerYear));
     }, [viewerYear]);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -176,7 +176,7 @@ export function TriMappingPanel() {
             setPreviewData(null);
             setMappings(initialMappings);
             setViewerYear(year);
-            fetchSavedData(year);
+            fetchSavedData(Number(year));
         } catch (error: unknown) {
             console.error(error);
             const msg = error instanceof Error ? error.message : "Erro ao salvar os dados.";
