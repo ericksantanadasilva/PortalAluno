@@ -55,13 +55,27 @@ export default async function RootLayout({
 
       const fallbackLogo = `https://ui-avatars.com/api/?name=${encodeURIComponent(tenantName)}&background=${primaryColor}&color=fff&size=128`;
 
+      // Normaliza URLs de upload para caminhos relativos (/api/upload/...),
+      // evitando erros com 'localhost:3001' ou portas antigas gravadas no banco.
+      const normalizeImageUrl = (url: string | null | undefined) => {
+        if (!url) return null;
+        const uploadIndex = url.indexOf('/api/upload/');
+        if (uploadIndex !== -1) {
+          return url.substring(uploadIndex);
+        }
+        return url;
+      };
+
+      const logoUrlClean = normalizeImageUrl(data.logoUrl);
+      const loginUrlClean = normalizeImageUrl(data.loginUrl);
+
       // Mapeia do backend pro formato esperado pelo frontend
       tenantConfig = {
         ...tenantConfig,
         cor_primaria: data.primaryColor || tenantConfigMock.cor_primaria,
         cor_secundaria: data.secondaryColor || tenantConfigMock.cor_secundaria,
-        logo_url: data.logoUrl ? data.logoUrl.replace(backendUrl, '') : fallbackLogo,
-        background_login: data.loginUrl ? data.loginUrl.replace(backendUrl, '') : tenantConfigMock.background_login,
+        logo_url: logoUrlClean || fallbackLogo,
+        background_login: loginUrlClean || tenantConfigMock.background_login,
         nome: tenantName,
         allowedReportTemplates: data.allowedReportTemplates || (tenantConfigMock as any).allowedReportTemplates || ["ENEM", "UERJ", "ENEM_PARCIAL", "DISCURSIVO"]
       };

@@ -43,11 +43,17 @@ export function WhiteLabelTab() {
       });
       if (res.ok) {
         const data = await res.json();
+        const cleanUrl = (url?: string | null) => {
+          if (!url) return '';
+          const idx = url.indexOf('/api/upload/');
+          return idx !== -1 ? url.substring(idx) : url;
+        };
+
         const newConfig = {
           primaryColor: data.primaryColor || '#3b82f6',
           secondaryColor: data.secondaryColor || '#1e40af',
-          logoUrl: data.logoUrl,
-          loginUrl: data.loginUrl
+          logoUrl: cleanUrl(data.logoUrl),
+          loginUrl: cleanUrl(data.loginUrl)
         };
         setConfig(newConfig);
         applyCssVariables(newConfig.primaryColor, newConfig.secondaryColor);

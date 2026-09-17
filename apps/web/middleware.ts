@@ -9,19 +9,50 @@ export async function middleware(request: NextRequest) {
   const url = request.nextUrl;
   const hostname = request.headers.get('host') || '';
 
-  // Ignora chamadas locais de ip, localhost ou URLs do GitHub Codespaces
+  // 1. Extração de slug com suporte a multi-nível (*.portal.ericksantana.dev.br), IPs e porta
   let slug = url.searchParams.get('slug') || '';
-  
-  if (
-    !slug &&
-    !hostname.startsWith('localhost:') &&
-    !hostname.startsWith('127.0.0.1') &&
-    !hostname.includes('app.github.dev') &&
-    !hostname.includes('githubpreview.dev')
-  ) {
-    const parts = hostname.split('.');
-    if (parts.length >= 2 && parts[0] && parts[0] !== 'www') {
-      slug = parts[0];
+
+  if (!slug) {
+    const hostWithoutPort = (hostname ? hostname.split(':')[0] || '' : '').toLowerCase().trim();
+
+    const isLocalOrDev =
+      hostWithoutPort === 'localhost' ||
+      hostWithoutPort === '127.0.0.1' ||
+      hostWithoutPort.includes('app.github.dev') ||
+      hostWithoutPort.includes('githubpreview.dev');
+
+    const isIpAddress = /^(\d{1,3}\.){3}\d{1,3}$/.test(hostWithoutPort);
+
+    if (!isLocalOrDev && !isIpAddress) {
+      const configuredRootDomain = process.env.ROOT_DOMAIN?.toLowerCase().trim();
+      const baseDomain = configuredRootDomain || 'portal.ericksantana.dev.br';
+
+      if (hostWithoutPort === baseDomain || hostWithoutPort === `www.${baseDomain}`) {
+        // Domínio raiz sem subdomínio de tenant
+        slug = '';
+      } else if (hostWithoutPort.endsWith(`.${baseDomain}`)) {
+        // Ex: curso1.portal.ericksantana.dev.br -> extrai "curso1"
+        const sub = hostWithoutPort.slice(0, -(baseDomain.length + 1));
+        const subParts = sub.split('.').filter(p => p !== 'www');
+        slug = subParts[subParts.length - 1] || '';
+      } else {
+        // Fallback para outros domínios com subdomínio (ex: curso.meudominio.com.br)
+        const parts = hostWithoutPort.split('.');
+        const isBrDomain = parts.length >= 3 && parts[parts.length - 1] === 'br';
+        const rootPartsCount = isBrDomain ? 3 : 2;
+
+        if (parts.length > rootPartsCount) {
+          const subdomains = parts.slice(0, parts.length - rootPartsCount).filter(p => p !== 'www');
+          const portalIndex = subdomains.indexOf('portal');
+          if (portalIndex > 0) {
+            slug = subdomains[portalIndex - 1] || '';
+          } else if (portalIndex === 0 && subdomains.length === 1) {
+            slug = '';
+          } else if (subdomains.length > 0) {
+            slug = subdomains[0] || '';
+          }
+        }
+      }
     }
   }
 
