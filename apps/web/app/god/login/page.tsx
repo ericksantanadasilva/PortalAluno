@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Loader2, ShieldCheck, ArrowRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { godLoginAction } from './actions';
+import { PageTitle } from '@/components/ui/typography';
 
 export default function GodLoginPage() {
   const router = useRouter();
@@ -37,7 +38,7 @@ export default function GodLoginPage() {
             <ShieldCheck className="h-8 w-8 text-indigo-400" />
           </div>
           <div>
-            <h2 className="text-2xl font-bold tracking-tight text-white">God Mode</h2>
+            <PageTitle className="text-2xl text-white">God Mode</PageTitle>
             <p className="text-sm text-slate-400 mt-2">Área restrita aos Super Administradores do sistema.</p>
           </div>
         </div>
@@ -73,9 +74,9 @@ export default function GodLoginPage() {
             />
           </div>
 
-          <Button 
-            type="submit" 
-            disabled={isLoading} 
+          <Button
+            type="submit"
+            disabled={isLoading}
             className="w-full bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg h-11 transition-colors"
           >
             {isLoading ? (
