@@ -28,7 +28,7 @@ export default function DashboardLayout({
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    
+
     if (!token) {
       router.replace('/login');
       return;
@@ -41,20 +41,20 @@ export default function DashboardLayout({
     fetch('/api/auth/me', {
       headers: { Authorization: `Bearer ${token}` }
     })
-    .then(async res => {
-      const data = await res.json();
-      if (!res.ok || data.error) {
-        if (res.status === 401) {
-          localStorage.removeItem("token");
-          localStorage.removeItem("user_role");
-          localStorage.removeItem("tenant_slug");
-          router.replace('/login');
+      .then(async res => {
+        const data = await res.json();
+        if (!res.ok || data.error) {
+          if (res.status === 401) {
+            localStorage.removeItem("token");
+            localStorage.removeItem("user_role");
+            localStorage.removeItem("tenant_slug");
+            router.replace('/login');
+          }
+        } else {
+          setUserProfile(data);
         }
-      } else {
-        setUserProfile(data);
-      }
-    })
-    .catch(err => console.error(err));
+      })
+      .catch(err => console.error(err));
 
     // Se o usuário for aluno e tentar acessar páginas restritas, redireciona para o boletim
     if (role === 'aluno' && (pathname.includes('/dashboard/frequencia') || pathname.includes('/admin/settings'))) {
@@ -74,19 +74,19 @@ export default function DashboardLayout({
 
   return (
     <SidebarProvider>
-      <AppSidebar 
-        userRole={userRole} 
-        userProfile={userProfile} 
-        tenantConfig={tenantConfig} 
-        onLogout={handleLogout} 
+      <AppSidebar
+        userRole={userRole}
+        userProfile={userProfile}
+        tenantConfig={tenantConfig}
+        onLogout={handleLogout}
       />
-      
+
       <SidebarInset>
         {/* Header Responsivo */}
         <header className="sticky top-0 h-16 shrink-0 border-b border-slate-100 flex items-center justify-between px-4 md:px-8 z-30 bg-background shadow-sm">
           <div className="flex items-center gap-2">
             <SidebarTrigger className="-ml-1" />
-            <h1 className="text-xl md:text-2xl font-bold tracking-tight text-foreground ml-2">Dashboard</h1>
+            <h1 className="ml-2 text-lg font-semibold text-foreground">Dashboard</h1>
           </div>
         </header>
 
