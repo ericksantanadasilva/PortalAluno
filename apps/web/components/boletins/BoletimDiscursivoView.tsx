@@ -5,7 +5,7 @@ import { type BoletimData, tenantConfigMock } from "@repo/database-mocks";
 import { Trophy } from "lucide-react";
 import { DestaqueDiscursivo } from "./DestaqueDiscursivo";
 import { hexToHSL } from "@/lib/utils";
-import PageTitle, { SectionTitle } from "@/components/ui/typography";
+import { SectionTitle } from "@/components/ui/typography";
 import {
   DesempenhoPorDisciplinaSection,
   PlanoRevisaoSection,

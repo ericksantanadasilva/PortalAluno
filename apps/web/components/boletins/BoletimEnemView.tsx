@@ -7,6 +7,7 @@ import { Tooltip, TooltipTrigger, TooltipProvider } from "@/components/ui/toolti
 import { Check, X, Trophy, Target } from "lucide-react";
 import { DestaqueEnem } from "./DestaqueEnem";
 import { hexToHSL } from "@/lib/utils";
+import { SectionTitle } from "../ui/typography";
 import {
   DesempenhoPorDisciplinaSection,
   PlanoRevisaoSection,
@@ -33,10 +34,10 @@ export default function BoletimEnemView({ data }: BoletimEnemViewProps) {
       >
         {/* ── Seção: Seu Resultado ── */}
         <section>
-          <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+          <SectionTitle className="mb-4 flex items-center gap-2">
             <Trophy className="w-5 h-5 text-primary" />
             Seu Resultado
-          </h2>
+          </SectionTitle>
           <DestaqueEnem data={data} />
         </section>
 
