@@ -9,6 +9,7 @@ import { Loader2, ArrowLeft, Eye, EyeOff, ShieldCheck, UserCheck, ArrowRight } f
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useConfirmModal } from '@/hooks/useConfirmModal';
+import { PageTitle } from "@/components/ui/typography";
 
 export default function LoginPage() {
   const { showAlert, ConfirmModal } = useConfirmModal();
@@ -125,9 +126,9 @@ export default function LoginPage() {
                 className="w-full h-full object-cover"
               />
             </div>
-            <h1 className="text-3xl font-semibold tracking-tight text-foreground">
+            <PageTitle>
               {mustReset ? "Definir Nova Senha" : "Bem-vindo ao Portal"}
-            </h1>
+            </PageTitle>
             <p className="text-sm text-muted-foreground">
               {mustReset
                 ? "Substitua a sua senha temporária de primeiro acesso"
