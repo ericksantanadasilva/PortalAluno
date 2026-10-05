@@ -25,6 +25,7 @@ import {
   Download,
   ExternalLink
 } from 'lucide-react';
+import { SectionTitle } from '@/components/ui/typography';
 
 interface QuestionItem {
   id: string;
@@ -259,13 +260,13 @@ export default function CorrectorAreaPage() {
               <span>Voltar</span>
             </Button>
             <div>
-              <h2 className="text-lg font-bold flex items-center gap-2">
+              <SectionTitle className="flex items-center gap-2">
                 <User className="size-4 text-primary" />
                 <span>{activeSubmission.student.name}</span>
                 <Badge variant="secondary" className="font-mono text-xs rounded">
                   MAT {activeSubmission.student.registrationNumber}
                 </Badge>
-              </h2>
+              </SectionTitle>
               <p className="text-xs text-muted-foreground">{activeSubmission.exam.title}</p>
             </div>
           </div>
