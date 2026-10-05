@@ -27,6 +27,7 @@ import {
 import { useFrequencia, ScheduledClass } from "@/contexts/FrequenciaContext";
 import { formatDate } from "@/lib/utils";
 import { useConfirmModal } from "@/hooks/useConfirmModal";
+import { BlockTitle } from "../ui/typography";
 
 interface ControleJanelaValidacaoProps {
   janelas: any[];
@@ -175,7 +176,7 @@ export function ControleJanelaValidacao({
       <div className="rounded-2xl border border-border shadow-sm bg-card p-4 md:px-8 md:py-6">
         <div className="mb-5 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
           <div>
-            <h3 className="text-lg font-bold text-foreground flex items-center gap-2 flex-wrap">
+            <BlockTitle className="flex items-center gap-2 flex-wrap">
               Grade Padrão (Templates)
               <Badge variant="outline" className="text-[10px] font-semibold gap-1 rounded-full">
                 <Repeat className="w-3 h-3" />
@@ -187,7 +188,7 @@ export function ControleJanelaValidacao({
                   Editando
                 </Badge>
               )}
-            </h3>
+            </BlockTitle>
             <p className="text-sm text-muted-foreground mt-1">
               {modoEdicao
                 ? "Altere os campos abaixo e clique em Salvar alterações, ou cancele para criar uma nova janela."
