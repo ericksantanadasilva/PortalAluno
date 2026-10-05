@@ -5,6 +5,7 @@ import { type BoletimData, tenantConfigMock } from "@repo/database-mocks";
 import { Trophy } from "lucide-react";
 import { DestaqueDiscursivo } from "./DestaqueDiscursivo";
 import { hexToHSL } from "@/lib/utils";
+import PageTitle, { SectionTitle } from "@/components/ui/typography";
 import {
   DesempenhoPorDisciplinaSection,
   PlanoRevisaoSection,
@@ -25,10 +26,10 @@ export default function BoletimDiscursivoView({ data }: BoletimDiscursivoViewPro
     >
       {/* ── Seção: Seu Resultado ── */}
       <section>
-        <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+        <SectionTitle className="mb-4 flex items-center gap-2">
           <Trophy className="w-5 h-5 text-primary" />
           Seu Resultado
-        </h2>
+        </SectionTitle>
         <DestaqueDiscursivo data={data} />
       </section>
 
