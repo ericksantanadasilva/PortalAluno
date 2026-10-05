@@ -1,5 +1,6 @@
 import React from "react";
 import { cn } from "@/lib/utils";
+import { BlockTitle } from "../ui/typography";
 
 interface EmptyStateProps {
   /** Ícone do Lucide (componente, não instância). */
@@ -47,7 +48,7 @@ export function EmptyState({
       )}
     >
       <Icon className="w-12 h-12 mx-auto text-muted-foreground/40 mb-4" />
-      <h3 className="text-lg font-semibold text-foreground">{title}</h3>
+      <BlockTitle>{title}</BlockTitle>
       {description && (
         <p className="text-muted-foreground mt-2 text-sm">{description}</p>
       )}
