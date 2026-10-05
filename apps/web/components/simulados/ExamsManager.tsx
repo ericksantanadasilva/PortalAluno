@@ -14,6 +14,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Plus, Trash2, Loader2, Edit2, X, Save, Calculator, UserX, BookOpen, CheckSquare } from 'lucide-react';
 import { ThemeSelect, SubjectTreeItem } from './ThemeSelect';
+import { BlockTitle } from '../ui/typography';
 
 const API_URL = "/api";
 
@@ -528,7 +529,7 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="flex items-center justify-between pb-4 border-b">
-            <h3 className="font-semibold text-lg">Detalhes do Simulado</h3>
+            <BlockTitle>Detalhes do Simulado</BlockTitle>
             <div className="flex gap-6">
               {form.type === 'enem' && (
                 <div className="flex items-center gap-3">
