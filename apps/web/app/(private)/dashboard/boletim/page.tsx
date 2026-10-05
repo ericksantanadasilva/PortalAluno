@@ -25,6 +25,7 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { Label } from "@/components/ui/label";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { PageTitle } from "@/components/ui/typography";
 
 import BoletimUerjView from "@/components/boletins/BoletimUerjView";
 import BoletimEnemView from "@/components/boletins/BoletimEnemView";
@@ -51,7 +52,7 @@ export default function BoletimDetalhado() {
   const [role, setRole] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [loadingBoletins, setLoadingBoletins] = useState(false);
-  
+
   // Para simulacao de admin
   const [todosAlunos, setTodosAlunos] = useState<any[]>([]);
   const [selectedAlunoId, setSelectedAlunoId] = useState<string>("");
@@ -72,7 +73,7 @@ export default function BoletimDetalhado() {
         const meRes = await fetch(`${API_URL}/auth/me`, {
           headers: { Authorization: `Bearer ${token}` }
         });
-        
+
         if (meRes.ok) {
           const userData = await meRes.json();
           if (userRole === "aluno") {
@@ -96,7 +97,7 @@ export default function BoletimDetalhado() {
         setIsLoading(false);
       }
     };
-    
+
     carregarDados();
   }, []);
 
@@ -156,7 +157,7 @@ export default function BoletimDetalhado() {
               Selecione um aluno para visualizar o Boletim Pedagógico dele.
             </p>
           </div>
-          
+
           <Popover open={alunoPopoverOpen} onOpenChange={setAlunoPopoverOpen}>
             <PopoverTrigger
               className={cn(buttonVariants({ variant: "outline" }), "justify-between w-[450px] font-normal h-10 bg-background max-w-full")}
@@ -165,9 +166,9 @@ export default function BoletimDetalhado() {
             >
               {selectedAlunoId
                 ? (() => {
-                    const match = todosAlunos.find((a) => a.id === selectedAlunoId);
-                    return match ? `${match.name} (${match.registrationNumber})` : "Selecione um aluno...";
-                  })()
+                  const match = todosAlunos.find((a) => a.id === selectedAlunoId);
+                  return match ? `${match.name} (${match.registrationNumber})` : "Selecione um aluno...";
+                })()
                 : "Selecione um aluno..."}
               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </PopoverTrigger>
@@ -213,8 +214,8 @@ export default function BoletimDetalhado() {
           icon={GraduationCap}
           title="Nenhum boletim disponível"
           description={
-            role === "aluno" 
-              ? "Você ainda não participou de nenhum simulado cujos resultados foram liberados." 
+            role === "aluno"
+              ? "Você ainda não participou de nenhum simulado cujos resultados foram liberados."
               : "Este aluno não participou de nenhum simulado até o momento."
           }
           className="mt-8"
@@ -224,9 +225,9 @@ export default function BoletimDetalhado() {
           {/* ── Cabeçalho Fixo (Título, Matrícula, Nome e Turma) ── */}
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 border-b border-border pb-8 pt-4">
             <div className="space-y-2">
-              <h2 className="text-3xl font-bold tracking-tight text-foreground">
+              <PageTitle>
                 Boletim Pedagógico Avançado
-              </h2>
+              </PageTitle>
               <p className="text-muted-foreground text-lg">{boletimAtivo.simulado.titulo}</p>
               <p className="text-sm text-muted-foreground">
                 Aplicado em {formatDate(boletimAtivo.simulado.data)}
