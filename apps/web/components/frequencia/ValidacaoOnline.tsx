@@ -5,6 +5,7 @@ import { useFrequencia } from "@/contexts/FrequenciaContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { BlockTitle } from "../ui/typography";
 import {
   Laptop,
   CheckCircle,
@@ -228,7 +229,7 @@ export function ValidacaoOnline({
               {iniciais}
             </div>
             <div>
-              <h3 className="text-lg font-bold capitalize">{aluno.nome}</h3>
+              <BlockTitle className="capitalize text-inherit">{aluno.nome}</BlockTitle>
               <p className="text-xs text-white/70 capitalize">
                 {aluno.matricula} · {aluno.turmaNome || aluno.turma}
               </p>
