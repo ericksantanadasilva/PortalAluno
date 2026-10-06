@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { BlockTitle } from "./ui/typography";
 
 type PreviewData = {
     [sheetName: string]: {
@@ -276,9 +277,9 @@ export function TriMappingPanel() {
 
                                             return (
                                                 <div key={`${sub}-${tier}`} className="p-4 border rounded-lg bg-slate-50/50 space-y-4">
-                                                    <h3 className="font-medium text-slate-700 capitalize">
+                                                    <BlockTitle className="text-slate-700 capitalize">
                                                         Tier: {tier}
-                                                    </h3>
+                                                    </BlockTitle>
                                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
                                                         <div className="space-y-2 min-w-0">
                                                             <Label>Linha de Início</Label>
@@ -379,10 +380,10 @@ export function TriMappingPanel() {
 
                         {/* Preview Section */}
                         <div className="mt-8 space-y-4">
-                            <h3 className="font-medium text-lg flex items-center gap-2">
+                            <BlockTitle className="flex items-center gap-2">
                                 <FileSpreadsheet className="h-5 w-5 text-primary" />
                                 Preview dos Dados (Primeiras 5 Linhas)
-                            </h3>
+                            </BlockTitle>
                             <Tabs value={activePreviewTab || sheetNames[0]} onValueChange={setActivePreviewTab} className="w-full flex-col">
                                 <TabsList className="w-full justify-start overflow-x-auto flex-nowrap bg-slate-100 p-1 rounded-md">
                                     {sheetNames.map((sn) => (
