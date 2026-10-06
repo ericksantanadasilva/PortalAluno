@@ -1,5 +1,6 @@
 import React from "react";
 import { cn } from "@/lib/utils";
+import { PageTitle } from "../ui/typography";
 
 interface PageHeaderProps {
   /**
@@ -7,7 +8,7 @@ interface PageHeaderProps {
    * @example <Layers className="w-8 h-8 text-primary" />
    */
   icon?: React.ReactNode;
-  /** Título principal da página. Renderiza como <h2>. */
+  /** Título principal da página. Renderiza como <h1>. */
   title: string;
   /** Descrição/subtítulo abaixo do título. */
   description?: string;
@@ -43,8 +44,8 @@ interface PageHeaderProps {
 /**
  * Cabeçalho padronizado de página.
  *
- * Sempre renderiza `<h2>` porque o layout pai `(private)/layout.tsx`
- * já renderiza `<h1>Dashboard</h1>` no header global.
+ * Sempre renderiza `<h1>`: é o título principal da página. O layout pai
+ * `(private)/layout.tsx` usa só um `<span>` no header global.
  *
  * @example
  * // Padrão simples
@@ -90,14 +91,14 @@ export function PageHeader({
                 <span>{badge.label}</span>
               </div>
             )}
-            <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight text-foreground">
+            <PageTitle className="md:text-4xl">
               {icon && (
                 <span className="inline-flex items-center gap-3 [&>svg]:size-8">
                   {icon}
                 </span>
               )}
               {title}
-            </h2>
+            </PageTitle>
             {description && (
               <p className="text-muted-foreground mt-1 max-w-2xl text-sm md:text-base">
                 {description}
@@ -123,10 +124,10 @@ export function PageHeader({
       )}
     >
       <div>
-        <h2 className="text-3xl font-bold tracking-tight text-foreground flex items-center gap-3">
+        <PageTitle className="flex items-center gap-3">
           {icon && <span className="[&>svg]:size-8 [&>svg]:text-primary">{icon}</span>}
           {title}
-        </h2>
+        </PageTitle>
         {description && (
           <p className="text-muted-foreground mt-2">{description}</p>
         )}
