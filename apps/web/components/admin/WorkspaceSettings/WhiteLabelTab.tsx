@@ -315,7 +315,7 @@ export function WhiteLabelTab() {
               <div className="space-y-4 relative z-10">
                 <div className="bg-white rounded-2xl p-5 shadow-[0_4px_15px_rgb(0,0,0,0.02)] border-none transition-transform hover:-translate-y-1">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="text-sm font-bold text-slate-800">Desempenho Geral</div>
+                    <div className="text-sm font-bold text-foreground">Desempenho Geral</div>
                     <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ backgroundColor: config.primaryColor + '20', color: config.primaryColor }}>
                       <span className="text-[10px] font-bold">92%</span>
                     </div>
@@ -370,7 +370,7 @@ export function WhiteLabelTab() {
                   <CheckCircle2 className="w-8 h-8 text-emerald-500" />
                 )}
               </div>
-              <DialogTitle className="text-2xl font-bold mb-2 text-slate-900">{dialogMessage.title}</DialogTitle>
+              <DialogTitle className="text-2xl font-bold mb-2 text-foreground">{dialogMessage.title}</DialogTitle>
               <DialogDescription className="text-base text-slate-500 px-4">
                 {dialogMessage.description}
               </DialogDescription>

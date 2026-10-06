@@ -717,7 +717,7 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
                         key={sub.id}
                         className={`flex items-center gap-2.5 p-2.5 rounded-lg border text-xs font-semibold cursor-pointer transition-all ${isChecked
                           ? 'bg-primary border-primary text-primary-foreground shadow-sm'
-                          : 'bg-white border-border text-slate-700 hover:border-primary hover:bg-primary/5'
+                          : 'bg-white border-border text-foreground hover:border-primary hover:bg-primary/5'
                           }`}
                       >
                         <Checkbox
@@ -747,7 +747,7 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
                 discursiveSubjectIds.length > 0 ? (
                   <div className="w-full space-y-4 pt-2">
                     <div>
-                      <Label className="text-xs font-bold text-slate-700 uppercase tracking-wider block mb-2">
+                      <Label className="text-xs font-bold text-foreground uppercase tracking-wider block mb-2">
                         2. Selecione a Matéria para Preencher os Temas das Questões:
                       </Label>
 
@@ -762,7 +762,7 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
                               onClick={() => setSelectedDiscursiveTabSubjectId(subId)}
                               className={`px-4 py-2 text-xs font-bold rounded-lg transition-all ${isActive
                                 ? 'bg-primary text-primary-foreground shadow-sm'
-                                : 'bg-white text-slate-700 hover:bg-slate-200/80 border border-border'
+                                : 'bg-white text-foreground hover:bg-slate-200/80 border border-border'
                                 }`}
                             >
                               {subName}

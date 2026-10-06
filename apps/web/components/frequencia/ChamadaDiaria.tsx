@@ -271,7 +271,7 @@ export function ChamadaDiaria({
                       className={
                         isOnline
                           ? "rounded-full bg-blue-50 text-blue-700 border border-blue-100 font-semibold tracking-wide uppercase text-[10px]"
-                          : "rounded-full bg-muted text-slate-700 border border-border/60 font-semibold tracking-wide uppercase text-[10px]"
+                          : "rounded-full bg-muted text-foreground border border-border/60 font-semibold tracking-wide uppercase text-[10px]"
                       }
                     >
                       {isOnline ? (
@@ -328,7 +328,7 @@ export function ChamadaDiaria({
                   className={
                     isOnline
                       ? "rounded-full bg-blue-50 text-blue-700 border border-blue-100 font-semibold tracking-wide uppercase text-[10px]"
-                      : "rounded-full bg-muted text-slate-700 border border-border/60 font-semibold tracking-wide uppercase text-[10px]"
+                      : "rounded-full bg-muted text-foreground border border-border/60 font-semibold tracking-wide uppercase text-[10px]"
                   }
                 >
                   {isOnline ? "Online" : "Presencial"}

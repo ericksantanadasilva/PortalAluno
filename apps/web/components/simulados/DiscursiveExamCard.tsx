@@ -177,7 +177,7 @@ export function DiscursiveExamCard({ exam, onSubmissionSuccess }: DiscursiveExam
             </span>
           </div>
         </div>
-        <CardTitle className="text-xl font-bold text-slate-900 mt-2 break-words">
+        <CardTitle className="text-xl font-bold text-foreground mt-2 break-words">
           {exam.title}
         </CardTitle>
         <CardDescription className="text-slate-500 text-sm">
@@ -197,7 +197,7 @@ export function DiscursiveExamCard({ exam, onSubmissionSuccess }: DiscursiveExam
               <div key={subject.id} className="p-4 bg-muted/50 hover:bg-slate-50 transition-colors">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-3 mb-3">
                   <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-                    <span className="font-bold text-slate-800 text-base mr-1">
+                    <span className="font-bold text-foreground text-base mr-1">
                       {subject.subjectName}
                     </span>
                     {submission ? (

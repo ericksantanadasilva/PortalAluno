@@ -181,8 +181,8 @@ export function HistoricoAbonosView({
             {formatDate(dataReferencia)}
           </p>
           <div className="flex flex-wrap gap-2 pt-3">
-            <Badge variant="secondary" className="px-3 py-1 text-xs font-semibold tracking-wide uppercase rounded-full bg-muted text-slate-700 hover:bg-slate-100 border border-border/60">
-              <span className="font-bold mr-1 text-slate-900">{totais.total}</span> REGISTROS
+            <Badge variant="secondary" className="px-3 py-1 text-xs font-semibold tracking-wide uppercase rounded-full bg-muted text-foreground hover:bg-slate-100 border border-border/60">
+              <span className="font-bold mr-1 text-foreground">{totais.total}</span> REGISTROS
             </Badge>
             <Badge variant="secondary" className="px-3 py-1 text-xs font-semibold tracking-wide uppercase rounded-full bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-100">
               <span className="font-bold mr-1">{totais.vigentes}</span> VIGENTES

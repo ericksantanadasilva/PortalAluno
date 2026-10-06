@@ -448,7 +448,7 @@ export default function TemasPage() {
                                             <ChevronRight className="w-5 h-5 text-slate-400" />
                                         )}
                                         <div>
-                                            <CardTitle className="text-lg font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                                            <CardTitle className="text-lg font-bold text-foreground dark:text-slate-100 flex items-center gap-2">
                                                 {subject.name}
                                                 <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary dark:bg-primary/10 dark:text-primary font-medium">
                                                     {subject.themes.length} temas | {totalSubthemes} subtemas
@@ -487,7 +487,7 @@ export default function TemasPage() {
                                                         <div className="flex items-center justify-between">
                                                             <div
                                                                 onClick={() => toggleTheme(theme.id)}
-                                                                className="flex items-center gap-2 cursor-pointer font-semibold text-slate-700 dark:text-slate-200 hover:text-primary"
+                                                                className="flex items-center gap-2 cursor-pointer font-semibold text-foreground dark:text-slate-200 hover:text-primary"
                                                             >
                                                                 {isThemeExpanded ? (
                                                                     <ChevronDown className="w-4 h-4 text-slate-500" />
@@ -655,7 +655,7 @@ export default function TemasPage() {
                             <>
                                 <div className="border-2 border-dashed border-border dark:border-slate-700 rounded-lg p-6 text-center hover:border-primary transition-colors">
                                     <Upload className="w-10 h-10 mx-auto text-slate-400 mb-2" />
-                                    <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                                    <p className="text-sm font-medium text-foreground dark:text-slate-300">
                                         Clique para selecionar o arquivo Excel (.xlsx, .csv)
                                     </p>
                                     <input
@@ -668,7 +668,7 @@ export default function TemasPage() {
 
                                 {excelRows.length > 0 && (
                                     <div className="space-y-2">
-                                        <h4 className="font-semibold text-sm text-slate-800">
+                                        <h4 className="font-semibold text-sm text-foreground">
                                             Pré-visualização ({excelRows.length} linhas encontradas):
                                         </h4>
                                         <div className="max-h-48 overflow-y-auto border rounded divide-y text-xs">
@@ -696,15 +696,15 @@ export default function TemasPage() {
                                 </BlockTitle>
                                 <div className="grid grid-cols-3 gap-2 text-sm max-w-sm mx-auto bg-white dark:bg-slate-900 p-3 rounded-md shadow-sm border">
                                     <div>
-                                        <span className="block font-bold text-slate-800">{importResult.createdSubjects}</span>
+                                        <span className="block font-bold text-foreground">{importResult.createdSubjects}</span>
                                         <span className="text-xs text-slate-500">Disciplinas</span>
                                     </div>
                                     <div>
-                                        <span className="block font-bold text-slate-800">{importResult.createdThemes}</span>
+                                        <span className="block font-bold text-foreground">{importResult.createdThemes}</span>
                                         <span className="text-xs text-slate-500">Temas</span>
                                     </div>
                                     <div>
-                                        <span className="block font-bold text-slate-800">{importResult.createdSubthemes}</span>
+                                        <span className="block font-bold text-foreground">{importResult.createdSubthemes}</span>
                                         <span className="text-xs text-slate-500">Subtemas</span>
                                     </div>
                                 </div>

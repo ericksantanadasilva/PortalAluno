@@ -32,7 +32,7 @@ export function DestaqueUerj({ data }: DestaqueUerjProps) {
           </div>
           <p className="text-sm text-slate-500 mt-2">
             Conceito médio da turma:{" "}
-            <span className="font-bold text-slate-700">
+            <span className="font-bold text-foreground">
               {data.resultadoTime.conceitoMedioTurma}
             </span>
           </p>

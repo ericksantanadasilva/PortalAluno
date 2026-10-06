@@ -22,7 +22,7 @@ export function getDifficultyColor(taxa: number) {
   if (taxa >= 75)
     return "bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400 border-none";
   if (taxa >= 45)
-    return "bg-muted text-slate-700 dark:bg-slate-800 dark:text-slate-300 border-none";
+    return "bg-muted text-foreground dark:bg-slate-800 dark:text-slate-300 border-none";
   return "bg-rose-50 text-rose-700 dark:bg-rose-900/20 dark:text-rose-400 border-none";
 }
 

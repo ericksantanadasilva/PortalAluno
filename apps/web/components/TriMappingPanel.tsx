@@ -277,7 +277,7 @@ export function TriMappingPanel() {
 
                                             return (
                                                 <div key={`${sub}-${tier}`} className="p-4 border rounded-lg bg-muted/50 space-y-4">
-                                                    <BlockTitle className="text-slate-700 capitalize">
+                                                    <BlockTitle className="text-foreground capitalize">
                                                         Tier: {tier}
                                                     </BlockTitle>
                                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
@@ -508,7 +508,7 @@ export function TriMappingPanel() {
 
                             <div className="border rounded-md max-h-[400px] overflow-y-auto relative bg-white">
                                 <table className="w-full text-sm text-left">
-                                    <thead className="sticky top-0 bg-muted shadow-sm z-10 text-slate-700">
+                                    <thead className="sticky top-0 bg-muted shadow-sm z-10 text-foreground">
                                         <tr>
                                             <th className="h-10 px-4 font-medium border-b w-24">Acertos</th>
                                             <th className="h-10 px-4 font-medium border-b">Linha Inferior</th>

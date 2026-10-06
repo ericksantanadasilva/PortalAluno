@@ -314,7 +314,7 @@ export function DiscursiveSubmissionsManager() {
     <div className="space-y-6">
       <Card className="border-border shadow-sm bg-white">
         <CardHeader className="border-b border-border pb-6">
-          <CardTitle className="text-xl font-bold text-slate-900 flex items-center gap-2">
+          <CardTitle className="text-xl font-bold text-foreground flex items-center gap-2">
             <BookOpen className="w-5 h-5 text-primary" />
             Central de Downloads - Simulados Discursivos
           </CardTitle>
@@ -416,7 +416,7 @@ export function DiscursiveSubmissionsManager() {
           ) : filteredSubmissions.length === 0 ? (
             <div className="py-16 text-center text-slate-500 border border-dashed rounded-lg bg-muted/50">
               <FileText className="w-12 h-12 mx-auto text-slate-300 mb-2" />
-              <p className="font-semibold text-slate-700">Nenhuma submissão encontrada</p>
+              <p className="font-semibold text-foreground">Nenhuma submissão encontrada</p>
               <p className="text-xs text-slate-500 mt-1">Os envios dos alunos para este simulado aparecerão nesta tabela.</p>
             </div>
           ) : (
@@ -430,12 +430,12 @@ export function DiscursiveSubmissionsManager() {
                         onCheckedChange={handleSelectAll}
                       />
                     </TableHead>
-                    <TableHead className="font-bold text-slate-800">Aluno</TableHead>
-                    <TableHead className="font-bold text-slate-800">Matrícula</TableHead>
-                    <TableHead className="font-bold text-slate-800">Matéria da Prova</TableHead>
-                    <TableHead className="font-bold text-slate-800">Data de Envio</TableHead>
-                    <TableHead className="font-bold text-slate-800">Status</TableHead>
-                    <TableHead className="text-right font-bold text-slate-800">Ação</TableHead>
+                    <TableHead className="font-bold text-foreground">Aluno</TableHead>
+                    <TableHead className="font-bold text-foreground">Matrícula</TableHead>
+                    <TableHead className="font-bold text-foreground">Matéria da Prova</TableHead>
+                    <TableHead className="font-bold text-foreground">Data de Envio</TableHead>
+                    <TableHead className="font-bold text-foreground">Status</TableHead>
+                    <TableHead className="text-right font-bold text-foreground">Ação</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -449,14 +449,14 @@ export function DiscursiveSubmissionsManager() {
                             onCheckedChange={(checked) => handleSelectOne(row.id, checked)}
                           />
                         </TableCell>
-                        <TableCell className="font-semibold text-slate-900">
+                        <TableCell className="font-semibold text-foreground">
                           {row.studentName}
                         </TableCell>
                         <TableCell className="text-slate-600 font-mono text-xs">
                           {row.registrationNumber}
                         </TableCell>
                         <TableCell>
-                          <Badge variant="outline" className="bg-muted text-slate-800 border-border font-semibold">
+                          <Badge variant="outline" className="bg-muted text-foreground border-border font-semibold">
                             {row.subjectName}
                           </Badge>
                         </TableCell>
@@ -473,7 +473,7 @@ export function DiscursiveSubmissionsManager() {
                             size="sm"
                             variant="outline"
                             onClick={() => handleDownloadSingle(row.id, row.formattedFilename)}
-                            className="border-border text-slate-700 hover:bg-slate-100 hover:text-slate-900 gap-1.5 font-medium text-xs h-8"
+                            className="border-border text-foreground hover:bg-slate-100 hover:text-slate-900 gap-1.5 font-medium text-xs h-8"
                           >
                             <Download className="w-3.5 h-3.5 text-primary" />
                             Baixar PDF
