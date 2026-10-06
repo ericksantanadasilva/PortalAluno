@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Loader2, Upload, FileSignature, CheckCircle2 } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { SmallLabel } from '@/components/ui/typography';
 
 const API_URL = "/api";
 
@@ -22,15 +23,15 @@ type ExamData = {
 export function OmrImportTab() {
   const [exams, setExams] = useState<ExamData[]>([]);
   const [loadingExams, setLoadingExams] = useState(true);
-  
+
   const [selectedExamId, setSelectedExamId] = useState<string>('');
   const [dayNumber, setDayNumber] = useState<string>('1');
   const [file, setFile] = useState<File | null>(null);
-  
+
   const [colRegistration, setColRegistration] = useState('Matricula');
   const [colLanguage, setColLanguage] = useState('Lingua');
   const [colQuestionsStart, setColQuestionsStart] = useState('1');
-  
+
   const [uploading, setUploading] = useState(false);
   const [uploadResult, setUploadResult] = useState<{ success: boolean; message: string; details?: string; ignored?: string[] } | null>(null);
 
@@ -76,14 +77,14 @@ export function OmrImportTab() {
       const formData = new FormData();
       formData.append('file', file);
       formData.append('examId', selectedExamId);
-      
+
       const mappings = {
         dayNumber: Number(dayNumber),
         colRegistration,
         colLanguage,
         colQuestionsStart
       };
-      
+
       formData.append('mappings', JSON.stringify(mappings));
 
       const res = await fetch(`${API_URL}/exams/import-omr`, {
@@ -97,8 +98,8 @@ export function OmrImportTab() {
       const data = await res.json();
 
       if (res.ok) {
-        setUploadResult({ 
-          success: true, 
+        setUploadResult({
+          success: true,
           message: data.message,
           details: `Alunos processados: ${data.studentsProcessed}. Respostas salvas: ${data.responsesSaved}.`,
           ignored: data.ignoredRegistrations
@@ -127,16 +128,16 @@ export function OmrImportTab() {
         </CardDescription>
       </CardHeader>
       <CardContent className="pt-6 space-y-8">
-        
+
         {/* Seção 1: Seleção do Simulado */}
         <div className="space-y-4">
-          <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-500">1. Selecione o Simulado</h3>
-          
+          <SmallLabel>1. Selecione o Simulado</SmallLabel>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>Simulado</Label>
               {loadingExams ? (
-                <div className="h-10 flex items-center text-sm text-muted-foreground"><Loader2 className="w-4 h-4 animate-spin mr-2"/> Carregando...</div>
+                <div className="h-10 flex items-center text-sm text-muted-foreground"><Loader2 className="w-4 h-4 animate-spin mr-2" /> Carregando...</div>
               ) : (
                 <Select value={selectedExamId} onValueChange={(val) => val && setSelectedExamId(val)}>
                   <SelectTrigger className="bg-white w-full md:w-[350px]">
@@ -176,7 +177,7 @@ export function OmrImportTab() {
 
         {/* Seção 2: Mapeamento de Colunas */}
         <div className="space-y-4 border-t border-slate-100 pt-6">
-          <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-500">2. Mapeamento das Colunas do Arquivo</h3>
+          <SmallLabel>2. Mapeamento das Colunas do Arquivo</SmallLabel>
           <p className="text-sm text-muted-foreground">
             Informe exatamente como estão escritos os cabeçalhos (primeira linha) do seu arquivo para que o sistema saiba onde ler os dados.
           </p>
@@ -184,10 +185,10 @@ export function OmrImportTab() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="space-y-2">
               <Label>Nome da Coluna: Matrícula</Label>
-              <Input 
-                placeholder="Ex: Matricula" 
-                value={colRegistration} 
-                onChange={e => setColRegistration(e.target.value)} 
+              <Input
+                placeholder="Ex: Matricula"
+                value={colRegistration}
+                onChange={e => setColRegistration(e.target.value)}
                 className="bg-white"
               />
               <p className="text-xs text-muted-foreground">A coluna que identifica o aluno.</p>
@@ -195,11 +196,11 @@ export function OmrImportTab() {
 
             <div className="space-y-2">
               <Label>Nome da Coluna: Idioma (Opcional)</Label>
-              <Input 
-                placeholder="Ex: Lingua" 
-                value={colLanguage} 
+              <Input
+                placeholder="Ex: Lingua"
+                value={colLanguage}
                 onChange={e => setColLanguage(e.target.value)}
-                className="bg-white" 
+                className="bg-white"
                 disabled={selectedExam?.isEnemFull && dayNumber === '2'}
               />
               <p className="text-xs text-muted-foreground">Deixe em branco se não houver.</p>
@@ -207,9 +208,9 @@ export function OmrImportTab() {
 
             <div className="space-y-2">
               <Label className="text-primary font-bold">Coluna Inicial das Respostas</Label>
-              <Input 
-                placeholder="Ex: 1 ou Q1" 
-                value={colQuestionsStart} 
+              <Input
+                placeholder="Ex: 1 ou Q1"
+                value={colQuestionsStart}
                 onChange={e => setColQuestionsStart(e.target.value)}
                 className="bg-primary/5 border-primary/20 focus-visible:ring-primary/30"
               />
@@ -220,13 +221,13 @@ export function OmrImportTab() {
 
         {/* Seção 3: Upload do Arquivo */}
         <div className="space-y-4 border-t border-slate-100 pt-6">
-          <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-500">3. Arquivo de Dados</h3>
-          
+          <SmallLabel>3. Arquivo de Dados</SmallLabel>
+
           <div className="space-y-2">
             <Label>Arquivo CSV ou XLSX</Label>
-            <Input 
-              type="file" 
-              accept=".csv, .xlsx, .xls" 
+            <Input
+              type="file"
+              accept=".csv, .xlsx, .xls"
               onChange={handleFileChange}
               className="bg-white cursor-pointer file:cursor-pointer file:bg-slate-100 file:text-slate-700 file:border-0 file:mr-4 file:px-4 file:py-1 file:rounded-full file:text-sm file:font-semibold hover:file:bg-slate-200 transition-all"
             />
@@ -257,8 +258,8 @@ export function OmrImportTab() {
         )}
       </CardContent>
       <CardFooter className="bg-slate-50/50 border-t border-slate-100 p-6 flex justify-end">
-        <Button 
-          disabled={!selectedExamId || !file || !colRegistration || !colQuestionsStart || uploading} 
+        <Button
+          disabled={!selectedExamId || !file || !colRegistration || !colQuestionsStart || uploading}
           onClick={handleUpload}
           className="gap-2 shadow-sm rounded-full px-8"
           size="lg"
