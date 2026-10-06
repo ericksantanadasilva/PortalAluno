@@ -13,6 +13,7 @@ import { Download, UploadCloud, Plus, FileSpreadsheet, Search, X, Trash2, Shield
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { AlunoForm } from '../types/workspace-settings.types';
 import { useConfirmModal } from '@/hooks/useConfirmModal';
+import { BlockTitle, SmallLabel } from '@/components/ui/typography';
 
 
 // URL base do seu servidor Express no Monorepo
@@ -476,7 +477,7 @@ export function StudentsTab() {
         <TabsContent value="cadastro" className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between bg-primary/5 p-4 rounded-lg border border-primary/10 gap-4">
             <div>
-              <h3 className="font-semibold text-primary">Contexto de Matrícula</h3>
+              <BlockTitle>Contexto de Matrícula</BlockTitle>
               <p className="text-sm text-muted-foreground">Os alunos cadastrados ou importados farão parte do ano letivo selecionado.</p>
             </div>
             <div className="w-full sm:w-64">
@@ -692,7 +693,7 @@ export function StudentsTab() {
 
               {/* Gestão de Modalidades */}
               <div className="space-y-4">
-                <h3 className="text-sm font-medium border-b pb-2">1. Modalidades de Ensino (Combos Pedagógicos)</h3>
+                <SmallLabel className="border-b pb-2">1. Modalidades de Ensino (Combos Pedagógicos)</SmallLabel>
                 <div className="flex flex-wrap gap-2">
                   {modalidades.map(m => (
                     <Badge key={m.id} variant="outline" className="rounded-full px-3 py-1 flex items-center gap-2 text-sm capitalize bg-muted/40 font-normal">
@@ -721,7 +722,7 @@ export function StudentsTab() {
 
               {/* Gestão de Turmas */}
               <div className="space-y-4">
-                <h3 className="text-sm font-medium border-b pb-2">2. Turmas Ativas e Alocações</h3>
+                <SmallLabel className="border-b pb-2">2. Turmas Ativas e Alocações</SmallLabel>
                 <div className="flex flex-wrap gap-2">
                   {turmas.map(t => (
                     <Badge key={t.id} variant="outline" className="rounded-full px-3 py-1 flex items-center gap-2 text-sm bg-muted/40 font-normal">
