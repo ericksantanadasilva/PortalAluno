@@ -146,7 +146,7 @@ export function ThemeSelect({
                         e.stopPropagation();
                         setOpen(!open);
                     }}
-                    className="absolute right-2 text-slate-400 hover:text-emerald-600 focus:outline-none p-1"
+                    className="absolute right-2 text-muted-foreground hover:text-emerald-600 focus:outline-none p-1"
                 >
                     <ChevronDown className={cn("w-3.5 h-3.5 transition-transform", open && "rotate-180")} />
                 </button>
@@ -162,7 +162,7 @@ export function ThemeSelect({
                             <button
                                 type="button"
                                 onClick={() => setOpen(false)}
-                                className="text-slate-400 hover:text-slate-600"
+                                className="text-muted-foreground hover:text-slate-600"
                             >
                                 <X className="w-3.5 h-3.5" />
                             </button>
@@ -178,7 +178,7 @@ export function ThemeSelect({
 
                         <div className="max-h-56 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800 text-xs">
                             {filteredOptions.length === 0 ? (
-                                <div className="p-3 text-center text-slate-400">
+                                <div className="p-3 text-center text-muted-foreground">
                                     Nenhum tema/subtema encontrado no catálogo.
                                 </div>
                             ) : (
@@ -209,7 +209,7 @@ export function ThemeSelect({
                                                     </span>
                                                 </div>
                                                 {opt.type === 'subtheme' && (
-                                                    <span className="text-[10px] text-slate-400 pl-3">
+                                                    <span className="text-[10px] text-muted-foreground pl-3">
                                                         Tema: {opt.themeName}
                                                     </span>
                                                 )}

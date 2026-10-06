@@ -392,7 +392,7 @@ export default function TemasPage() {
             {/* Barra de Pesquisa */}
             <Card className="border-border dark:border-slate-800 shadow-sm">
                 <CardContent className="p-4 flex items-center gap-3">
-                    <Search className="w-5 h-5 text-slate-400" />
+                    <Search className="w-5 h-5 text-muted-foreground" />
                     <Input
                         placeholder="Buscar por disciplina, tema ou subtema (ex: Acidez, Cinética, Orgânica)..."
                         value={search}
@@ -445,7 +445,7 @@ export default function TemasPage() {
                                         {isExpanded ? (
                                             <ChevronDown className="w-5 h-5 text-primary" />
                                         ) : (
-                                            <ChevronRight className="w-5 h-5 text-slate-400" />
+                                            <ChevronRight className="w-5 h-5 text-muted-foreground" />
                                         )}
                                         <div>
                                             <CardTitle className="text-lg font-bold text-foreground dark:text-slate-100 flex items-center gap-2">
@@ -472,7 +472,7 @@ export default function TemasPage() {
                                 {isExpanded && (
                                     <CardContent className="p-4 pt-2 space-y-3">
                                         {subject.themes.length === 0 ? (
-                                            <p className="text-sm text-slate-400 italic py-2 pl-4">
+                                            <p className="text-sm text-muted-foreground italic py-2 pl-4">
                                                 Nenhum tema cadastrado nesta disciplina.
                                             </p>
                                         ) : (
@@ -492,10 +492,10 @@ export default function TemasPage() {
                                                                 {isThemeExpanded ? (
                                                                     <ChevronDown className="w-4 h-4 text-muted-foreground" />
                                                                 ) : (
-                                                                    <ChevronRight className="w-4 h-4 text-slate-400" />
+                                                                    <ChevronRight className="w-4 h-4 text-muted-foreground" />
                                                                 )}
                                                                 <span>{theme.name}</span>
-                                                                <span className="text-xs text-slate-400 font-normal">
+                                                                <span className="text-xs text-muted-foreground font-normal">
                                                                     ({theme.subthemes.length} subtemas)
                                                                 </span>
                                                             </div>
@@ -531,7 +531,7 @@ export default function TemasPage() {
                                                         {isThemeExpanded && (
                                                             <div className="pl-6 pt-1 space-y-1 border-l-2 border-border dark:border-slate-800 ml-2">
                                                                 {theme.subthemes.length === 0 ? (
-                                                                    <p className="text-xs text-slate-400 italic">
+                                                                    <p className="text-xs text-muted-foreground italic">
                                                                         Sem subtemas vinculados.
                                                                     </p>
                                                                 ) : (
@@ -654,7 +654,7 @@ export default function TemasPage() {
                         {!importResult ? (
                             <>
                                 <div className="border-2 border-dashed border-border dark:border-slate-700 rounded-lg p-6 text-center hover:border-primary transition-colors">
-                                    <Upload className="w-10 h-10 mx-auto text-slate-400 mb-2" />
+                                    <Upload className="w-10 h-10 mx-auto text-muted-foreground mb-2" />
                                     <p className="text-sm font-medium text-foreground dark:text-slate-300">
                                         Clique para selecionar o arquivo Excel (.xlsx, .csv)
                                     </p>
@@ -680,7 +680,7 @@ export default function TemasPage() {
                                                 </div>
                                             ))}
                                             {excelRows.length > 10 && (
-                                                <div className="p-2 text-center text-slate-400 italic">
+                                                <div className="p-2 text-center text-muted-foreground italic">
                                                     ... e mais {excelRows.length - 10} linhas.
                                                 </div>
                                             )}
