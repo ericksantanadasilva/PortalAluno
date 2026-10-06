@@ -172,7 +172,7 @@ export function DiscursiveExamCard({ exam, onSubmissionSuccess }: DiscursiveExam
               </Badge>
             )}
             <span className="flex items-center whitespace-nowrap">
-              <Clock className="w-3.5 h-3.5 mr-1 text-slate-400 flex-shrink-0" />
+              <Clock className="w-3.5 h-3.5 mr-1 text-muted-foreground flex-shrink-0" />
               {new Date(exam.createdAt).toLocaleDateString('pt-BR')}
             </span>
           </div>

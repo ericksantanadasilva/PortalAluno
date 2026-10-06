@@ -196,7 +196,7 @@ export default function SimuladosStudentPage() {
                             {exam.type.replace('_', ' ')}
                           </Badge>
                           <div className="flex items-center text-xs text-muted-foreground bg-muted border px-2 py-1 rounded-md font-medium">
-                            <Calendar className="w-3 h-3 mr-1 text-slate-400" />
+                            <Calendar className="w-3 h-3 mr-1 text-muted-foreground" />
                             {examDate.toLocaleDateString('pt-BR', { timeZone: 'UTC' })}
                           </div>
                         </div>
@@ -204,7 +204,7 @@ export default function SimuladosStudentPage() {
                           {exam.title}
                         </CardTitle>
                         <CardDescription className="flex items-center gap-1 mt-3">
-                          <LayoutList className="w-4 h-4 text-slate-400" />
+                          <LayoutList className="w-4 h-4 text-muted-foreground" />
                           {exam.totalQuestions} Questões
                         </CardDescription>
                         <div className="text-xs text-muted-foreground mt-2 bg-muted p-2 rounded-md border flex flex-col gap-1">

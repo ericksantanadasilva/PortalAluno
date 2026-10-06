@@ -268,7 +268,7 @@ export function AnswerKeysManager({ updateTrigger }: { onUpdate?: () => void, up
                           <button
                             title="Anular Questão"
                             onClick={() => toggleAnularQuestao(numero, language)}
-                            className={`w-8 h-8 flex items-center justify-center rounded transition-colors ${anulada ? 'text-destructive bg-destructive/10' : 'text-slate-400 hover:bg-destructive/10 hover:text-destructive'}`}
+                            className={`w-8 h-8 flex items-center justify-center rounded transition-colors ${anulada ? 'text-destructive bg-destructive/10' : 'text-muted-foreground hover:bg-destructive/10 hover:text-destructive'}`}
                           >
                             <AlertTriangle className="w-4 h-4" />
                           </button>

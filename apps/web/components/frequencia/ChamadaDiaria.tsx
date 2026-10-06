@@ -261,7 +261,7 @@ export function ChamadaDiaria({
                       </div>
                       <div>
                         <p className="font-semibold text-foreground text-sm">{aluno.nome}</p>
-                        <p className="font-normal text-xs text-slate-400">{aluno.matricula}</p>
+                        <p className="font-normal text-xs text-muted-foreground">{aluno.matricula}</p>
                       </div>
                     </div>
                   </TableCell>
@@ -316,7 +316,7 @@ export function ChamadaDiaria({
                   </div>
                   <div className="space-y-0.5">
                     <p className="font-semibold text-foreground text-sm">{aluno.nome}</p>
-                    <p className="font-normal text-xs text-slate-400">{aluno.matricula}</p>
+                    <p className="font-normal text-xs text-muted-foreground">{aluno.matricula}</p>
                   </div>
                 </div>
                 {isOnline && <OnlineStatusIndicator status={aluno.status_atual} />}

@@ -326,7 +326,7 @@ export function HistoricoAbonosView({
                             <p className="font-semibold text-sm text-foreground">
                               {abono.alunoNome}
                             </p>
-                            <p className="font-normal text-xs text-slate-400">
+                            <p className="font-normal text-xs text-muted-foreground">
                               {matriculaPorAlunoId[abono.alunoId] || abono.alunoId}
                             </p>
                           </div>

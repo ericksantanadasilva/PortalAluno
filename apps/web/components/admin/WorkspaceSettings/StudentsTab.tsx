@@ -635,7 +635,7 @@ export function StudentsTab() {
                   onDragOver={handleDrag}
                   onDrop={handleDrop}
                 >
-                  <div className={`p-4 rounded-full transition-colors ${dragActive ? 'bg-primary/10 text-primary' : 'bg-white text-slate-400 shadow-sm'}`}>
+                  <div className={`p-4 rounded-full transition-colors ${dragActive ? 'bg-primary/10 text-primary' : 'bg-white text-muted-foreground shadow-sm'}`}>
                     <UploadCloud className="w-8 h-8" />
                   </div>
                   <div className="text-center">

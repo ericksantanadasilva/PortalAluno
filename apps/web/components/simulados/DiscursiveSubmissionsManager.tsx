@@ -350,7 +350,7 @@ export function DiscursiveSubmissionsManager() {
 
               {selectedExamId && (
                 <div className="relative flex-1">
-                  <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+                  <Search className="w-4 h-4 text-muted-foreground absolute left-3 top-3" />
                   <Input
                     placeholder="Buscar aluno, matrícula ou matéria..."
                     value={searchTerm}
@@ -408,7 +408,7 @@ export function DiscursiveSubmissionsManager() {
               <p>Carregando submissões dos alunos...</p>
             </div>
           ) : !selectedExamId ? (
-            <div className="py-16 text-center text-slate-400 border border-dashed rounded-lg bg-muted/50">
+            <div className="py-16 text-center text-muted-foreground border border-dashed rounded-lg bg-muted/50">
               <BookOpen className="w-12 h-12 mx-auto text-slate-300 mb-2" />
               <p className="font-medium">Nenhum simulado discursivo selecionado.</p>
               <p className="text-xs text-muted-foreground mt-1">Crie ou selecione um simulado no menu acima para visualizar as resoluções.</p>
