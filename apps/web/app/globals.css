@@ -4,10 +4,12 @@
 
 @layer base {
   :root {
-    --background: 210 40% 98%; /* #F8FAFC Off-white premium */
+    --background: 210 40% 98%;
+    /* #F8FAFC Off-white premium */
     --foreground: 222.2 84% 4.9%;
 
-    --card: 0 0% 100%; /* Pure white for floating cards */
+    --card: 0 0% 100%;
+    /* Pure white for floating cards */
     --card-foreground: 222.2 84% 4.9%;
 
     --popover: 0 0% 100%;
@@ -38,7 +40,7 @@
     --sidebar-foreground: 240 5.9% 10%;
     --sidebar-primary: 240 5.9% 10%;
     --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent: 240 5.9% 90%;
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
