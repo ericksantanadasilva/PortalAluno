@@ -1,17 +1,16 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { Geist } from "next/font/google";
+import { Ubuntu } from "next/font/google";
 import { cn } from "@/lib/utils";
 import TenantProvider from "@/components/TenantProvider";
 import { tenantConfigMock } from "@repo/database-mocks";
 import { headers } from "next/headers";
 
-const geist = Geist({ subsets: ['latin'], variable: '--font-sans' });
-
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
+const ubuntu = Ubuntu({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "700"],
+  variable: "--font-ubuntu",
 });
 const geistMono = localFont({
   src: "./fonts/GeistMonoVF.woff",
@@ -87,9 +86,9 @@ export default async function RootLayout({
   return (
     // O suppressHydrationWarning impede que extensões de terceiros que injetam 
     // atributos nas tags quebrem o ciclo de vida do React no mobile.
-    <html lang="pt-BR" className={cn("font-sans", geist.variable)} suppressHydrationWarning>
+    <html lang="pt-BR" className={cn("font-sans", ubuntu.variable)} suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-background`}
+        className={`${ubuntu.className} ${geistMono.variable} antialiased min-h-screen bg-background`}
         suppressHydrationWarning
       >
         <TenantProvider tenantConfig={tenantConfig as any}>
