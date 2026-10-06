@@ -65,7 +65,7 @@ export default function BoletimUerjView({ data }: BoletimUerjViewProps) {
                     Fácil (≥75%)
                   </div>
                   <div className="flex items-center gap-1.5 font-medium">
-                    <div className="w-3 h-3 rounded-full bg-slate-100 border border-slate-200 dark:bg-slate-800" />
+                    <div className="w-3 h-3 rounded-full bg-slate-100 border border-border dark:bg-slate-800" />
                     Média (45-74%)
                   </div>
                   <div className="flex items-center gap-1.5 font-medium">

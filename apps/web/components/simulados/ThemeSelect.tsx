@@ -138,7 +138,7 @@ export function ThemeSelect({
                     onChange={handleTextChange}
                     onFocus={() => setOpen(true)}
                     placeholder={placeholder}
-                    className={cn("h-8 pr-7 text-xs bg-white dark:bg-slate-950 border-slate-200 focus-visible:ring-emerald-500", className)}
+                    className={cn("h-8 pr-7 text-xs bg-white dark:bg-slate-950 border-border focus-visible:ring-emerald-500", className)}
                 />
                 <button
                     type="button"
@@ -153,7 +153,7 @@ export function ThemeSelect({
             </div>
 
             {open && (
-                <div className="absolute left-0 top-full mt-1 w-[320px] sm:w-[380px] md:w-[440px] z-50 p-2.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xl animate-in fade-in-0 zoom-in-95">
+                <div className="absolute left-0 top-full mt-1 w-[320px] sm:w-[380px] md:w-[440px] z-50 p-2.5 rounded-lg border border-border dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xl animate-in fade-in-0 zoom-in-95">
                     <div className="space-y-2">
                         <div className="flex items-center justify-between px-2 py-1 bg-slate-50 dark:bg-slate-950 rounded border text-xs text-slate-500">
                             <span className="flex items-center gap-1.5 font-medium text-emerald-700 dark:text-emerald-400">

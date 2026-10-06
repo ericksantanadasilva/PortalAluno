@@ -312,8 +312,8 @@ export function DiscursiveSubmissionsManager() {
 
   return (
     <div className="space-y-6">
-      <Card className="border-slate-200 shadow-sm bg-white">
-        <CardHeader className="border-b border-slate-100 pb-6">
+      <Card className="border-border shadow-sm bg-white">
+        <CardHeader className="border-b border-border pb-6">
           <CardTitle className="text-xl font-bold text-slate-900 flex items-center gap-2">
             <BookOpen className="w-5 h-5 text-primary" />
             Central de Downloads - Simulados Discursivos
@@ -325,7 +325,7 @@ export function DiscursiveSubmissionsManager() {
 
         <CardContent className="pt-6 space-y-6">
           {/* Controls Bar */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-50 p-4 rounded-xl border border-border">
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 flex-1 max-w-2xl">
               <div className="w-full sm:w-72">
                 <Select
@@ -333,7 +333,7 @@ export function DiscursiveSubmissionsManager() {
                   onValueChange={(val) => { if (val) setSelectedExamId(val); }}
                   disabled={loadingExams || exams.length === 0}
                 >
-                  <SelectTrigger className="bg-white border-slate-300 h-10">
+                  <SelectTrigger className="bg-white border-border h-10">
                     <SelectValue placeholder={loadingExams ? 'Carregando simulados...' : 'Selecione um simulado...'}>
                       {selectedExamId ? (exams.find(e => e.id === selectedExamId)?.title || 'Carregando...') : null}
                     </SelectValue>
@@ -355,7 +355,7 @@ export function DiscursiveSubmissionsManager() {
                     placeholder="Buscar aluno, matrícula ou matéria..."
                     value={searchTerm}
                     onChange={(e) => setSearchWith(e.target.value)}
-                    className="pl-9 bg-white border-slate-300 h-10"
+                    className="pl-9 bg-white border-border h-10"
                   />
                 </div>
               )}
@@ -420,7 +420,7 @@ export function DiscursiveSubmissionsManager() {
               <p className="text-xs text-slate-500 mt-1">Os envios dos alunos para este simulado aparecerão nesta tabela.</p>
             </div>
           ) : (
-            <div className="border border-slate-200 rounded-lg overflow-hidden shadow-sm">
+            <div className="border border-border rounded-lg overflow-hidden shadow-sm">
               <Table>
                 <TableHeader className="bg-slate-50">
                   <TableRow>
@@ -456,7 +456,7 @@ export function DiscursiveSubmissionsManager() {
                           {row.registrationNumber}
                         </TableCell>
                         <TableCell>
-                          <Badge variant="outline" className="bg-slate-100 text-slate-800 border-slate-200 font-semibold">
+                          <Badge variant="outline" className="bg-slate-100 text-slate-800 border-border font-semibold">
                             {row.subjectName}
                           </Badge>
                         </TableCell>
@@ -473,7 +473,7 @@ export function DiscursiveSubmissionsManager() {
                             size="sm"
                             variant="outline"
                             onClick={() => handleDownloadSingle(row.id, row.formattedFilename)}
-                            className="border-slate-300 text-slate-700 hover:bg-slate-100 hover:text-slate-900 gap-1.5 font-medium text-xs h-8"
+                            className="border-border text-slate-700 hover:bg-slate-100 hover:text-slate-900 gap-1.5 font-medium text-xs h-8"
                           >
                             <Download className="w-3.5 h-3.5 text-primary" />
                             Baixar PDF

@@ -24,7 +24,7 @@ export const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
             if (onCheckedChange) onCheckedChange(e.target.checked);
           }}
           className={cn(
-            'peer h-4 w-4 shrink-0 rounded-sm border border-slate-300 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 appearance-none checked:bg-primary checked:border-primary cursor-pointer transition-all',
+            'peer h-4 w-4 shrink-0 rounded-sm border border-border ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 appearance-none checked:bg-primary checked:border-primary cursor-pointer transition-all',
             className
           )}
           {...props}

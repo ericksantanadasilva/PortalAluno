@@ -717,7 +717,7 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
                         key={sub.id}
                         className={`flex items-center gap-2.5 p-2.5 rounded-lg border text-xs font-semibold cursor-pointer transition-all ${isChecked
                           ? 'bg-primary border-primary text-primary-foreground shadow-sm'
-                          : 'bg-white border-slate-200 text-slate-700 hover:border-primary hover:bg-primary/5'
+                          : 'bg-white border-border text-slate-700 hover:border-primary hover:bg-primary/5'
                           }`}
                       >
                         <Checkbox
@@ -751,7 +751,7 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
                         2. Selecione a Matéria para Preencher os Temas das Questões:
                       </Label>
 
-                      <div className="flex flex-wrap gap-2 p-1.5 bg-slate-100 rounded-xl border border-slate-200">
+                      <div className="flex flex-wrap gap-2 p-1.5 bg-slate-100 rounded-xl border border-border">
                         {discursiveSubjectIds.map(subId => {
                           const subName = subjects.find(s => s.id === subId)?.name || subId;
                           const isActive = (selectedDiscursiveTabSubjectId || discursiveSubjectIds[0]) === subId;
@@ -762,7 +762,7 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
                               onClick={() => setSelectedDiscursiveTabSubjectId(subId)}
                               className={`px-4 py-2 text-xs font-bold rounded-lg transition-all ${isActive
                                 ? 'bg-primary text-primary-foreground shadow-sm'
-                                : 'bg-white text-slate-700 hover:bg-slate-200/80 border border-slate-200'
+                                : 'bg-white text-slate-700 hover:bg-slate-200/80 border border-border'
                                 }`}
                             >
                               {subName}
@@ -776,7 +776,7 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
                       const activeSubId = selectedDiscursiveTabSubjectId || discursiveSubjectIds[0];
                       const activeSubName = subjects.find(s => s.id === activeSubId)?.name || activeSubId;
                       return (
-                        <div className="rounded-xl border border-slate-200 overflow-hidden shadow-sm bg-white w-full">
+                        <div className="rounded-xl border border-border overflow-hidden shadow-sm bg-white w-full">
                           <div className="bg-primary/10 px-4 py-2.5 border-b border-primary/20 flex items-center justify-between">
                             <span className="font-bold text-foreground text-xs uppercase tracking-wide">
                               Matriz de Conteúdos: {activeSubName}
@@ -856,7 +856,7 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
                               </td>
                               <td className="px-4 py-2">
                                 <Select value={q.subjectId || undefined} onValueChange={(v) => updateQ(q.questionNumber, 'none', 'subjectId', v || '')}>
-                                  <SelectTrigger className="h-8 w-full border-slate-200">
+                                  <SelectTrigger className="h-8 w-full border-border">
                                     <SelectValue placeholder={subjects.length === 0 ? "Carregando..." : "Selecione a Disciplina"}>
                                       {q.subjectId ? subjects.find(s => s.id === q.subjectId)?.name : null}
                                     </SelectValue>
@@ -901,7 +901,7 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
                                 <td className="px-4 py-2 flex items-center gap-2">
                                   <Badge variant="outline" className="w-20 justify-center">Inglês</Badge>
                                   <Select value={qEn.subjectId || undefined} onValueChange={(v) => updateQ(qEn.questionNumber, 'ingles', 'subjectId', v || '')}>
-                                    <SelectTrigger className="h-8 w-full border-slate-200">
+                                    <SelectTrigger className="h-8 w-full border-border">
                                       <SelectValue placeholder={subjects.length === 0 ? "Carregando..." : "Disciplina..."}>
                                         {qEn.subjectId ? subjects.find(s => s.id === qEn.subjectId)?.name : null}
                                       </SelectValue>
@@ -929,7 +929,7 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
                                 <td className="px-4 py-2 flex items-center gap-2">
                                   <Badge variant="outline" className="w-20 justify-center">Espanhol</Badge>
                                   <Select value={qEs.subjectId || undefined} onValueChange={(v) => updateQ(qEs.questionNumber, 'espanhol', 'subjectId', v || '')}>
-                                    <SelectTrigger className="h-8 w-full border-slate-200">
+                                    <SelectTrigger className="h-8 w-full border-border">
                                       <SelectValue placeholder={subjects.length === 0 ? "Carregando..." : "Disciplina..."}>
                                         {qEs.subjectId ? subjects.find(s => s.id === qEs.subjectId)?.name : null}
                                       </SelectValue>

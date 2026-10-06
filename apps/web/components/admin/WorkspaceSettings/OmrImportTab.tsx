@@ -117,8 +117,8 @@ export function OmrImportTab() {
   };
 
   return (
-    <Card className="border-slate-200 shadow-sm">
-      <CardHeader className="bg-slate-50/50 border-b border-slate-100 pb-6">
+    <Card className="border-border shadow-sm">
+      <CardHeader className="bg-slate-50/50 border-b border-border pb-6">
         <CardTitle className="text-xl flex items-center gap-2">
           <Upload className="w-5 h-5 text-primary" />
           Importação de Respostas (OMR/Remark)
@@ -176,7 +176,7 @@ export function OmrImportTab() {
         </div>
 
         {/* Seção 2: Mapeamento de Colunas */}
-        <div className="space-y-4 border-t border-slate-100 pt-6">
+        <div className="space-y-4 border-t border-border pt-6">
           <SmallLabel>2. Mapeamento das Colunas do Arquivo</SmallLabel>
           <p className="text-sm text-muted-foreground">
             Informe exatamente como estão escritos os cabeçalhos (primeira linha) do seu arquivo para que o sistema saiba onde ler os dados.
@@ -220,7 +220,7 @@ export function OmrImportTab() {
         </div>
 
         {/* Seção 3: Upload do Arquivo */}
-        <div className="space-y-4 border-t border-slate-100 pt-6">
+        <div className="space-y-4 border-t border-border pt-6">
           <SmallLabel>3. Arquivo de Dados</SmallLabel>
 
           <div className="space-y-2">
@@ -257,7 +257,7 @@ export function OmrImportTab() {
           </Alert>
         )}
       </CardContent>
-      <CardFooter className="bg-slate-50/50 border-t border-slate-100 p-6 flex justify-end">
+      <CardFooter className="bg-slate-50/50 border-t border-border p-6 flex justify-end">
         <Button
           disabled={!selectedExamId || !file || !colRegistration || !colQuestionsStart || uploading}
           onClick={handleUpload}

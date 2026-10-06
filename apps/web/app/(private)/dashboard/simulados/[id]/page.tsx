@@ -187,7 +187,7 @@ export default function SimuladoAnswerPage() {
               </CardDescription>
             </div>
             
-            <div className="text-sm font-bold bg-slate-100 text-slate-600 px-4 py-2 rounded-full border border-slate-200">
+            <div className="text-sm font-bold bg-slate-100 text-slate-600 px-4 py-2 rounded-full border border-border">
               Respondidas: {answers.filter(a => a.chosenAlternative).length} / {exam.totalQuestions}
             </div>
           </div>
@@ -239,7 +239,7 @@ export default function SimuladoAnswerPage() {
               const selected = studentAns?.chosenAlternative;
 
               return (
-                <div key={numero} className={`flex flex-col gap-2 p-3 rounded-xl transition-all ${anulada ? 'opacity-50 grayscale bg-slate-50' : 'bg-white hover:bg-slate-50 border border-slate-100 hover:shadow-[0_4px_15px_rgb(0,0,0,0.02)]'}`}>
+                <div key={numero} className={`flex flex-col gap-2 p-3 rounded-xl transition-all ${anulada ? 'opacity-50 grayscale bg-slate-50' : 'bg-white hover:bg-slate-50 border border-border hover:shadow-[0_4px_15px_rgb(0,0,0,0.02)]'}`}>
                   <div className="flex items-center justify-between">
                     <span className="font-mono font-bold text-slate-500 text-sm pl-1">
                       {numero}.
@@ -248,7 +248,7 @@ export default function SimuladoAnswerPage() {
                     {selected && !anulada && <CheckCircle2 className="w-4 h-4 text-emerald-500" />}
                   </div>
 
-                  <div className="flex bg-slate-100/50 rounded-lg p-1.5 border border-slate-200/50 shadow-inner items-center justify-center gap-1">
+                  <div className="flex bg-slate-100/50 rounded-lg p-1.5 border border-border/50 shadow-inner items-center justify-center gap-1">
                     {alternativasPossiveis.map((alt) => {
                       const isSelected = selected === alt;
                       return (
@@ -273,7 +273,7 @@ export default function SimuladoAnswerPage() {
             })}
           </div>
         </CardContent>
-        <CardFooter className="flex justify-end border-t border-slate-100 p-6 bg-slate-50/50 rounded-b-xl">
+        <CardFooter className="flex justify-end border-t border-border p-6 bg-slate-50/50 rounded-b-xl">
           <Button disabled={saving || (hasForeignLanguage && !selectedLanguage)} onClick={handleSave} className="gap-2 rounded-full px-8 shadow-md" size="lg">
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
             Entregar Cartão-Resposta

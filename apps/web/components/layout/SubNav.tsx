@@ -143,7 +143,7 @@ export function SubNav({
 
       {/* Desktop: Pills */}
       <div className={cn("hidden md:flex justify-center w-full", !mobileSelect && "flex")}>
-        <div className="inline-flex h-11 items-center justify-center rounded-xl bg-slate-100 p-1 border border-slate-200">
+        <div className="inline-flex h-11 items-center justify-center rounded-xl bg-slate-100 p-1 border border-border">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = getIsActive(tab);

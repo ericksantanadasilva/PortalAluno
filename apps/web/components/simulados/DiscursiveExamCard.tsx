@@ -157,7 +157,7 @@ export function DiscursiveExamCard({ exam, onSubmissionSuccess }: DiscursiveExam
   };
 
   return (
-    <Card className="border-slate-200 shadow-sm hover:shadow-md transition-all bg-white relative overflow-hidden">
+    <Card className="border-border shadow-sm hover:shadow-md transition-all bg-white relative overflow-hidden">
       <div className={`absolute top-0 left-0 w-full h-1 ${allSubmitted ? 'bg-emerald-600' : isExpired ? 'bg-destructive' : isCardActive ? 'bg-primary' : 'bg-slate-300'}`} />
       <CardHeader className="pb-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
@@ -186,7 +186,7 @@ export function DiscursiveExamCard({ exam, onSubmissionSuccess }: DiscursiveExam
       </CardHeader>
 
       <CardContent className="space-y-4">
-        <div className="divide-y divide-slate-100 border border-slate-100 rounded-lg overflow-hidden">
+        <div className="divide-y divide-slate-100 border border-border rounded-lg overflow-hidden">
           {exam.subjects.map((subject) => {
             const submission = subject.submission;
             const selectedFile = selectedFiles[subject.id];
@@ -230,7 +230,7 @@ export function DiscursiveExamCard({ exam, onSubmissionSuccess }: DiscursiveExam
                         Prazo Encerrado
                       </Badge>
                     ) : !isStarted ? (
-                      <Badge variant="outline" className="bg-slate-50 text-slate-600 border-slate-200 text-xs font-medium rounded whitespace-nowrap">
+                      <Badge variant="outline" className="bg-slate-50 text-slate-600 border-border text-xs font-medium rounded whitespace-nowrap">
                         Aguardando Prazo
                       </Badge>
                     ) : (
@@ -254,7 +254,7 @@ export function DiscursiveExamCard({ exam, onSubmissionSuccess }: DiscursiveExam
                       </Badge>
                     </div>
                   ) : !isStarted ? (
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 bg-slate-100 border border-slate-200 rounded-md text-slate-600 text-xs font-medium">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 bg-slate-100 border border-border rounded-md text-slate-600 text-xs font-medium">
                       <span className="flex items-center gap-1.5">
                         <Clock className="w-4 h-4 text-slate-500 flex-shrink-0" />
                         Aguardando início do prazo para envio da resolução.
@@ -265,7 +265,7 @@ export function DiscursiveExamCard({ exam, onSubmissionSuccess }: DiscursiveExam
                     <div className="flex flex-col gap-2">
                       <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                         <label className="flex-1 cursor-pointer">
-                          <div className="border border-dashed border-slate-300 rounded-md p-2.5 bg-white hover:border-primary hover:bg-primary/5 transition-all flex items-center justify-center gap-2 text-xs text-slate-600">
+                          <div className="border border-dashed border-border rounded-md p-2.5 bg-white hover:border-primary hover:bg-primary/5 transition-all flex items-center justify-center gap-2 text-xs text-slate-600">
                             <FileUp className="w-4 h-4 text-primary flex-shrink-0" />
                             <span className="truncate">
                               {selectedFile ? selectedFile.name : 'Selecionar arquivo PDF da matéria...'}

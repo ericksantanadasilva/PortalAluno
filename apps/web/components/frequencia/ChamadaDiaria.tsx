@@ -134,7 +134,7 @@ export function ChamadaDiaria({
   return (
     <div className="w-full rounded-2xl border border-border shadow-sm bg-card overflow-hidden">
       {/* Barra de filtros integrada ao painel */}
-      <div className="flex flex-col sm:flex-row sm:items-end gap-4 p-4 md:px-8 md:py-5 border-b border-slate-100 bg-primary/5">
+      <div className="flex flex-col sm:flex-row sm:items-end gap-4 p-4 md:px-8 md:py-5 border-b border-border bg-primary/5">
         <div className="flex-1 min-w-0 space-y-1.5">
           <label
             htmlFor="turma-select"
@@ -256,7 +256,7 @@ export function ChamadaDiaria({
                 <TableRow key={aluno.id} className="hover:bg-slate-50/80 transition-colors border-none">
                   <TableCell className="py-4 pl-5 align-middle">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full overflow-hidden border border-slate-200 bg-slate-50 shrink-0">
+                      <div className="w-10 h-10 rounded-full overflow-hidden border border-border bg-slate-50 shrink-0">
                         <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(aluno.nome)}&background=random`} alt={aluno.nome} />
                       </div>
                       <div>
@@ -271,7 +271,7 @@ export function ChamadaDiaria({
                       className={
                         isOnline
                           ? "rounded-full bg-blue-50 text-blue-700 border border-blue-100 font-semibold tracking-wide uppercase text-[10px]"
-                          : "rounded-full bg-slate-50 text-slate-700 border border-slate-200/60 font-semibold tracking-wide uppercase text-[10px]"
+                          : "rounded-full bg-slate-50 text-slate-700 border border-border/60 font-semibold tracking-wide uppercase text-[10px]"
                       }
                     >
                       {isOnline ? (
@@ -311,7 +311,7 @@ export function ChamadaDiaria({
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-10 h-10 rounded-full overflow-hidden border border-slate-200 bg-slate-50 shrink-0">
+                  <div className="w-10 h-10 rounded-full overflow-hidden border border-border bg-slate-50 shrink-0">
                     <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(aluno.nome)}&background=random`} alt={aluno.nome} />
                   </div>
                   <div className="space-y-0.5">
@@ -328,7 +328,7 @@ export function ChamadaDiaria({
                   className={
                     isOnline
                       ? "rounded-full bg-blue-50 text-blue-700 border border-blue-100 font-semibold tracking-wide uppercase text-[10px]"
-                      : "rounded-full bg-slate-50 text-slate-700 border border-slate-200/60 font-semibold tracking-wide uppercase text-[10px]"
+                      : "rounded-full bg-slate-50 text-slate-700 border border-border/60 font-semibold tracking-wide uppercase text-[10px]"
                   }
                 >
                   {isOnline ? "Online" : "Presencial"}

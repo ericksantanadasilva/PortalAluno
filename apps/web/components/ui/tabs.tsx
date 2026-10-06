@@ -25,7 +25,7 @@ function Tabs({
 }
 
 const tabsListVariants = cva(
-  "group/tabs-list inline-flex items-center justify-start rounded-lg p-1 text-muted-foreground bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700",
+  "group/tabs-list inline-flex items-center justify-start rounded-lg p-1 text-muted-foreground bg-slate-100 dark:bg-slate-800 border border-border dark:border-slate-700",
   {
     variants: {
       variant: {

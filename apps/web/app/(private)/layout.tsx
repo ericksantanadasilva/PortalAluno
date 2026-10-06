@@ -83,7 +83,7 @@ export default function DashboardLayout({
 
       <SidebarInset>
         {/* Header Responsivo */}
-        <header className="sticky top-0 h-16 shrink-0 border-b border-slate-100 flex items-center justify-between px-4 md:px-8 z-30 bg-background shadow-sm">
+        <header className="sticky top-0 h-16 shrink-0 border-b border-border flex items-center justify-between px-4 md:px-8 z-30 bg-background shadow-sm">
           <div className="flex items-center gap-2">
             <SidebarTrigger className="-ml-1" />
           </div>

@@ -390,7 +390,7 @@ export default function TemasPage() {
             />
 
             {/* Barra de Pesquisa */}
-            <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
+            <Card className="border-border dark:border-slate-800 shadow-sm">
                 <CardContent className="p-4 flex items-center gap-3">
                     <Search className="w-5 h-5 text-slate-400" />
                     <Input
@@ -436,7 +436,7 @@ export default function TemasPage() {
                         const totalSubthemes = subject.themes.reduce((acc, t) => acc + t.subthemes.length, 0);
 
                         return (
-                            <Card key={subject.id} className="border-slate-200 dark:border-slate-800 overflow-hidden">
+                            <Card key={subject.id} className="border-border dark:border-slate-800 overflow-hidden">
                                 <CardHeader
                                     onClick={() => toggleSubject(subject.id)}
                                     className="cursor-pointer bg-slate-50 dark:bg-slate-900/50 hover:bg-slate-100 dark:hover:bg-slate-900 transition-colors p-4 flex flex-row items-center justify-between"
@@ -463,7 +463,7 @@ export default function TemasPage() {
                                             e.stopPropagation();
                                             openThemeModal(subject.id);
                                         }}
-                                        className="gap-1 border-slate-300 rounded-md"
+                                        className="gap-1 border-border rounded-md"
                                     >
                                         <Plus className="w-3.5 h-3.5" /> Adicionar Tema
                                     </Button>
@@ -482,7 +482,7 @@ export default function TemasPage() {
                                                 return (
                                                     <div
                                                         key={theme.id}
-                                                        className="border border-slate-200 dark:border-slate-800 rounded-lg p-3 space-y-2 bg-white dark:bg-slate-950"
+                                                        className="border border-border dark:border-slate-800 rounded-lg p-3 space-y-2 bg-white dark:bg-slate-950"
                                                     >
                                                         <div className="flex items-center justify-between">
                                                             <div
@@ -529,7 +529,7 @@ export default function TemasPage() {
                                                         </div>
 
                                                         {isThemeExpanded && (
-                                                            <div className="pl-6 pt-1 space-y-1 border-l-2 border-slate-100 dark:border-slate-800 ml-2">
+                                                            <div className="pl-6 pt-1 space-y-1 border-l-2 border-border dark:border-slate-800 ml-2">
                                                                 {theme.subthemes.length === 0 ? (
                                                                     <p className="text-xs text-slate-400 italic">
                                                                         Sem subtemas vinculados.
@@ -653,7 +653,7 @@ export default function TemasPage() {
                     <div className="space-y-4 py-2">
                         {!importResult ? (
                             <>
-                                <div className="border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-lg p-6 text-center hover:border-primary transition-colors">
+                                <div className="border-2 border-dashed border-border dark:border-slate-700 rounded-lg p-6 text-center hover:border-primary transition-colors">
                                     <Upload className="w-10 h-10 mx-auto text-slate-400 mb-2" />
                                     <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
                                         Clique para selecionar o arquivo Excel (.xlsx, .csv)

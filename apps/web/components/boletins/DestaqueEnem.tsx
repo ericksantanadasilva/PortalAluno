@@ -38,7 +38,7 @@ export function DestaqueEnem({ data }: DestaqueEnemProps) {
         {triCards.map((card) => (
           <Card
             key={card.label}
-            className={`shadow-[0_4px_15px_rgb(0,0,0,0.02)] rounded-2xl bg-white border-slate-100 transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:-translate-y-1 ${card.value === maxTri ? "ring-2 ring-offset-2 border-none" : ""
+            className={`shadow-[0_4px_15px_rgb(0,0,0,0.02)] rounded-2xl bg-white border-border transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:-translate-y-1 ${card.value === maxTri ? "ring-2 ring-offset-2 border-none" : ""
               }`}
             style={
               card.value === maxTri

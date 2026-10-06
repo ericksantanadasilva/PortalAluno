@@ -236,11 +236,11 @@ export function AnswerKeysManager({ updateTrigger }: { onUpdate?: () => void, up
                     if (language === 'espanhol') label = `${numero} (Espanhol)`;
 
                     return (
-                      <div key={`${numero}-${language}`} className={`flex flex-col gap-2 p-3 rounded-xl transition-all ${anulada ? 'opacity-50 grayscale bg-slate-50' : 'bg-white hover:bg-slate-50 border border-slate-100 hover:shadow-[0_4px_15px_rgb(0,0,0,0.02)]'}`}>
+                      <div key={`${numero}-${language}`} className={`flex flex-col gap-2 p-3 rounded-xl transition-all ${anulada ? 'opacity-50 grayscale bg-slate-50' : 'bg-white hover:bg-slate-50 border border-border hover:shadow-[0_4px_15px_rgb(0,0,0,0.02)]'}`}>
                         <span className="font-mono font-bold text-slate-500 text-sm pl-1">
                           {label}
                         </span>
-                        <div className="flex bg-slate-100/50 rounded-lg p-1.5 border border-slate-200/50 shadow-inner items-center gap-1 justify-between">
+                        <div className="flex bg-slate-100/50 rounded-lg p-1.5 border border-border/50 shadow-inner items-center gap-1 justify-between">
                           <div className="flex gap-1">
                             {['A', 'B', 'C', 'D', 'E'].map((alt) => {
                               // Se for UERJ, só vai até a letra D
@@ -281,7 +281,7 @@ export function AnswerKeysManager({ updateTrigger }: { onUpdate?: () => void, up
             </div>
           )}
         </CardContent>
-        <CardFooter className="flex justify-end border-t border-slate-100 p-6">
+        <CardFooter className="flex justify-end border-t border-border p-6">
           <Button disabled={!selectedExamId || saving || questions.length === 0} onClick={handleSaveAnswerKey} className="gap-2 rounded-full px-8 shadow-md">
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
             Salvar Gabarito Oficial

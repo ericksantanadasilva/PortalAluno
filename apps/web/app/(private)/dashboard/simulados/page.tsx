@@ -81,7 +81,7 @@ export default function SimuladosStudentPage() {
       ) : (
         <Tabs defaultValue="discursive" className="w-full space-y-6">
           <div className="flex justify-center w-full">
-            <TabsList className="grid grid-cols-1 sm:inline-flex sm:h-11 h-auto items-center justify-center rounded-xl bg-slate-100 p-1 border border-slate-200 w-full sm:w-auto gap-1">
+            <TabsList className="grid grid-cols-1 sm:inline-flex sm:h-11 h-auto items-center justify-center rounded-xl bg-slate-100 p-1 border border-border w-full sm:w-auto gap-1">
               <TabsTrigger value="discursive" className="data-[active]:bg-white data-[active]:text-primary data-[state=active]:bg-white data-[state=active]:text-primary font-semibold px-4 py-2 text-xs sm:text-sm w-full justify-center">
                 <FileText className="w-4 h-4 mr-1.5 sm:mr-2 flex-shrink-0" />
                 <span className="truncate">Simulados Discursivos ({discursiveExams.length})</span>
@@ -188,7 +188,7 @@ export default function SimuladosStudentPage() {
                   const isCardCompletelyExpired = isExpired1 && (!exam.isEnemFull || isExpired2);
 
                   return (
-                    <Card key={exam.id} className="hover:shadow-lg transition-all group border-slate-200 flex flex-col h-full bg-white relative overflow-hidden">
+                    <Card key={exam.id} className="hover:shadow-lg transition-all group border-border flex flex-col h-full bg-white relative overflow-hidden">
                       <div className={`absolute top-0 left-0 w-full h-1 ${isCardCompletelyExpired ? 'bg-destructive' : isCardActive ? 'bg-primary' : 'bg-slate-300'}`} />
                       <CardHeader className="pb-3 flex-grow">
                         <div className="flex justify-between items-start mb-2">
@@ -213,7 +213,7 @@ export default function SimuladosStudentPage() {
                             {wStart.toLocaleDateString('pt-BR')} {wStart.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })} até {wEnd.toLocaleDateString('pt-BR')} {wEnd.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
                           </div>
                           {exam.isEnemFull && wStart2 && wEnd2 && (
-                            <div className="mt-1 border-t pt-1 border-slate-200">
+                            <div className="mt-1 border-t pt-1 border-border">
                               <span className="font-semibold block mb-1">Prazo Dia 2:</span>
                               {wStart2.toLocaleDateString('pt-BR')} {wStart2.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })} até {wEnd2.toLocaleDateString('pt-BR')} {wEnd2.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
                             </div>

@@ -348,7 +348,7 @@ export function StudentsTab() {
       <Tabs defaultValue="lista" className="w-full flex flex-col space-y-6">
         {userRole !== 'professor' && (
           <div className="flex justify-center w-full">
-            <TabsList className="inline-flex h-11 items-center justify-center rounded-xl bg-slate-100 p-1 border border-slate-200">
+            <TabsList className="inline-flex h-11 items-center justify-center rounded-xl bg-slate-100 p-1 border border-border">
               <TabsTrigger value="lista" className="px-6 py-2 font-semibold rounded-lg data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm transition-all">Lista de Alunos</TabsTrigger>
               <TabsTrigger value="cadastro" className="px-6 py-2 font-semibold rounded-lg data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm transition-all">Cadastros & Importação</TabsTrigger>
               <TabsTrigger value="config" className="px-6 py-2 font-semibold rounded-lg data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm transition-all">Turmas e Modalidades</TabsTrigger>
@@ -628,7 +628,7 @@ export function StudentsTab() {
                 </Button>
 
                 <div
-                  className={`border-2 border-dashed rounded-2xl p-8 flex flex-col items-center justify-center gap-4 transition-all duration-300 cursor-pointer ${dragActive ? 'border-primary bg-primary/5 scale-[1.02]' : 'border-slate-200 bg-slate-50/50 hover:bg-slate-50'
+                  className={`border-2 border-dashed rounded-2xl p-8 flex flex-col items-center justify-center gap-4 transition-all duration-300 cursor-pointer ${dragActive ? 'border-primary bg-primary/5 scale-[1.02]' : 'border-border bg-slate-50/50 hover:bg-slate-50'
                     }`}
                   onDragEnter={handleDrag}
                   onDragLeave={handleDrag}
