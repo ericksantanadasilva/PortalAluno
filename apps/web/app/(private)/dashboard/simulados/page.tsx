@@ -81,7 +81,7 @@ export default function SimuladosStudentPage() {
       ) : (
         <Tabs defaultValue="discursive" className="w-full space-y-6">
           <div className="flex justify-center w-full">
-            <TabsList className="grid grid-cols-1 sm:inline-flex sm:h-11 h-auto items-center justify-center rounded-xl bg-slate-100 p-1 border border-border w-full sm:w-auto gap-1">
+            <TabsList className="grid grid-cols-1 sm:inline-flex sm:h-11 h-auto items-center justify-center rounded-xl bg-muted p-1 border border-border w-full sm:w-auto gap-1">
               <TabsTrigger value="discursive" className="data-[active]:bg-white data-[active]:text-primary data-[state=active]:bg-white data-[state=active]:text-primary font-semibold px-4 py-2 text-xs sm:text-sm w-full justify-center">
                 <FileText className="w-4 h-4 mr-1.5 sm:mr-2 flex-shrink-0" />
                 <span className="truncate">Simulados Discursivos ({discursiveExams.length})</span>
@@ -195,7 +195,7 @@ export default function SimuladosStudentPage() {
                           <Badge variant={isCardActive ? 'default' : 'secondary'} className="uppercase font-semibold tracking-wider text-[10px]">
                             {exam.type.replace('_', ' ')}
                           </Badge>
-                          <div className="flex items-center text-xs text-muted-foreground bg-slate-50 border px-2 py-1 rounded-md font-medium">
+                          <div className="flex items-center text-xs text-muted-foreground bg-muted border px-2 py-1 rounded-md font-medium">
                             <Calendar className="w-3 h-3 mr-1 text-slate-400" />
                             {examDate.toLocaleDateString('pt-BR', { timeZone: 'UTC' })}
                           </div>
@@ -207,7 +207,7 @@ export default function SimuladosStudentPage() {
                           <LayoutList className="w-4 h-4 text-slate-400" />
                           {exam.totalQuestions} Questões
                         </CardDescription>
-                        <div className="text-xs text-slate-500 mt-2 bg-slate-50 p-2 rounded-md border flex flex-col gap-1">
+                        <div className="text-xs text-slate-500 mt-2 bg-muted p-2 rounded-md border flex flex-col gap-1">
                           <div>
                             <span className="font-semibold block mb-1">{exam.isEnemFull ? "Prazo Dia 1:" : "Prazo de Envio:"}</span>
                             {wStart.toLocaleDateString('pt-BR')} {wStart.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })} até {wEnd.toLocaleDateString('pt-BR')} {wEnd.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}

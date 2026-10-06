@@ -439,7 +439,7 @@ export default function TemasPage() {
                             <Card key={subject.id} className="border-border dark:border-slate-800 overflow-hidden">
                                 <CardHeader
                                     onClick={() => toggleSubject(subject.id)}
-                                    className="cursor-pointer bg-slate-50 dark:bg-slate-900/50 hover:bg-slate-100 dark:hover:bg-slate-900 transition-colors p-4 flex flex-row items-center justify-between"
+                                    className="cursor-pointer bg-muted dark:bg-slate-900/50 hover:bg-slate-100 dark:hover:bg-slate-900 transition-colors p-4 flex flex-row items-center justify-between"
                                 >
                                     <div className="flex items-center gap-3">
                                         {isExpanded ? (

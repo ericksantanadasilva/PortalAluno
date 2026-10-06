@@ -320,7 +320,7 @@ export function WhiteLabelTab() {
                       <span className="text-[10px] font-bold">92%</span>
                     </div>
                   </div>
-                  <div className="w-full h-2.5 rounded-full bg-slate-100 overflow-hidden">
+                  <div className="w-full h-2.5 rounded-full bg-muted overflow-hidden">
                     <div
                       className="h-full rounded-full transition-all duration-700 ease-out"
                       style={{ width: '92%', backgroundColor: config.primaryColor }}
@@ -376,7 +376,7 @@ export function WhiteLabelTab() {
               </DialogDescription>
             </div>
           </div>
-          <div className="bg-slate-50 border-t border-border px-6 py-4 flex sm:justify-center">
+          <div className="bg-muted border-t border-border px-6 py-4 flex sm:justify-center">
             <Button onClick={() => setShowSuccessModal(false)} className={`w-full rounded-xl text-white h-11 text-base font-medium shadow-sm ${dialogMessage.isError ? 'bg-red-600 hover:bg-red-700' : 'bg-slate-900 hover:bg-slate-800'}`}>
               Fechar
             </Button>

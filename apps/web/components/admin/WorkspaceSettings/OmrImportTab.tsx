@@ -118,7 +118,7 @@ export function OmrImportTab() {
 
   return (
     <Card className="border-border shadow-sm">
-      <CardHeader className="bg-slate-50/50 border-b border-border pb-6">
+      <CardHeader className="bg-muted/50 border-b border-border pb-6">
         <CardTitle className="text-xl flex items-center gap-2">
           <Upload className="w-5 h-5 text-primary" />
           Importação de Respostas (OMR/Remark)
@@ -257,7 +257,7 @@ export function OmrImportTab() {
           </Alert>
         )}
       </CardContent>
-      <CardFooter className="bg-slate-50/50 border-t border-border p-6 flex justify-end">
+      <CardFooter className="bg-muted/50 border-t border-border p-6 flex justify-end">
         <Button
           disabled={!selectedExamId || !file || !colRegistration || !colQuestionsStart || uploading}
           onClick={handleUpload}

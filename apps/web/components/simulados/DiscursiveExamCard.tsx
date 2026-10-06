@@ -194,7 +194,7 @@ export function DiscursiveExamCard({ exam, onSubmissionSuccess }: DiscursiveExam
             const itemFeedback = feedback?.subjectId === subject.id ? feedback : null;
 
             return (
-              <div key={subject.id} className="p-4 bg-slate-50/50 hover:bg-slate-50 transition-colors">
+              <div key={subject.id} className="p-4 bg-muted/50 hover:bg-slate-50 transition-colors">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-3 mb-3">
                   <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
                     <span className="font-bold text-slate-800 text-base mr-1">
@@ -230,7 +230,7 @@ export function DiscursiveExamCard({ exam, onSubmissionSuccess }: DiscursiveExam
                         Prazo Encerrado
                       </Badge>
                     ) : !isStarted ? (
-                      <Badge variant="outline" className="bg-slate-50 text-slate-600 border-border text-xs font-medium rounded whitespace-nowrap">
+                      <Badge variant="outline" className="bg-muted text-slate-600 border-border text-xs font-medium rounded whitespace-nowrap">
                         Aguardando Prazo
                       </Badge>
                     ) : (
@@ -254,7 +254,7 @@ export function DiscursiveExamCard({ exam, onSubmissionSuccess }: DiscursiveExam
                       </Badge>
                     </div>
                   ) : !isStarted ? (
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 bg-slate-100 border border-border rounded-md text-slate-600 text-xs font-medium">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 bg-muted border border-border rounded-md text-slate-600 text-xs font-medium">
                       <span className="flex items-center gap-1.5">
                         <Clock className="w-4 h-4 text-slate-500 flex-shrink-0" />
                         Aguardando início do prazo para envio da resolução.

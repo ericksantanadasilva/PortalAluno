@@ -325,7 +325,7 @@ export function DiscursiveSubmissionsManager() {
 
         <CardContent className="pt-6 space-y-6">
           {/* Controls Bar */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-50 p-4 rounded-xl border border-border">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-muted p-4 rounded-xl border border-border">
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 flex-1 max-w-2xl">
               <div className="w-full sm:w-72">
                 <Select
@@ -408,13 +408,13 @@ export function DiscursiveSubmissionsManager() {
               <p>Carregando submissões dos alunos...</p>
             </div>
           ) : !selectedExamId ? (
-            <div className="py-16 text-center text-slate-400 border border-dashed rounded-lg bg-slate-50/50">
+            <div className="py-16 text-center text-slate-400 border border-dashed rounded-lg bg-muted/50">
               <BookOpen className="w-12 h-12 mx-auto text-slate-300 mb-2" />
               <p className="font-medium">Nenhum simulado discursivo selecionado.</p>
               <p className="text-xs text-slate-500 mt-1">Crie ou selecione um simulado no menu acima para visualizar as resoluções.</p>
             </div>
           ) : filteredSubmissions.length === 0 ? (
-            <div className="py-16 text-center text-slate-500 border border-dashed rounded-lg bg-slate-50/50">
+            <div className="py-16 text-center text-slate-500 border border-dashed rounded-lg bg-muted/50">
               <FileText className="w-12 h-12 mx-auto text-slate-300 mb-2" />
               <p className="font-semibold text-slate-700">Nenhuma submissão encontrada</p>
               <p className="text-xs text-slate-500 mt-1">Os envios dos alunos para este simulado aparecerão nesta tabela.</p>
@@ -422,7 +422,7 @@ export function DiscursiveSubmissionsManager() {
           ) : (
             <div className="border border-border rounded-lg overflow-hidden shadow-sm">
               <Table>
-                <TableHeader className="bg-slate-50">
+                <TableHeader className="bg-muted">
                   <TableRow>
                     <TableHead className="w-12 text-center">
                       <Checkbox
@@ -456,7 +456,7 @@ export function DiscursiveSubmissionsManager() {
                           {row.registrationNumber}
                         </TableCell>
                         <TableCell>
-                          <Badge variant="outline" className="bg-slate-100 text-slate-800 border-border font-semibold">
+                          <Badge variant="outline" className="bg-muted text-slate-800 border-border font-semibold">
                             {row.subjectName}
                           </Badge>
                         </TableCell>

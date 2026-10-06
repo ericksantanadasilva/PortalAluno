@@ -25,11 +25,11 @@ function Tabs({
 }
 
 const tabsListVariants = cva(
-  "group/tabs-list inline-flex items-center justify-start rounded-lg p-1 text-muted-foreground bg-slate-100 dark:bg-slate-800 border border-border dark:border-slate-700",
+  "group/tabs-list inline-flex items-center justify-start rounded-lg p-1 text-muted-foreground bg-muted dark:bg-slate-800 border border-border dark:border-slate-700",
   {
     variants: {
       variant: {
-        default: "bg-slate-100 dark:bg-slate-800",
+        default: "bg-muted dark:bg-slate-800",
         line: "gap-1 bg-transparent border-0",
       },
     },

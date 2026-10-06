@@ -250,7 +250,7 @@ export function TriMappingPanel() {
                     </CardHeader>
                     <CardContent>
                         <Tabs value={activeSubjectTab} onValueChange={setActiveSubjectTab} className="w-full flex-col">
-                            <TabsList className="w-full justify-start overflow-x-auto flex-nowrap bg-slate-100 p-1 rounded-md">
+                            <TabsList className="w-full justify-start overflow-x-auto flex-nowrap bg-muted p-1 rounded-md">
                                 {SUBJECTS.map((sub) => (
                                     <TabsTrigger
                                         key={sub}
@@ -276,7 +276,7 @@ export function TriMappingPanel() {
                                                 : [];
 
                                             return (
-                                                <div key={`${sub}-${tier}`} className="p-4 border rounded-lg bg-slate-50/50 space-y-4">
+                                                <div key={`${sub}-${tier}`} className="p-4 border rounded-lg bg-muted/50 space-y-4">
                                                     <BlockTitle className="text-slate-700 capitalize">
                                                         Tier: {tier}
                                                     </BlockTitle>
@@ -385,7 +385,7 @@ export function TriMappingPanel() {
                                 Preview dos Dados (Primeiras 5 Linhas)
                             </BlockTitle>
                             <Tabs value={activePreviewTab || sheetNames[0]} onValueChange={setActivePreviewTab} className="w-full flex-col">
-                                <TabsList className="w-full justify-start overflow-x-auto flex-nowrap bg-slate-100 p-1 rounded-md">
+                                <TabsList className="w-full justify-start overflow-x-auto flex-nowrap bg-muted p-1 rounded-md">
                                     {sheetNames.map((sn) => (
                                         <TabsTrigger
                                             key={`preview-${sn}`}
@@ -479,7 +479,7 @@ export function TriMappingPanel() {
                     ) : savedData.length > 0 ? (
                         <div className="space-y-4">
                             <Tabs value={viewerSubjectTab} onValueChange={setViewerSubjectTab} className="w-full flex-col">
-                                <TabsList className="w-full justify-start overflow-x-auto flex-nowrap bg-slate-100 p-1 rounded-md">
+                                <TabsList className="w-full justify-start overflow-x-auto flex-nowrap bg-muted p-1 rounded-md">
                                     {SUBJECTS.map((sub) => (
                                         <TabsTrigger
                                             key={`viewer-sub-${sub}`}
@@ -493,7 +493,7 @@ export function TriMappingPanel() {
                             </Tabs>
 
                             <Tabs value={viewerTierTab} onValueChange={setViewerTierTab} className="w-full flex-col">
-                                <TabsList className="w-full justify-start overflow-x-auto flex-nowrap bg-slate-50 p-1 rounded-md border">
+                                <TabsList className="w-full justify-start overflow-x-auto flex-nowrap bg-muted p-1 rounded-md border">
                                     {TIERS.map((tier) => (
                                         <TabsTrigger
                                             key={`viewer-tier-${tier}`}
@@ -508,7 +508,7 @@ export function TriMappingPanel() {
 
                             <div className="border rounded-md max-h-[400px] overflow-y-auto relative bg-white">
                                 <table className="w-full text-sm text-left">
-                                    <thead className="sticky top-0 bg-slate-100 shadow-sm z-10 text-slate-700">
+                                    <thead className="sticky top-0 bg-muted shadow-sm z-10 text-slate-700">
                                         <tr>
                                             <th className="h-10 px-4 font-medium border-b w-24">Acertos</th>
                                             <th className="h-10 px-4 font-medium border-b">Linha Inferior</th>
@@ -539,7 +539,7 @@ export function TriMappingPanel() {
                             </div>
                         </div>
                     ) : (
-                        <div className="text-center p-8 text-slate-500 bg-slate-50 rounded-lg border border-dashed">
+                        <div className="text-center p-8 text-slate-500 bg-muted rounded-lg border border-dashed">
                             Nenhum dado de TRI salvo para o ano de {viewerYear}.
                         </div>
                     )}

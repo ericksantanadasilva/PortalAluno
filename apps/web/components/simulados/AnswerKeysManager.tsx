@@ -210,7 +210,7 @@ export function AnswerKeysManager({ updateTrigger }: { onUpdate?: () => void, up
                   <CheckCircle2 className="w-5 h-5 text-emerald-500" />
                   Cartão-Resposta Digital
                 </div>
-                <div className="text-sm font-bold bg-slate-100 text-slate-600 px-3 py-1 rounded-full">
+                <div className="text-sm font-bold bg-muted text-slate-600 px-3 py-1 rounded-full">
                   {questions.length} Questões
                 </div>
               </div>
@@ -236,11 +236,11 @@ export function AnswerKeysManager({ updateTrigger }: { onUpdate?: () => void, up
                     if (language === 'espanhol') label = `${numero} (Espanhol)`;
 
                     return (
-                      <div key={`${numero}-${language}`} className={`flex flex-col gap-2 p-3 rounded-xl transition-all ${anulada ? 'opacity-50 grayscale bg-slate-50' : 'bg-white hover:bg-slate-50 border border-border hover:shadow-[0_4px_15px_rgb(0,0,0,0.02)]'}`}>
+                      <div key={`${numero}-${language}`} className={`flex flex-col gap-2 p-3 rounded-xl transition-all ${anulada ? 'opacity-50 grayscale bg-muted' : 'bg-white hover:bg-slate-50 border border-border hover:shadow-[0_4px_15px_rgb(0,0,0,0.02)]'}`}>
                         <span className="font-mono font-bold text-slate-500 text-sm pl-1">
                           {label}
                         </span>
-                        <div className="flex bg-slate-100/50 rounded-lg p-1.5 border border-border/50 shadow-inner items-center gap-1 justify-between">
+                        <div className="flex bg-muted/50 rounded-lg p-1.5 border border-border/50 shadow-inner items-center gap-1 justify-between">
                           <div className="flex gap-1">
                             {['A', 'B', 'C', 'D', 'E'].map((alt) => {
                               // Se for UERJ, só vai até a letra D

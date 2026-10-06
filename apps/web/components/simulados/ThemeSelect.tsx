@@ -155,7 +155,7 @@ export function ThemeSelect({
             {open && (
                 <div className="absolute left-0 top-full mt-1 w-[320px] sm:w-[380px] md:w-[440px] z-50 p-2.5 rounded-lg border border-border dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xl animate-in fade-in-0 zoom-in-95">
                     <div className="space-y-2">
-                        <div className="flex items-center justify-between px-2 py-1 bg-slate-50 dark:bg-slate-950 rounded border text-xs text-slate-500">
+                        <div className="flex items-center justify-between px-2 py-1 bg-muted dark:bg-slate-950 rounded border text-xs text-slate-500">
                             <span className="flex items-center gap-1.5 font-medium text-emerald-700 dark:text-emerald-400">
                                 <Sparkles className="w-3.5 h-3.5" /> Catálogo de Temas & Subtemas
                             </span>
@@ -193,7 +193,7 @@ export function ThemeSelect({
                                             onClick={() => handleSelectOption(opt)}
                                             className={cn(
                                                 "p-2 cursor-pointer hover:bg-emerald-50 dark:hover:bg-emerald-950/40 rounded transition-colors flex items-center justify-between",
-                                                opt.type === 'subtheme' ? "pl-5" : "font-semibold bg-slate-50/50 dark:bg-slate-950/30",
+                                                opt.type === 'subtheme' ? "pl-5" : "font-semibold bg-muted/50 dark:bg-slate-950/30",
                                                 isSelected && "bg-emerald-100/60 dark:bg-emerald-950 text-emerald-900 dark:text-emerald-300 font-bold"
                                             )}
                                         >

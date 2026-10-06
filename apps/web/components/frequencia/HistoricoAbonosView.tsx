@@ -181,7 +181,7 @@ export function HistoricoAbonosView({
             {formatDate(dataReferencia)}
           </p>
           <div className="flex flex-wrap gap-2 pt-3">
-            <Badge variant="secondary" className="px-3 py-1 text-xs font-semibold tracking-wide uppercase rounded-full bg-slate-50 text-slate-700 hover:bg-slate-100 border border-border/60">
+            <Badge variant="secondary" className="px-3 py-1 text-xs font-semibold tracking-wide uppercase rounded-full bg-muted text-slate-700 hover:bg-slate-100 border border-border/60">
               <span className="font-bold mr-1 text-slate-900">{totais.total}</span> REGISTROS
             </Badge>
             <Badge variant="secondary" className="px-3 py-1 text-xs font-semibold tracking-wide uppercase rounded-full bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-100">
@@ -319,7 +319,7 @@ export function HistoricoAbonosView({
                     <TableRow key={abono.id} className="hover:bg-slate-50/80 transition-colors border-none">
                       <TableCell className="font-medium text-foreground py-4 align-top">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full overflow-hidden border border-border bg-slate-50 shrink-0">
+                          <div className="w-10 h-10 rounded-full overflow-hidden border border-border bg-muted shrink-0">
                             <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(abono.alunoNome)}&background=random`} alt={abono.alunoNome} />
                           </div>
                           <div>
@@ -358,11 +358,11 @@ export function HistoricoAbonosView({
                               const disciplinas = abono.disciplina.split(",").map((d) => d.trim()).filter(Boolean);
                               return (
                                 <div className="flex flex-wrap items-center gap-1.5" title={abono.disciplina}>
-                                  <Badge variant="outline" className="rounded-full bg-slate-50 text-slate-600 border border-border/60 font-semibold normal-case text-xs">
+                                  <Badge variant="outline" className="rounded-full bg-muted text-slate-600 border border-border/60 font-semibold normal-case text-xs">
                                     {disciplinas[0]}
                                   </Badge>
                                   {disciplinas.length > 1 && (
-                                    <Badge variant="secondary" className="rounded-full bg-slate-100 text-slate-500 border-none font-semibold normal-case text-[10px] cursor-help">
+                                    <Badge variant="secondary" className="rounded-full bg-muted text-slate-500 border-none font-semibold normal-case text-[10px] cursor-help">
                                       +{disciplinas.length - 1} matérias
                                     </Badge>
                                   )}
@@ -370,7 +370,7 @@ export function HistoricoAbonosView({
                               );
                             })()
                           ) : (
-                            <Badge variant="secondary" className="rounded-full bg-slate-100 text-slate-500 border-none font-semibold normal-case text-[10px]">
+                            <Badge variant="secondary" className="rounded-full bg-muted text-slate-500 border-none font-semibold normal-case text-[10px]">
                               Todas
                             </Badge>
                           )}
@@ -474,7 +474,7 @@ export function HistoricoAbonosView({
                         return (
                           <>
                             {disciplinas.map((d, idx) => (
-                              <Badge key={idx} variant="outline" className="rounded-full bg-slate-50 text-slate-600 border border-border/60 font-semibold normal-case text-xs">
+                              <Badge key={idx} variant="outline" className="rounded-full bg-muted text-slate-600 border border-border/60 font-semibold normal-case text-xs">
                                 {d}
                               </Badge>
                             ))}

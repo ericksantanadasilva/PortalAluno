@@ -751,7 +751,7 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
                         2. Selecione a Matéria para Preencher os Temas das Questões:
                       </Label>
 
-                      <div className="flex flex-wrap gap-2 p-1.5 bg-slate-100 rounded-xl border border-border">
+                      <div className="flex flex-wrap gap-2 p-1.5 bg-muted rounded-xl border border-border">
                         {discursiveSubjectIds.map(subId => {
                           const subName = subjects.find(s => s.id === subId)?.name || subId;
                           const isActive = (selectedDiscursiveTabSubjectId || discursiveSubjectIds[0]) === subId;
@@ -784,7 +784,7 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
                           </div>
                           <div className="max-h-[450px] overflow-y-auto">
                             <table className="w-full text-sm text-left">
-                              <thead className="text-xs text-slate-500 uppercase bg-slate-50 sticky top-0 z-10 shadow-sm border-b">
+                              <thead className="text-xs text-slate-500 uppercase bg-muted sticky top-0 z-10 shadow-sm border-b">
                                 <tr>
                                   <th className="px-4 py-3 w-16 text-center font-bold">Nº</th>
                                   <th className="px-4 py-3 font-bold">Conteúdo / Tema Pedagógico ({activeSubName})</th>
@@ -796,7 +796,7 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
                                   if (!q) return null;
                                   return (
                                     <tr key={`${activeSubId}-q-${num}`} className="hover:bg-primary/5 transition-colors">
-                                      <td className="px-4 py-2 text-center font-bold text-primary bg-slate-50/50">{num}</td>
+                                      <td className="px-4 py-2 text-center font-bold text-primary bg-muted/50">{num}</td>
                                       <td className="px-4 py-2">
                                         <ThemeSelect
                                           subjectId={activeSubId}
@@ -819,7 +819,7 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
                     })()}
                   </div>
                 ) : (
-                  <div className="text-center py-6 border border-dashed rounded-lg text-slate-500 text-sm bg-slate-50">
+                  <div className="text-center py-6 border border-dashed rounded-lg text-slate-500 text-sm bg-muted">
                     Selecione ao menos uma matéria na lista acima para exibir a matriz de questões.
                   </div>
                 )
@@ -888,7 +888,7 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
 
                           return (
                             <React.Fragment key={`${qEn.questionNumber}-foreign`}>
-                              <tr className="border-b border-dashed bg-slate-50/50">
+                              <tr className="border-b border-dashed bg-muted/50">
                                 <td rowSpan={2} className="px-4 py-2 text-center font-bold text-primary">{qEn.questionNumber}</td>
                                 <td rowSpan={2} className="px-4 py-2 text-center border-r border-dashed">
                                   <input
@@ -925,7 +925,7 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
                                   />
                                 </td>
                               </tr>
-                              <tr className="border-b last:border-0 bg-slate-50/50">
+                              <tr className="border-b last:border-0 bg-muted/50">
                                 <td className="px-4 py-2 flex items-center gap-2">
                                   <Badge variant="outline" className="w-20 justify-center">Espanhol</Badge>
                                   <Select value={qEs.subjectId || undefined} onValueChange={(v) => updateQ(qEs.questionNumber, 'espanhol', 'subjectId', v || '')}>
