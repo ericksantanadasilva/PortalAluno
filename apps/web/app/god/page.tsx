@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Loader2, Plus, Building2, User, CheckCircle2, LayoutDashboard, Copy, LogOut, Settings } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { godLogoutAction } from "./login/actions";
+import { PageTitle, SectionTitle, SmallLabel } from "@/components/ui/typography";
 
 interface Tenant {
   id: string;
@@ -82,7 +83,7 @@ export default function GodModePage() {
         body: JSON.stringify({ allowedReportTemplates: editTemplates })
       });
       if (!res.ok) throw new Error("Erro ao atualizar a instituição");
-      
+
       showToast("Configurações atualizadas com sucesso!");
       setShowEditModal(false);
       fetchTenants();
@@ -196,14 +197,14 @@ export default function GodModePage() {
       <div className="max-w-6xl mx-auto p-6 lg:p-8 mt-4 lg:mt-8">
         <header className="mb-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
+            <PageTitle className="flex items-center gap-2 text-slate-900">
               SuperUser <span className="text-slate-300 font-normal mx-1">/</span> God Mode
-            </h1>
+            </PageTitle>
             <p className="text-slate-500 mt-2">Painel de controle mestre para gestão de instâncias (Tenants) e acesso isolado.</p>
           </div>
-          
-          <Button 
-            variant="outline" 
+
+          <Button
+            variant="outline"
             className="text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700 w-fit shadow-sm"
             onClick={async () => {
               await godLogoutAction();
@@ -232,7 +233,7 @@ export default function GodModePage() {
                 <form id="onboarding-form" onSubmit={handleSubmit} className="space-y-7">
 
                   <div className="space-y-4">
-                    <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Dados da Instituição</h3>
+                    <SmallLabel>Dados da Instituição</SmallLabel>
 
                     <div className="grid gap-2">
                       <Label htmlFor="name" className="text-slate-700">Nome da Instituição</Label>
@@ -257,7 +258,7 @@ export default function GodModePage() {
                   <div className="w-full h-px bg-slate-100" />
 
                   <div className="space-y-4">
-                    <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Templates de Boletim</h3>
+                    <SmallLabel>Templates de Boletim</SmallLabel>
                     <div className="grid grid-cols-2 gap-3">
                       {TEMPLATE_OPTIONS.map((opt) => (
                         <label key={opt.value} className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer">
@@ -276,7 +277,7 @@ export default function GodModePage() {
                   <div className="w-full h-px bg-slate-100" />
 
                   <div className="space-y-4">
-                    <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Admin Master</h3>
+                    <SmallLabel>Admin Master</SmallLabel>
 
                     <div className="grid gap-2">
                       <Label htmlFor="adminName" className="text-slate-700">Nome Completo</Label>
@@ -306,10 +307,10 @@ export default function GodModePage() {
           {/* Painel de Personificação */}
           <section className="space-y-6">
             <div className="flex flex-col gap-2">
-              <h2 className="text-xl font-semibold flex items-center gap-2 text-slate-900">
+              <SectionTitle className="flex items-center gap-2 text-slate-900">
                 <User className="w-5 h-5 text-indigo-500" />
                 Painel de Personificação
-              </h2>
+              </SectionTitle>
               <p className="text-sm text-slate-500">
                 Acesse o ambiente como se fosse o usuário master de uma das escolas cadastradas.
               </p>
@@ -423,7 +424,7 @@ export default function GodModePage() {
                     type="checkbox"
                     checked={editTemplates.includes(opt.value)}
                     onChange={() => {
-                      setEditTemplates(prev => prev.includes(opt.value) 
+                      setEditTemplates(prev => prev.includes(opt.value)
                         ? prev.filter(t => t !== opt.value)
                         : [...prev, opt.value]
                       );
@@ -438,8 +439,8 @@ export default function GodModePage() {
 
           <DialogFooter>
             <Button variant="ghost" onClick={() => setShowEditModal(false)} className="rounded-xl">Cancelar</Button>
-            <Button 
-              onClick={handleUpdateTenant} 
+            <Button
+              onClick={handleUpdateTenant}
               disabled={isUpdating}
               className="rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white"
             >
