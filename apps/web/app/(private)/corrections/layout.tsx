@@ -16,10 +16,8 @@ export default function CorrectionsLayout({ children }: { children: React.ReactN
   return (
     <PageContainer>
       <PageHeader
-        variant="banner"
         title="Gestão e Correção Discursiva"
         description="Centralize entregas presenciais, controle submissões online, distribua pacotes em lotes e digite notas discursivas com segurança e auditoria."
-        badge={{ label: "Simulados Discursivos Presenciais & Online", icon: <CheckSquare /> }}
       />
 
 
