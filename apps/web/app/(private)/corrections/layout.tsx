@@ -1,16 +1,7 @@
 'use client';
 
 import React from 'react';
-import { PageContainer, PageHeader, SubNav } from '@/components/layout';
-import { UploadCloud, FileText, Share2, CheckSquare, BarChart2 } from 'lucide-react';
-
-const NAV_ITEMS = [
-  { id: 'presential', href: '/corrections/presential', label: 'Recebimento Presencial', icon: UploadCloud },
-  { id: 'submissions', href: '/corrections/submissions', label: 'Entregas & Submissões', icon: FileText },
-  { id: 'distribution', href: '/corrections/distribution', label: 'Distribuição de Lotes', icon: Share2 },
-  { id: 'corrector', href: '/corrections/corrector', label: 'Minhas Correções', icon: CheckSquare },
-  { id: 'results', href: '/corrections/results', label: 'Resultados & Boletim', icon: BarChart2 },
-];
+import { PageContainer, PageHeader } from '@/components/layout';
 
 export default function CorrectionsLayout({ children }: { children: React.ReactNode }) {
   return (
