@@ -281,8 +281,8 @@ export default function SubmissionsOverviewPage() {
       {actionMessage && (
         <div
           className={`p-4 rounded-xl border flex items-center justify-between gap-3 ${actionMessage.type === 'success'
-              ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-700 dark:text-emerald-300'
-              : 'bg-rose-500/15 border-rose-500/30 text-rose-700 dark:text-rose-300'
+            ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-700 dark:text-emerald-300'
+            : 'bg-rose-500/15 border-rose-500/30 text-rose-700 dark:text-rose-300'
             }`}
         >
           <div className="flex items-center gap-2 text-sm font-semibold">
@@ -452,7 +452,7 @@ export default function SubmissionsOverviewPage() {
                         <TableCell>{getStatusBadge(sub.status)}</TableCell>
                         <TableCell className="text-sm font-medium">
                           {sub.batchItem?.batch.corrector.name ? (
-                            <span className="text-primary">{sub.batchItem.batch.corrector.name}</span>
+                            <span >{sub.batchItem.batch.corrector.name}</span>
                           ) : (
                             <span className="text-muted-foreground italic">— não distribuído —</span>
                           )}
