@@ -3,12 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { PageContainer, PageHeader, EmptyState } from "@/components/layout";
 import { ValidacaoOnline } from "@/components/frequencia/ValidacaoOnline";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
-import { Label } from "@/components/ui/label";
-import { Loader2, Check, ChevronsUpDown, Laptop } from "lucide-react";
-import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { Loader2, Laptop } from "lucide-react";
 import { SimulacaoAcesso } from "@/components/layout/SimulacaoAcesso";
 
 export default function PresencaOnlinePage() {
@@ -19,7 +14,6 @@ export default function PresencaOnlinePage() {
   // Para simulacao de admin
   const [todosAlunos, setTodosAlunos] = useState<any[]>([]);
   const [selectedAlunoId, setSelectedAlunoId] = useState<string>("");
-  const [alunoPopoverOpen, setAlunoPopoverOpen] = useState(false);
 
   useEffect(() => {
     const carregarDados = async () => {
