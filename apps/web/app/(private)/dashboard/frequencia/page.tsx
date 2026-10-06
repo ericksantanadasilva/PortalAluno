@@ -38,9 +38,9 @@ export default function FrequenciaPage() {
     new Date().toLocaleDateString("en-CA")
   );
 
-  const aulasDoDia = scheduledClasses.filter(c => 
-    c.classId === turmaSelecionada && 
-    c.date.startsWith(dataSelecionada) && 
+  const aulasDoDia = scheduledClasses.filter(c =>
+    c.classId === turmaSelecionada &&
+    c.date.startsWith(dataSelecionada) &&
     !c.isCanceled
   );
 
@@ -73,7 +73,6 @@ export default function FrequenciaPage() {
       <PageHeader
         title="Frequência & Abonos"
         description="Controle de chamada diária, registro de abonos de alunos e gerenciamento das janelas de validação."
-        icon={<ClipboardList className="w-8 h-8 text-primary" />}
       />
 
       <SubNav

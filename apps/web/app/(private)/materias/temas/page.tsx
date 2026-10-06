@@ -367,7 +367,6 @@ export default function TemasPage() {
             <PageHeader
                 title="Temas e Subtemas (Caça Gaps)"
                 description="Cadastre e organize os conteúdos cobrados nos simulados por Disciplina, Tema e Subtema."
-                icon={<Layers />}
                 actions={
                     <>
                         <Button

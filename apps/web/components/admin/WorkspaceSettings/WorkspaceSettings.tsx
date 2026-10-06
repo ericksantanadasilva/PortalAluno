@@ -46,7 +46,6 @@ export function WorkspaceSettings() {
     <PageContainer>
       <PageHeader
         title="Configurações da Escola"
-        icon={<Briefcase className="w-8 h-8 text-primary" />}
         description="Gerencie as configurações gerais da sua escola, membros, alunos e importações OMR."
       />
 
