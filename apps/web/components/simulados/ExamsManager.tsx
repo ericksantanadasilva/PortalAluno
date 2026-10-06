@@ -700,7 +700,7 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
                   {discursiveSubjectIds.length} matéria(s) selecionada(s)
                 </Badge>
               </div>
-              <p className="text-xs text-slate-600">
+              <p className="text-xs text-muted-foreground">
                 Marque abaixo as matérias que farão parte desta prova discursiva. Na área do aluno, um botão de upload de PDF será exibido para cada matéria marcada.
               </p>
 
@@ -784,7 +784,7 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
                           </div>
                           <div className="max-h-[450px] overflow-y-auto">
                             <table className="w-full text-sm text-left">
-                              <thead className="text-xs text-slate-500 uppercase bg-muted sticky top-0 z-10 shadow-sm border-b">
+                              <thead className="text-xs text-muted-foreground uppercase bg-muted sticky top-0 z-10 shadow-sm border-b">
                                 <tr>
                                   <th className="px-4 py-3 w-16 text-center font-bold">Nº</th>
                                   <th className="px-4 py-3 font-bold">Conteúdo / Tema Pedagógico ({activeSubName})</th>
@@ -819,7 +819,7 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
                     })()}
                   </div>
                 ) : (
-                  <div className="text-center py-6 border border-dashed rounded-lg text-slate-500 text-sm bg-muted">
+                  <div className="text-center py-6 border border-dashed rounded-lg text-muted-foreground text-sm bg-muted">
                     Selecione ao menos uma matéria na lista acima para exibir a matriz de questões.
                   </div>
                 )
@@ -1044,7 +1044,7 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
                           >
                             {closingId === simulado.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Calculator className="w-4 h-4" />}
                           </Button>
-                          <Button variant="ghost" size="icon" onClick={() => loadExamForEdit(simulado)} className="text-slate-500 hover:text-primary">
+                          <Button variant="ghost" size="icon" onClick={() => loadExamForEdit(simulado)} className="text-muted-foreground hover:text-primary">
                             <Edit2 className="w-4 h-4" />
                           </Button>
                           <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10 hover:text-destructive" onClick={() => handleDelete(simulado.id)}>
@@ -1065,7 +1065,7 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="text-lg font-bold">{modalState.title}</DialogTitle>
-            <DialogDescription className="text-slate-600 mt-2 leading-relaxed">
+            <DialogDescription className="text-muted-foreground mt-2 leading-relaxed">
               {modalState.description}
             </DialogDescription>
           </DialogHeader>

@@ -243,10 +243,10 @@ export function ChamadaDiaria({
         <Table className="w-full">
           <TableHeader>
             <TableRow className="hover:bg-transparent border-none">
-              <TableHead className="text-xs font-semibold tracking-wide uppercase text-slate-500 pl-5 w-[300px]">Aluno</TableHead>
-              <TableHead className="text-xs font-semibold tracking-wide uppercase text-slate-500 w-[130px]">Modalidade</TableHead>
-              <TableHead className="text-xs font-semibold tracking-wide uppercase text-slate-500 w-[200px]">Portal Online</TableHead>
-              <TableHead className="text-xs font-semibold tracking-wide uppercase text-slate-500 w-[280px] text-right pr-5">Ações</TableHead>
+              <TableHead className="text-xs font-semibold tracking-wide uppercase text-muted-foreground pl-5 w-[300px]">Aluno</TableHead>
+              <TableHead className="text-xs font-semibold tracking-wide uppercase text-muted-foreground w-[130px]">Modalidade</TableHead>
+              <TableHead className="text-xs font-semibold tracking-wide uppercase text-muted-foreground w-[200px]">Portal Online</TableHead>
+              <TableHead className="text-xs font-semibold tracking-wide uppercase text-muted-foreground w-[280px] text-right pr-5">Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

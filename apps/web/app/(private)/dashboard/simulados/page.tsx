@@ -207,7 +207,7 @@ export default function SimuladosStudentPage() {
                           <LayoutList className="w-4 h-4 text-slate-400" />
                           {exam.totalQuestions} Questões
                         </CardDescription>
-                        <div className="text-xs text-slate-500 mt-2 bg-muted p-2 rounded-md border flex flex-col gap-1">
+                        <div className="text-xs text-muted-foreground mt-2 bg-muted p-2 rounded-md border flex flex-col gap-1">
                           <div>
                             <span className="font-semibold block mb-1">{exam.isEnemFull ? "Prazo Dia 1:" : "Prazo de Envio:"}</span>
                             {wStart.toLocaleDateString('pt-BR')} {wStart.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })} até {wEnd.toLocaleDateString('pt-BR')} {wEnd.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}

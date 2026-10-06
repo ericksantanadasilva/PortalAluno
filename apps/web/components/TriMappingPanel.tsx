@@ -255,7 +255,7 @@ export function TriMappingPanel() {
                                     <TabsTrigger
                                         key={sub}
                                         value={sub}
-                                        className={`flex-1 py-2 px-4 text-center rounded-md transition-all ${activeSubjectTab === sub ? 'bg-white text-primary shadow border-b-2 border-primary font-bold' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-200'}`}
+                                        className={`flex-1 py-2 px-4 text-center rounded-md transition-all ${activeSubjectTab === sub ? 'bg-white text-primary shadow border-b-2 border-primary font-bold' : 'text-muted-foreground hover:text-slate-800 hover:bg-slate-200'}`}
                                     >
                                         {sub}
                                     </TabsTrigger>
@@ -390,7 +390,7 @@ export function TriMappingPanel() {
                                         <TabsTrigger
                                             key={`preview-${sn}`}
                                             value={sn}
-                                            className={`py-2 px-4 rounded-md transition-all ${(activePreviewTab || sheetNames[0]) === sn ? 'bg-white text-primary shadow border-b-2 border-primary font-bold' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-200'}`}
+                                            className={`py-2 px-4 rounded-md transition-all ${(activePreviewTab || sheetNames[0]) === sn ? 'bg-white text-primary shadow border-b-2 border-primary font-bold' : 'text-muted-foreground hover:text-slate-800 hover:bg-slate-200'}`}
                                         >
                                             {sn}
                                         </TabsTrigger>
@@ -461,7 +461,7 @@ export function TriMappingPanel() {
                         </CardDescription>
                     </div>
                     <div className="w-full md:w-48">
-                        <Label htmlFor="viewerYear" className="text-xs text-slate-500 mb-1 block">Ano Letivo (Consulta)</Label>
+                        <Label htmlFor="viewerYear" className="text-xs text-muted-foreground mb-1 block">Ano Letivo (Consulta)</Label>
                         <Input
                             id="viewerYear"
                             type="number"
@@ -484,7 +484,7 @@ export function TriMappingPanel() {
                                         <TabsTrigger
                                             key={`viewer-sub-${sub}`}
                                             value={sub}
-                                            className={`flex-1 py-2 px-4 text-center rounded-md transition-all ${viewerSubjectTab === sub ? 'bg-white text-primary shadow border-b-2 border-primary font-bold' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-200'}`}
+                                            className={`flex-1 py-2 px-4 text-center rounded-md transition-all ${viewerSubjectTab === sub ? 'bg-white text-primary shadow border-b-2 border-primary font-bold' : 'text-muted-foreground hover:text-slate-800 hover:bg-slate-200'}`}
                                         >
                                             {sub}
                                         </TabsTrigger>
@@ -498,7 +498,7 @@ export function TriMappingPanel() {
                                         <TabsTrigger
                                             key={`viewer-tier-${tier}`}
                                             value={tier}
-                                            className={`flex-1 py-1.5 px-4 text-center rounded-md transition-all capitalize ${viewerTierTab === tier ? 'bg-primary text-primary-foreground shadow font-medium' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-200'}`}
+                                            className={`flex-1 py-1.5 px-4 text-center rounded-md transition-all capitalize ${viewerTierTab === tier ? 'bg-primary text-primary-foreground shadow font-medium' : 'text-muted-foreground hover:text-slate-800 hover:bg-slate-200'}`}
                                         >
                                             {tier}
                                         </TabsTrigger>
@@ -539,7 +539,7 @@ export function TriMappingPanel() {
                             </div>
                         </div>
                     ) : (
-                        <div className="text-center p-8 text-slate-500 bg-muted rounded-lg border border-dashed">
+                        <div className="text-center p-8 text-muted-foreground bg-muted rounded-lg border border-dashed">
                             Nenhum dado de TRI salvo para o ano de {viewerYear}.
                         </div>
                     )}

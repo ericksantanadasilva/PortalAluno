@@ -22,7 +22,7 @@ export function DestaqueUerj({ data }: DestaqueUerjProps) {
           }}
         />
         <CardContent className="flex flex-col items-center justify-center py-10 relative">
-          <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-widest mb-3">
+          <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mb-3">
             Conceito Obtido
           </p>
           <div
@@ -30,7 +30,7 @@ export function DestaqueUerj({ data }: DestaqueUerjProps) {
           >
             {data.destaqueGeral.conceitoUerj}
           </div>
-          <p className="text-sm text-slate-500 mt-2">
+          <p className="text-sm text-muted-foreground mt-2">
             Conceito médio da turma:{" "}
             <span className="font-bold text-foreground">
               {data.resultadoTime.conceitoMedioTurma}

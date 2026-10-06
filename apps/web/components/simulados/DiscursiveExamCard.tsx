@@ -164,7 +164,7 @@ export function DiscursiveExamCard({ exam, onSubmissionSuccess }: DiscursiveExam
           <Badge className="self-start bg-primary/10 text-primary hover:bg-primary/10 border-primary/20 text-xs font-semibold tracking-wide uppercase rounded-full whitespace-nowrap h-auto py-0.5 px-2.5">
             Simulado Discursivo
           </Badge>
-          <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500">
+          <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
             {exam.windowEnd && (
               <Badge variant="outline" className={`text-xs font-medium whitespace-nowrap ${isExpired ? 'bg-rose-50 text-rose-700 border-rose-200 rounded-full' : 'bg-primary/10 text-primary border-primary/20 rounded-full'}`}>
                 <Clock className="w-3.5 h-3.5 mr-1 flex-shrink-0" />
@@ -180,7 +180,7 @@ export function DiscursiveExamCard({ exam, onSubmissionSuccess }: DiscursiveExam
         <CardTitle className="text-xl font-bold text-foreground mt-2 break-words">
           {exam.title}
         </CardTitle>
-        <CardDescription className="text-slate-500 text-sm">
+        <CardDescription className="text-muted-foreground text-sm">
           Anexe a folha de resolução em PDF individualmente para cada matéria abaixo.
         </CardDescription>
       </CardHeader>
@@ -230,7 +230,7 @@ export function DiscursiveExamCard({ exam, onSubmissionSuccess }: DiscursiveExam
                         Prazo Encerrado
                       </Badge>
                     ) : !isStarted ? (
-                      <Badge variant="outline" className="bg-muted text-slate-600 border-border text-xs font-medium rounded whitespace-nowrap">
+                      <Badge variant="outline" className="bg-muted text-muted-foreground border-border text-xs font-medium rounded whitespace-nowrap">
                         Aguardando Prazo
                       </Badge>
                     ) : (
@@ -254,9 +254,9 @@ export function DiscursiveExamCard({ exam, onSubmissionSuccess }: DiscursiveExam
                       </Badge>
                     </div>
                   ) : !isStarted ? (
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 bg-muted border border-border rounded-md text-slate-600 text-xs font-medium">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 bg-muted border border-border rounded-md text-muted-foreground text-xs font-medium">
                       <span className="flex items-center gap-1.5">
-                        <Clock className="w-4 h-4 text-slate-500 flex-shrink-0" />
+                        <Clock className="w-4 h-4 text-muted-foreground flex-shrink-0" />
                         Aguardando início do prazo para envio da resolução.
                       </span>
                       <Badge variant="outline" className="self-start sm:self-auto text-[11px] whitespace-nowrap">Em Breve</Badge>
@@ -265,7 +265,7 @@ export function DiscursiveExamCard({ exam, onSubmissionSuccess }: DiscursiveExam
                     <div className="flex flex-col gap-2">
                       <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                         <label className="flex-1 cursor-pointer">
-                          <div className="border border-dashed border-border rounded-md p-2.5 bg-white hover:border-primary hover:bg-primary/5 transition-all flex items-center justify-center gap-2 text-xs text-slate-600">
+                          <div className="border border-dashed border-border rounded-md p-2.5 bg-white hover:border-primary hover:bg-primary/5 transition-all flex items-center justify-center gap-2 text-xs text-muted-foreground">
                             <FileUp className="w-4 h-4 text-primary flex-shrink-0" />
                             <span className="truncate">
                               {selectedFile ? selectedFile.name : 'Selecionar arquivo PDF da matéria...'}

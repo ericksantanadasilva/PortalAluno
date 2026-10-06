@@ -210,7 +210,7 @@ export function AnswerKeysManager({ updateTrigger }: { onUpdate?: () => void, up
                   <CheckCircle2 className="w-5 h-5 text-emerald-500" />
                   Cartão-Resposta Digital
                 </div>
-                <div className="text-sm font-bold bg-muted text-slate-600 px-3 py-1 rounded-full">
+                <div className="text-sm font-bold bg-muted text-muted-foreground px-3 py-1 rounded-full">
                   {questions.length} Questões
                 </div>
               </div>
@@ -237,7 +237,7 @@ export function AnswerKeysManager({ updateTrigger }: { onUpdate?: () => void, up
 
                     return (
                       <div key={`${numero}-${language}`} className={`flex flex-col gap-2 p-3 rounded-xl transition-all ${anulada ? 'opacity-50 grayscale bg-muted' : 'bg-white hover:bg-slate-50 border border-border hover:shadow-[0_4px_15px_rgb(0,0,0,0.02)]'}`}>
-                        <span className="font-mono font-bold text-slate-500 text-sm pl-1">
+                        <span className="font-mono font-bold text-muted-foreground text-sm pl-1">
                           {label}
                         </span>
                         <div className="flex bg-muted/50 rounded-lg p-1.5 border border-border/50 shadow-inner items-center gap-1 justify-between">
@@ -256,8 +256,8 @@ export function AnswerKeysManager({ updateTrigger }: { onUpdate?: () => void, up
                                   className={`w-8 h-8 flex items-center justify-center text-xs font-semibold rounded transition-colors disabled:cursor-not-allowed ${
                                     isSelected && !anulada
                                       ? 'bg-primary text-primary-foreground shadow-sm' 
-                                      : 'text-slate-600 hover:bg-white hover:text-slate-900 hover:shadow-sm'
-                                  } ${anulada && isSelected ? 'bg-slate-300 text-slate-600' : ''}`}
+                                      : 'text-muted-foreground hover:bg-white hover:text-slate-900 hover:shadow-sm'
+                                  } ${anulada && isSelected ? 'bg-slate-300 text-muted-foreground' : ''}`}
                                 >
                                   {alt}
                                 </button>

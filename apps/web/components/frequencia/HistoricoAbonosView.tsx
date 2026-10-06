@@ -296,13 +296,13 @@ export function HistoricoAbonosView({
           <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent border-none">
-                <TableHead className="text-xs font-semibold uppercase tracking-wide text-slate-500 w-[280px]">Aluno</TableHead>
-                <TableHead className="text-xs font-semibold uppercase tracking-wide text-slate-500 w-[120px]">Tipo</TableHead>
-                <TableHead className="text-xs font-semibold uppercase tracking-wide text-slate-500">Motivo</TableHead>
-                <TableHead className="text-xs font-semibold uppercase tracking-wide text-slate-500 w-[160px]">Período</TableHead>
-                <TableHead className="text-xs font-semibold uppercase tracking-wide text-slate-500 w-[160px]">Abrangência</TableHead>
-                <TableHead className="text-xs font-semibold uppercase tracking-wide text-slate-500 w-[100px]">Status</TableHead>
-                <TableHead className="text-xs font-semibold uppercase tracking-wide text-slate-500 w-[100px] text-right">Ações</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wide text-muted-foreground w-[280px]">Aluno</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wide text-muted-foreground w-[120px]">Tipo</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Motivo</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wide text-muted-foreground w-[160px]">Período</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wide text-muted-foreground w-[160px]">Abrangência</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wide text-muted-foreground w-[100px]">Status</TableHead>
+                <TableHead className="text-xs font-semibold uppercase tracking-wide text-muted-foreground w-[100px] text-right">Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -358,11 +358,11 @@ export function HistoricoAbonosView({
                               const disciplinas = abono.disciplina.split(",").map((d) => d.trim()).filter(Boolean);
                               return (
                                 <div className="flex flex-wrap items-center gap-1.5" title={abono.disciplina}>
-                                  <Badge variant="outline" className="rounded-full bg-muted text-slate-600 border border-border/60 font-semibold normal-case text-xs">
+                                  <Badge variant="outline" className="rounded-full bg-muted text-muted-foreground border border-border/60 font-semibold normal-case text-xs">
                                     {disciplinas[0]}
                                   </Badge>
                                   {disciplinas.length > 1 && (
-                                    <Badge variant="secondary" className="rounded-full bg-muted text-slate-500 border-none font-semibold normal-case text-[10px] cursor-help">
+                                    <Badge variant="secondary" className="rounded-full bg-muted text-muted-foreground border-none font-semibold normal-case text-[10px] cursor-help">
                                       +{disciplinas.length - 1} matérias
                                     </Badge>
                                   )}
@@ -370,7 +370,7 @@ export function HistoricoAbonosView({
                               );
                             })()
                           ) : (
-                            <Badge variant="secondary" className="rounded-full bg-muted text-slate-500 border-none font-semibold normal-case text-[10px]">
+                            <Badge variant="secondary" className="rounded-full bg-muted text-muted-foreground border-none font-semibold normal-case text-[10px]">
                               Todas
                             </Badge>
                           )}
@@ -394,7 +394,7 @@ export function HistoricoAbonosView({
                       </TableCell>
                       <TableCell className="py-4 align-top text-right">
                         <div className="flex justify-end gap-1">
-                          <Button variant="ghost" size="icon" onClick={() => handleOpenEdit(abono)} className="h-8 w-8 text-slate-500 hover:text-primary">
+                          <Button variant="ghost" size="icon" onClick={() => handleOpenEdit(abono)} className="h-8 w-8 text-muted-foreground hover:text-primary">
                             <Edit2 className="w-4 h-4" />
                           </Button>
                           <Button variant="ghost" size="icon" onClick={() => handleConfirmDelete(abono.id)} className="h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive">
@@ -474,7 +474,7 @@ export function HistoricoAbonosView({
                         return (
                           <>
                             {disciplinas.map((d, idx) => (
-                              <Badge key={idx} variant="outline" className="rounded-full bg-muted text-slate-600 border border-border/60 font-semibold normal-case text-xs">
+                              <Badge key={idx} variant="outline" className="rounded-full bg-muted text-muted-foreground border border-border/60 font-semibold normal-case text-xs">
                                 {d}
                               </Badge>
                             ))}
@@ -486,7 +486,7 @@ export function HistoricoAbonosView({
                 </div>
 
                 <div className="flex items-center gap-2 pt-2 border-t border-border mt-2 justify-end">
-                  <Button variant="ghost" size="sm" onClick={() => handleOpenEdit(abono)} className="text-slate-500 hover:text-primary gap-1">
+                  <Button variant="ghost" size="sm" onClick={() => handleOpenEdit(abono)} className="text-muted-foreground hover:text-primary gap-1">
                     <Edit2 className="w-3.5 h-3.5" /> Editar
                   </Button>
                   <Button variant="ghost" size="sm" onClick={() => handleConfirmDelete(abono.id)} className="text-destructive hover:bg-destructive/10 hover:text-destructive gap-1">

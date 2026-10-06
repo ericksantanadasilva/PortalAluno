@@ -187,7 +187,7 @@ export default function SimuladoAnswerPage() {
               </CardDescription>
             </div>
             
-            <div className="text-sm font-bold bg-muted text-slate-600 px-4 py-2 rounded-full border border-border">
+            <div className="text-sm font-bold bg-muted text-muted-foreground px-4 py-2 rounded-full border border-border">
               Respondidas: {answers.filter(a => a.chosenAlternative).length} / {exam.totalQuestions}
             </div>
           </div>
@@ -241,7 +241,7 @@ export default function SimuladoAnswerPage() {
               return (
                 <div key={numero} className={`flex flex-col gap-2 p-3 rounded-xl transition-all ${anulada ? 'opacity-50 grayscale bg-muted' : 'bg-white hover:bg-slate-50 border border-border hover:shadow-[0_4px_15px_rgb(0,0,0,0.02)]'}`}>
                   <div className="flex items-center justify-between">
-                    <span className="font-mono font-bold text-slate-500 text-sm pl-1">
+                    <span className="font-mono font-bold text-muted-foreground text-sm pl-1">
                       {numero}.
                       {isForeignLangQ && <span className="ml-1 text-[10px] uppercase text-blue-500 font-semibold">{selectedLanguage || 'Idioma'}</span>}
                     </span>
@@ -259,8 +259,8 @@ export default function SimuladoAnswerPage() {
                           className={`flex-1 h-10 flex items-center justify-center text-sm font-bold rounded transition-colors disabled:cursor-not-allowed ${
                             isSelected && !anulada
                               ? 'bg-primary text-primary-foreground shadow-sm' 
-                              : 'text-slate-600 hover:bg-white hover:text-slate-900 hover:shadow-sm'
-                          } ${anulada && isSelected ? 'bg-slate-300 text-slate-600' : ''}`}
+                              : 'text-muted-foreground hover:bg-white hover:text-slate-900 hover:shadow-sm'
+                          } ${anulada && isSelected ? 'bg-slate-300 text-muted-foreground' : ''}`}
                         >
                           {alt}
                         </button>
@@ -285,7 +285,7 @@ export default function SimuladoAnswerPage() {
         <DialogContent className="sm:max-w-sm">
           <DialogHeader>
             <DialogTitle>{modalState.title}</DialogTitle>
-            <DialogDescription className="mt-2 text-slate-600 leading-relaxed">
+            <DialogDescription className="mt-2 text-muted-foreground leading-relaxed">
               {modalState.description}
             </DialogDescription>
           </DialogHeader>

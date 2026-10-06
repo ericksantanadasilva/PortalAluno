@@ -640,7 +640,7 @@ export function StudentsTab() {
                   </div>
                   <div className="text-center">
                     <p className="text-sm font-semibold text-foreground">Arraste e solte a planilha CSV</p>
-                    <p className="text-xs text-slate-500 mt-1">Ou clique para procurar em seus arquivos</p>
+                    <p className="text-xs text-muted-foreground mt-1">Ou clique para procurar em seus arquivos</p>
                   </div>
                 </div>
 

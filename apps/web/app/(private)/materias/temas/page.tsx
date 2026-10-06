@@ -409,15 +409,15 @@ export default function TemasPage() {
 
             {/* Árvore Hierárquica */}
             {loading ? (
-                <div className="flex flex-col items-center justify-center py-16 gap-3 text-slate-500">
+                <div className="flex flex-col items-center justify-center py-16 gap-3 text-muted-foreground">
                     <Loader2 className="w-8 h-8 animate-spin text-primary" />
                     <p>Carregando catálogo de temas...</p>
                 </div>
             ) : filteredTree.length === 0 ? (
-                <Card className="p-12 text-center text-slate-500">
+                <Card className="p-12 text-center text-muted-foreground">
                     <BookOpen className="w-12 h-12 mx-auto text-slate-300 mb-4" />
                     <BlockTitle>Nenhum tema encontrado</BlockTitle>
-                    <p className="mt-1 text-sm text-slate-500">
+                    <p className="mt-1 text-sm text-muted-foreground">
                         {search ? 'Tente buscar por outro termo.' : 'Você pode importar sua planilha Excel ou criar os temas manualmente.'}
                     </p>
                     {!search && (
@@ -490,7 +490,7 @@ export default function TemasPage() {
                                                                 className="flex items-center gap-2 cursor-pointer font-semibold text-foreground dark:text-slate-200 hover:text-primary"
                                                             >
                                                                 {isThemeExpanded ? (
-                                                                    <ChevronDown className="w-4 h-4 text-slate-500" />
+                                                                    <ChevronDown className="w-4 h-4 text-muted-foreground" />
                                                                 ) : (
                                                                     <ChevronRight className="w-4 h-4 text-slate-400" />
                                                                 )}
@@ -513,7 +513,7 @@ export default function TemasPage() {
                                                                     size="sm"
                                                                     variant="ghost"
                                                                     onClick={() => openThemeModal(subject.id, theme)}
-                                                                    className="h-8 w-8 p-0 text-slate-500 hover:text-slate-800"
+                                                                    className="h-8 w-8 p-0 text-muted-foreground hover:text-slate-800"
                                                                 >
                                                                     <Edit2 className="w-3.5 h-3.5" />
                                                                 </Button>
@@ -538,7 +538,7 @@ export default function TemasPage() {
                                                                     theme.subthemes.map(sub => (
                                                                         <div
                                                                             key={sub.id}
-                                                                            className="flex items-center justify-between text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900/50 p-1.5 rounded transition-colors"
+                                                                            className="flex items-center justify-between text-sm text-muted-foreground dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900/50 p-1.5 rounded transition-colors"
                                                                         >
                                                                             <span className="flex items-center gap-2">
                                                                                 <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
@@ -662,7 +662,7 @@ export default function TemasPage() {
                                         type="file"
                                         accept=".xlsx, .xls, .csv"
                                         onChange={handleFileUpload}
-                                        className="mt-3 mx-auto text-xs text-slate-500 block"
+                                        className="mt-3 mx-auto text-xs text-muted-foreground block"
                                     />
                                 </div>
 
@@ -676,7 +676,7 @@ export default function TemasPage() {
                                                 <div key={idx} className="p-2 grid grid-cols-3 gap-2">
                                                     <span className="font-medium text-primary">{row.disciplina}</span>
                                                     <span>{row.tema}</span>
-                                                    <span className="text-slate-500">{row.subtema || '-'}</span>
+                                                    <span className="text-muted-foreground">{row.subtema || '-'}</span>
                                                 </div>
                                             ))}
                                             {excelRows.length > 10 && (
@@ -697,15 +697,15 @@ export default function TemasPage() {
                                 <div className="grid grid-cols-3 gap-2 text-sm max-w-sm mx-auto bg-white dark:bg-slate-900 p-3 rounded-md shadow-sm border">
                                     <div>
                                         <span className="block font-bold text-foreground">{importResult.createdSubjects}</span>
-                                        <span className="text-xs text-slate-500">Disciplinas</span>
+                                        <span className="text-xs text-muted-foreground">Disciplinas</span>
                                     </div>
                                     <div>
                                         <span className="block font-bold text-foreground">{importResult.createdThemes}</span>
-                                        <span className="text-xs text-slate-500">Temas</span>
+                                        <span className="text-xs text-muted-foreground">Temas</span>
                                     </div>
                                     <div>
                                         <span className="block font-bold text-foreground">{importResult.createdSubthemes}</span>
-                                        <span className="text-xs text-slate-500">Subtemas</span>
+                                        <span className="text-xs text-muted-foreground">Subtemas</span>
                                     </div>
                                 </div>
                             </div>

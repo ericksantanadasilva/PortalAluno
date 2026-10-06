@@ -318,7 +318,7 @@ export function DiscursiveSubmissionsManager() {
             <BookOpen className="w-5 h-5 text-primary" />
             Central de Downloads - Simulados Discursivos
           </CardTitle>
-          <CardDescription className="text-slate-500 mt-1">
+          <CardDescription className="text-muted-foreground mt-1">
             Selecione um simulado discursivo para gerenciar as submissões enviadas pelos alunos e efetuar download unitário ou em lote (.ZIP).
           </CardDescription>
         </CardHeader>
@@ -403,7 +403,7 @@ export function DiscursiveSubmissionsManager() {
 
           {/* Submissions Table */}
           {loadingSubmissions ? (
-            <div className="py-16 text-center text-slate-500">
+            <div className="py-16 text-center text-muted-foreground">
               <Loader2 className="w-8 h-8 animate-spin mx-auto text-primary mb-3" />
               <p>Carregando submissões dos alunos...</p>
             </div>
@@ -411,13 +411,13 @@ export function DiscursiveSubmissionsManager() {
             <div className="py-16 text-center text-slate-400 border border-dashed rounded-lg bg-muted/50">
               <BookOpen className="w-12 h-12 mx-auto text-slate-300 mb-2" />
               <p className="font-medium">Nenhum simulado discursivo selecionado.</p>
-              <p className="text-xs text-slate-500 mt-1">Crie ou selecione um simulado no menu acima para visualizar as resoluções.</p>
+              <p className="text-xs text-muted-foreground mt-1">Crie ou selecione um simulado no menu acima para visualizar as resoluções.</p>
             </div>
           ) : filteredSubmissions.length === 0 ? (
-            <div className="py-16 text-center text-slate-500 border border-dashed rounded-lg bg-muted/50">
+            <div className="py-16 text-center text-muted-foreground border border-dashed rounded-lg bg-muted/50">
               <FileText className="w-12 h-12 mx-auto text-slate-300 mb-2" />
               <p className="font-semibold text-foreground">Nenhuma submissão encontrada</p>
-              <p className="text-xs text-slate-500 mt-1">Os envios dos alunos para este simulado aparecerão nesta tabela.</p>
+              <p className="text-xs text-muted-foreground mt-1">Os envios dos alunos para este simulado aparecerão nesta tabela.</p>
             </div>
           ) : (
             <div className="border border-border rounded-lg overflow-hidden shadow-sm">
@@ -452,7 +452,7 @@ export function DiscursiveSubmissionsManager() {
                         <TableCell className="font-semibold text-foreground">
                           {row.studentName}
                         </TableCell>
-                        <TableCell className="text-slate-600 font-mono text-xs">
+                        <TableCell className="text-muted-foreground font-mono text-xs">
                           {row.registrationNumber}
                         </TableCell>
                         <TableCell>
@@ -460,7 +460,7 @@ export function DiscursiveSubmissionsManager() {
                             {row.subjectName}
                           </Badge>
                         </TableCell>
-                        <TableCell className="text-slate-600 text-xs">
+                        <TableCell className="text-muted-foreground text-xs">
                           {formatDate(row.submittedAt)}
                         </TableCell>
                         <TableCell>

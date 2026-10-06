@@ -371,7 +371,7 @@ export function WhiteLabelTab() {
                 )}
               </div>
               <DialogTitle className="text-2xl font-bold mb-2 text-foreground">{dialogMessage.title}</DialogTitle>
-              <DialogDescription className="text-base text-slate-500 px-4">
+              <DialogDescription className="text-base text-muted-foreground px-4">
                 {dialogMessage.description}
               </DialogDescription>
             </div>

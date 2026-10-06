@@ -206,7 +206,7 @@ export default function SubjectsPage() {
                     <TableCell>{new Date(subject.createdAt).toLocaleDateString('pt-BR')}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-1">
-                        <Button variant="ghost" size="icon" onClick={() => openModal(subject)} className="text-slate-500 hover:text-primary">
+                        <Button variant="ghost" size="icon" onClick={() => openModal(subject)} className="text-muted-foreground hover:text-primary">
                           <Edit2 className="w-4 h-4" />
                         </Button>
                         <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10 hover:text-destructive" onClick={() => confirmDelete(subject.id)}>
