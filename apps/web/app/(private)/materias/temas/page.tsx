@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import * as XLSX from 'xlsx';
+import { BlockTitle } from '@/components/ui/typography';
 
 const API_URL = "/api";
 
@@ -415,7 +416,7 @@ export default function TemasPage() {
             ) : filteredTree.length === 0 ? (
                 <Card className="p-12 text-center text-slate-500">
                     <BookOpen className="w-12 h-12 mx-auto text-slate-300 mb-4" />
-                    <h3 className="text-lg font-medium text-slate-700 dark:text-slate-300">Nenhum tema encontrado</h3>
+                    <BlockTitle>Nenhum tema encontrado</BlockTitle>
                     <p className="mt-1 text-sm text-slate-500">
                         {search ? 'Tente buscar por outro termo.' : 'Você pode importar sua planilha Excel ou criar os temas manualmente.'}
                     </p>
@@ -690,9 +691,9 @@ export default function TemasPage() {
                         ) : (
                             <div className="bg-primary/5 dark:bg-primary/10 p-6 rounded-lg text-center space-y-3">
                                 <CheckCircle2 className="w-12 h-12 mx-auto text-primary" />
-                                <h3 className="text-lg font-bold text-primary dark:text-primary">
+                                <BlockTitle className="text-primary">
                                     Importação Concluída com Sucesso!
-                                </h3>
+                                </BlockTitle>
                                 <div className="grid grid-cols-3 gap-2 text-sm max-w-sm mx-auto bg-white dark:bg-slate-900 p-3 rounded-md shadow-sm border">
                                     <div>
                                         <span className="block font-bold text-slate-800">{importResult.createdSubjects}</span>
