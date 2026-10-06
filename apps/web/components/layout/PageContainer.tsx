@@ -14,11 +14,6 @@ const MAX_WIDTH_MAP = {
 interface PageContainerProps {
   children: React.ReactNode;
   /**
-   * Remove o padding herdado do layout pai para o conteúdo "sangrar" até as bordas.
-   * Substitui o hack de margem negativa usado pela página de Frequência.
-   */
-  fullBleed?: boolean;
-  /**
    * Largura máxima do conteúdo.
    * @default "7xl"
    */
@@ -60,26 +55,11 @@ const GAP_MAP = {
  */
 export function PageContainer({
   children,
-  fullBleed = false,
   maxWidth = "7xl",
   gap = "lg",
   className,
   style,
 }: PageContainerProps) {
-  if (fullBleed) {
-    return (
-      <div
-        style={style}
-        className={cn(
-          "-mx-4 md:-mx-8 -my-6 flex flex-col min-h-full w-[calc(100%+2rem)] md:w-[calc(100%+4rem)]",
-          className
-        )}
-      >
-        {children}
-      </div>
-    );
-  }
-
   return (
     <div
       style={style}
