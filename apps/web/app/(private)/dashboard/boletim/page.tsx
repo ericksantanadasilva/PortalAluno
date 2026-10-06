@@ -15,16 +15,9 @@ import {
   PenLine,
   ChevronDown,
   Loader2,
-  Check,
-  ChevronsUpDown
 } from "lucide-react";
 
 import { formatDate } from "@/lib/utils";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
-import { Label } from "@/components/ui/label";
-import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import { SimulacaoAcesso } from "@/components/layout/SimulacaoAcesso";
 import { PageTitle } from "@/components/ui/typography";
 
@@ -57,7 +50,6 @@ export default function BoletimDetalhado() {
   // Para simulacao de admin
   const [todosAlunos, setTodosAlunos] = useState<any[]>([]);
   const [selectedAlunoId, setSelectedAlunoId] = useState<string>("");
-  const [alunoPopoverOpen, setAlunoPopoverOpen] = useState(false);
 
   // Dados reais
   const [boletins, setBoletins] = useState<BoletimData[]>([]);
