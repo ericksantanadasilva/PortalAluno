@@ -25,6 +25,7 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { Label } from "@/components/ui/label";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { SimulacaoAcesso } from "@/components/layout/SimulacaoAcesso";
 import { PageTitle } from "@/components/ui/typography";
 
 import BoletimUerjView from "@/components/boletins/BoletimUerjView";
@@ -148,60 +149,12 @@ export default function BoletimDetalhado() {
   return (
     <PageContainer className="animate-in fade-in slide-in-from-bottom-4 duration-500" style={{ "--primary": primaryHSL } as React.CSSProperties}>
       {["admin", "super_admin", "secretaria"].includes(role || '') && (
-        <div className="mb-4 p-5 bg-amber-500/10 border border-amber-500/30 rounded-xl space-y-3">
-          <div>
-            <Label className="text-amber-800 dark:text-amber-300 font-bold mb-1 flex items-center gap-1.5">
-              <span>Simulação de Acesso (Administrador)</span>
-            </Label>
-            <p className="text-xs text-amber-700/80 dark:text-amber-400/80 mb-3">
-              Selecione um aluno para visualizar o Boletim Pedagógico dele.
-            </p>
-          </div>
-
-          <Popover open={alunoPopoverOpen} onOpenChange={setAlunoPopoverOpen}>
-            <PopoverTrigger
-              className={cn(buttonVariants({ variant: "outline" }), "justify-between w-[450px] font-normal h-10 bg-background max-w-full")}
-              role="combobox"
-              aria-expanded={alunoPopoverOpen}
-            >
-              {selectedAlunoId
-                ? (() => {
-                  const match = todosAlunos.find((a) => a.id === selectedAlunoId);
-                  return match ? `${match.name} (${match.registrationNumber})` : "Selecione um aluno...";
-                })()
-                : "Selecione um aluno..."}
-              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-            </PopoverTrigger>
-            <PopoverContent className="w-[450px] max-w-[90vw] p-0" align="start">
-              <Command>
-                <CommandInput placeholder="Buscar por nome ou matrícula..." />
-                <CommandList>
-                  <CommandEmpty>Nenhum aluno encontrado.</CommandEmpty>
-                  <CommandGroup>
-                    {todosAlunos.map((a) => (
-                      <CommandItem
-                        key={a.id}
-                        value={`${a.name} ${a.registrationNumber}`}
-                        onSelect={() => {
-                          setSelectedAlunoId(a.id);
-                          setAlunoPopoverOpen(false);
-                        }}
-                      >
-                        <Check
-                          className={cn(
-                            "mr-2 h-4 w-4",
-                            selectedAlunoId === a.id ? "opacity-100" : "opacity-0"
-                          )}
-                        />
-                        {a.name} ({a.registrationNumber}) - {a.class?.name || "Sem Turma"}
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                </CommandList>
-              </Command>
-            </PopoverContent>
-          </Popover>
-        </div>
+        <SimulacaoAcesso
+          alunos={todosAlunos}
+          selectedAlunoId={selectedAlunoId}
+          onSelectAluno={setSelectedAlunoId}
+          description="Selecione um aluno para visualizar o Boletim Pedagógico dele"
+        />
       )}
 
       {loadingBoletins ? (
