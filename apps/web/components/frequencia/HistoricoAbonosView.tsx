@@ -38,6 +38,7 @@ import {
 } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import { NovoAbonoDialog } from "./NovoAbonoDialog";
+import { SectionTitle, BlockTitle } from "../ui/typography";
 
 interface HistoricoAbonosViewProps {
   abonos: HistoricoAbono[];
@@ -175,7 +176,7 @@ export function HistoricoAbonosView({
       {/* Cabeçalho */}
       <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
         <div className="space-y-1">
-          <h2 className="text-2xl font-bold text-foreground">Histórico de Abonos</h2>
+          <SectionTitle>Histórico de Abonos</SectionTitle>
           <p className="text-sm text-muted-foreground flex items-center gap-2">
             {formatDate(dataReferencia)}
           </p>
@@ -289,7 +290,7 @@ export function HistoricoAbonosView({
       {/* Tabela desktop com novo visual */}
       <div className="hidden md:block bg-white dark:bg-card border border-border shadow-sm rounded-xl overflow-hidden">
         <div className="flex items-center justify-between p-4 border-b border-border bg-muted/10">
-          <h3 className="font-bold text-lg text-primary">{abonosFiltrados.length} abonos exibidos</h3>
+          <BlockTitle className="text-primary">{abonosFiltrados.length} abonos exibidos</BlockTitle>
         </div>
         <div className="overflow-x-auto">
           <Table>
@@ -483,7 +484,7 @@ export function HistoricoAbonosView({
                     </div>
                   )}
                 </div>
-                
+
                 <div className="flex items-center gap-2 pt-2 border-t border-border mt-2 justify-end">
                   <Button variant="ghost" size="sm" onClick={() => handleOpenEdit(abono)} className="text-slate-500 hover:text-primary gap-1">
                     <Edit2 className="w-3.5 h-3.5" /> Editar
