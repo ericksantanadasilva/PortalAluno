@@ -86,7 +86,6 @@ export default function DashboardLayout({
         <header className="sticky top-0 h-16 shrink-0 border-b border-slate-100 flex items-center justify-between px-4 md:px-8 z-30 bg-background shadow-sm">
           <div className="flex items-center gap-2">
             <SidebarTrigger className="-ml-1" />
-            <h1 className="ml-2 text-lg font-semibold text-foreground">Dashboard</h1>
           </div>
         </header>
 
