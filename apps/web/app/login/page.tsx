@@ -231,7 +231,7 @@ export default function LoginPage() {
               </div>
 
               <div className="pt-2 space-y-2">
-                <Button type="submit" disabled={isLoading} className="w-full bg-indigo-600 text-white hover:bg-indigo-700 rounded-xl h-10 shadow-sm">
+                <Button type="submit" disabled={isLoading} className="w-full rounded-xl h-10 shadow-sm">
                   {isLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : "Salvar Senha Definitiva"}
                 </Button>
 
