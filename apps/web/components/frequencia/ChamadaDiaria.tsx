@@ -80,8 +80,8 @@ function StatusActionButtons({
         variant={aluno.status_atual === "Abonado" ? "default" : "outline"}
         className={
           aluno.status_atual === "Abonado"
-            ? "rounded-full bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-sm"
-            : "rounded-full text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/30 border-blue-200 font-semibold"
+            ? "rounded-full font-semibold shadow-sm"
+            : "rounded-full font-semibold"
         }
         onClick={() => onUpdateStatus(aluno.id, "Abonado")}
       >
@@ -192,7 +192,7 @@ export function ChamadaDiaria({
                   type="button"
                   variant={aulaAtual.showCard ? "default" : "outline"}
                   size="icon"
-                  className={`shrink-0 w-9 h-9 rounded-lg ${aulaAtual.showCard ? "bg-blue-600 hover:bg-blue-700 text-white" : ""}`}
+                  className='shrink-0 w-9 h-9 rounded-lg' 
                   onClick={() => updateScheduledClass(aulaAtual.id, { showCard: !aulaAtual.showCard })}
                   title={aulaAtual.showCard ? "Ocultar Card no App" : "Mostrar Card no App"}
                 >
@@ -270,8 +270,8 @@ export function ChamadaDiaria({
                       variant="outline"
                       className={
                         isOnline
-                          ? "bg-blue-50 text-blue-700 border border-blue-100 font-semibold tracking-wide uppercase text-[10px]"
-                          : "bg-muted text-foreground border border-border/60 font-semibold tracking-wide uppercase text-[10px]"
+                          ? "bg-muted text-muted-foreground border border-border font-semibold tracking-wide uppercase text-[10px]"
+                          : "bg-muted text-muted-foreground border border-border font-semibold tracking-wide uppercase text-[10px]"
                       }
                     >
                       {isOnline ? (
@@ -327,8 +327,8 @@ export function ChamadaDiaria({
                   variant="outline"
                   className={
                     isOnline
-                      ? "bg-blue-50 text-blue-700 border border-blue-100 font-semibold tracking-wide uppercase text-[10px]"
-                      : "bg-muted text-foreground border border-border/60 font-semibold tracking-wide uppercase text-[10px]"
+                      ? "bg-muted text-muted-foreground border border-border font-semibold tracking-wide uppercase text-[10px]"
+                      : "bg-muted text-muted-foreground border border-border font-semibold tracking-wide uppercase text-[10px]"
                   }
                 >
                   {isOnline ? "Online" : "Presencial"}
@@ -340,7 +340,7 @@ export function ChamadaDiaria({
                       ? "bg-primary/10 text-primary border border-primary/20 font-semibold tracking-wide uppercase text-[10px]"
                       : aluno.status_atual === "Falta"
                         ? "bg-rose-50 text-rose-700 border border-rose-100 font-semibold tracking-wide uppercase text-[10px]"
-                        : "bg-blue-50 text-blue-700 border border-blue-100 font-semibold tracking-wide uppercase text-[10px]"
+                        : "bg-muted text-muted-foreground border border-border font-semibold tracking-wide uppercase text-[10px]"
                   }
                 >
                   {aluno.status_atual}
