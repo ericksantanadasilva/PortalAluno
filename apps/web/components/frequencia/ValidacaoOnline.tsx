@@ -217,20 +217,20 @@ export function ValidacaoOnline({
   return (
     <div className="w-full max-w-xl mx-auto space-y-5">
       <Card className="border border-border shadow-sm overflow-hidden bg-card rounded-xl">
-        <div className="bg-gradient-to-r from-indigo-600 via-violet-600 to-primary p-6 text-white">
-          <div className="flex items-center gap-1.5 mb-4 opacity-90">
+        <div className="bg-gradient-to-br from-primary/60 to-primary/20 border-b border-primary/40 p-6 text-foreground">
+          <div className="flex items-center gap-1.5 mb-4 text-foreground/80">
             <Laptop className="w-4 h-4" />
             <span className="text-[10px] font-bold uppercase tracking-widest">
               Portal do Aluno — Presença Online
             </span>
           </div>
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center font-bold text-lg border border-white/20">
+            <div className="w-12 h-12 rounded-full bg-background text-primary flex items-center justify-center font-bold text-lg border border-primary/20">
               {iniciais}
             </div>
             <div>
-              <BlockTitle className="capitalize text-inherit">{aluno.nome}</BlockTitle>
-              <p className="text-xs text-white/70 capitalize">
+              <BlockTitle className="capitalize">{aluno.nome}</BlockTitle>
+              <p className="text-xs text-foreground/80 capitalize">
                 {aluno.matricula} · {aluno.turmaNome || aluno.turma}
               </p>
             </div>
