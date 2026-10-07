@@ -66,8 +66,8 @@ function TipoBadge({ tipo }: { tipo: TipoAbonoSaaS }) {
       variant="outline"
       className={
         isMerito
-          ? "rounded-full bg-indigo-50 text-indigo-700 border border-indigo-100 font-semibold tracking-wide uppercase text-[10px] whitespace-nowrap"
-          : "rounded-full bg-purple-50 text-purple-700 border border-purple-100 font-semibold tracking-wide uppercase text-[10px] whitespace-nowrap"
+          ? "rounded-full bg-primary/10 text-primary border border-primary/20 font-semibold tracking-wide uppercase text-[10px] whitespace-nowrap"
+          : "rounded-full bg-muted text-muted-foreground border border-border font-semibold tracking-wide uppercase text-[10px] whitespace-nowrap"
       }
     >
       <span className="flex items-center gap-1">
@@ -187,16 +187,16 @@ export function HistoricoAbonosView({
             <Badge variant="secondary" className="px-3 py-1 text-xs font-semibold tracking-wide uppercase rounded-full bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-100">
               <span className="font-bold mr-1">{totais.vigentes}</span> VIGENTES
             </Badge>
-            <Badge variant="secondary" className="px-3 py-1 text-xs font-semibold tracking-wide uppercase rounded-full bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-100">
+            <Badge variant="secondary" className="px-3 py-1 text-xs font-semibold tracking-wide uppercase rounded-full bg-muted text-muted-foreground border border-border">
               <span className="font-bold mr-1">{totais.agendados}</span> AGENDADOS
             </Badge>
             <Badge variant="secondary" className="px-3 py-1 text-xs font-semibold tracking-wide uppercase rounded-full bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-100">
               <span className="font-bold mr-1 text-rose-900">{totais.encerrados}</span> ENCERRADOS
             </Badge>
-            <Badge variant="secondary" className="px-3 py-1 text-xs font-semibold tracking-wide uppercase rounded-full bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-100">
+            <Badge variant="secondary" className="px-3 py-1 text-xs font-semibold tracking-wide uppercase rounded-full bg-muted text-muted-foreground border border-border">
               <span className="font-bold mr-1">{totais.eventualidade}</span> EVENTUALIDADE
             </Badge>
-            <Badge variant="secondary" className="px-3 py-1 text-xs font-semibold tracking-wide uppercase rounded-full bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-100">
+            <Badge variant="secondary" className="px-3 py-1 text-xs font-semibold tracking-wide uppercase rounded-full bg-primary/10 text-primary border border-primary/20">
               <span className="font-bold mr-1">{totais.merito}</span> MÉRITO
             </Badge>
           </div>
@@ -384,7 +384,7 @@ export function HistoricoAbonosView({
                               status === "vigente"
                                 ? "rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100 font-semibold tracking-wide uppercase text-[10px]"
                                 : status === "agendado"
-                                  ? "rounded-full bg-blue-50 text-blue-700 border border-blue-100 font-semibold tracking-wide uppercase text-[10px]"
+                                  ? "rounded-full bg-muted text-muted-foreground border border-border font-semibold tracking-wide uppercase text-[10px]"
                                   : "rounded-full bg-rose-50 text-rose-700 border border-rose-100 font-semibold tracking-wide uppercase text-[10px]"
                             }
                           >
@@ -448,7 +448,7 @@ export function HistoricoAbonosView({
                       status === "vigente"
                         ? "rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100 font-semibold tracking-wide uppercase text-[10px]"
                         : status === "agendado"
-                          ? "rounded-full bg-blue-50 text-blue-700 border border-blue-100 font-semibold tracking-wide uppercase text-[10px]"
+                          ? "rounded-full bg-muted text-muted-foreground border border-border font-semibold tracking-wide uppercase text-[10px]"
                           : "rounded-full bg-rose-50 text-rose-700 border border-rose-100 font-semibold tracking-wide uppercase text-[10px]"
                     }
                   >
