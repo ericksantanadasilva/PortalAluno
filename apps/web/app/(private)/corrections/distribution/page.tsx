@@ -459,7 +459,7 @@ export default function DistributionPage() {
                 variant="default"
                 size="sm"
                 onClick={() => openGranularModal()}
-                className="gap-2 shrink-0 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-md font-semibold px-4 h-10"
+                className="gap-2 shrink-0 rounded-xl shadow-md font-semibold px-4 h-10"
               >
                 <Users className="size-4" />
                 <span>Reatribuição Granular</span>
@@ -542,7 +542,7 @@ export default function DistributionPage() {
                                 <CheckCircle2 className="size-3 mr-1" /> Concluído
                               </Badge>
                             ) : (
-                              <Badge className="bg-blue-500/20 text-blue-700 dark:text-blue-300 border-blue-500/30 rounded px-3 py-1 text-xs font-semibold">
+                              <Badge className="bg-muted text-muted-foreground border-border rounded px-3 py-1 text-xs font-semibold">
                                 <Clock className="size-3 mr-1" /> Em Andamento
                               </Badge>
                             )}
@@ -708,7 +708,7 @@ export default function DistributionPage() {
                                     Corrigida
                                   </Badge>
                                 ) : sub.status === 'UNDER_CORRECTION' ? (
-                                  <Badge className="bg-blue-500/20 text-blue-700 dark:text-blue-300 border border-blue-500/30 text-[11px] font-semibold rounded px-2.5 py-0.5">
+                                  <Badge className="bg-muted text-muted-foreground border border-border text-[11px] font-semibold rounded px-2.5 py-0.5">
                                     {currentCorrName}
                                   </Badge>
                                 ) : (
@@ -789,8 +789,8 @@ export default function DistributionPage() {
 
                   {/* Real-time WOW Preview */}
                   {selectedSubIds.length > 0 && selectedTargetCorrectors.length > 0 && (
-                    <div className="p-4 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex flex-col gap-2.5 shadow-sm">
-                      <div className="text-xs font-semibold text-indigo-700 dark:text-indigo-300 flex items-center gap-1.5">
+                    <div className="p-4 rounded-2xl bg-primary/10 border border-primary/20 flex flex-col gap-2.5 shadow-sm">
+                      <div className="text-xs font-semibold text-primary flex items-center gap-1.5">
                         <Sparkles className="size-4" />
                         <span>
                           {selectedTargetCorrectors.length === 1
@@ -801,7 +801,7 @@ export default function DistributionPage() {
                       {selectedTargetCorrectors.length > 1 && (
                         <div className="flex flex-wrap gap-2">
                           {getDistributionPreview().map((item, idx) => (
-                            <Badge key={idx} variant="outline" className="bg-background/90 text-xs font-bold px-3 py-1 rounded shadow-xs border-indigo-500/30">
+                            <Badge key={idx} variant="outline" className="bg-background/90 text-xs font-bold px-3 py-1 rounded shadow-xs border-primary/30">
                               {item.name}: {item.count} prova(s)
                             </Badge>
                           ))}
@@ -845,7 +845,7 @@ export default function DistributionPage() {
                 size="sm"
                 onClick={handleExecuteReassign}
                 disabled={submittingReassign || selectedSubIds.length === 0}
-                className="bg-indigo-600 hover:bg-indigo-700 text-white gap-2 rounded-xl h-10 px-5 font-semibold shadow-md"
+                className="gap-2 rounded-xl h-10 px-5 font-semibold shadow-md"
               >
                 {submittingReassign ? (
                   <>
