@@ -565,7 +565,7 @@ export default function CorrectorAreaPage() {
                               Corrigida
                             </Badge>
                           ) : (
-                            <Badge className="bg-blue-500/15 text-blue-700 dark:text-blue-300 border-blue-500/30 ">
+                            <Badge className="bg-muted text-muted-foreground border-border ">
                               Em Andamento
                             </Badge>
                           )}
