@@ -195,16 +195,16 @@ export default function SimuladoAnswerPage() {
 
         {hasForeignLanguage && (
           <div className="px-6 py-2">
-            <Alert className="bg-blue-50/50 border-blue-200">
+            <Alert className="bg-primary/5 border-primary/20">
               <div className="flex gap-4 items-start">
-                <Languages className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
+                <Languages className="w-5 h-5 text-primary shrink-0 mt-0.5" />
                 <div className="flex-1">
-                  <AlertTitle className="text-blue-800 font-bold text-base">Idioma Estrangeiro</AlertTitle>
-                  <AlertDescription className="text-blue-700 mt-2 flex flex-col md:flex-row md:items-center gap-4">
+                  <AlertTitle className="text-foreground font-bold text-base">Idioma Estrangeiro</AlertTitle>
+                  <AlertDescription className="text-muted-foreground mt-2 flex flex-col md:flex-row md:items-center gap-4">
                     <p>Esta prova possui questões de língua estrangeira. Selecione o idioma que você escolheu para realizar a prova:</p>
                     <div className="w-48 shrink-0">
                       <Select value={selectedLanguage} onValueChange={(val) => val && setSelectedLanguage(val)}>
-                        <SelectTrigger className="bg-white border-blue-200">
+                        <SelectTrigger className="bg-background">
                           <SelectValue placeholder="Selecione..." />
                         </SelectTrigger>
                         <SelectContent>
@@ -243,7 +243,7 @@ export default function SimuladoAnswerPage() {
                   <div className="flex items-center justify-between">
                     <span className="font-mono font-bold text-muted-foreground text-sm pl-1">
                       {numero}.
-                      {isForeignLangQ && <span className="ml-1 text-[10px] uppercase text-blue-500 font-semibold">{selectedLanguage || 'Idioma'}</span>}
+                      {isForeignLangQ && <span className="ml-1 text-[10px] uppercase text-muted-foreground font-semibold">{selectedLanguage || 'Idioma'}</span>}
                     </span>
                     {selected && !anulada && <CheckCircle2 className="w-4 h-4 text-emerald-500" />}
                   </div>
