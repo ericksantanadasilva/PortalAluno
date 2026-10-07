@@ -260,7 +260,7 @@ export default function SubmissionsOverviewPage() {
         );
       case 'UNDER_CORRECTION':
         return (
-          <Badge className="bg-blue-500/15 text-blue-700 dark:text-blue-300 border-blue-500/30 font-medium ">
+          <Badge className="bg-muted text-muted-foreground border-border font-medium ">
             <PlayCircle className="size-3 mr-1" /> Em Correção
           </Badge>
         );
@@ -440,11 +440,11 @@ export default function SubmissionsOverviewPage() {
                         </TableCell>
                         <TableCell>
                           {sub.type === 'PRESENTIAL' ? (
-                            <Badge variant="outline" className="border-purple-500/30 text-purple-600 dark:text-purple-400 bg-purple-500/10 ">
+                            <Badge variant="outline" className="border-border text-muted-foreground bg-muted ">
                               Presencial
                             </Badge>
                           ) : (
-                            <Badge variant="outline" className="border-teal-500/30 text-teal-600 dark:text-teal-400 bg-teal-500/10 ">
+                            <Badge variant="outline" className="border-border text-muted-foreground bg-muted ">
                               Online
                             </Badge>
                           )}
