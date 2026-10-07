@@ -66,8 +66,8 @@ function TipoBadge({ tipo }: { tipo: TipoAbonoSaaS }) {
       variant="outline"
       className={
         isMerito
-          ? "rounded-full bg-primary/10 text-primary border border-primary/20 font-semibold tracking-wide uppercase text-[10px] whitespace-nowrap"
-          : "rounded-full bg-muted text-muted-foreground border border-border font-semibold tracking-wide uppercase text-[10px] whitespace-nowrap"
+          ? "bg-primary/10 text-primary border border-primary/20 font-semibold tracking-wide uppercase text-[10px] whitespace-nowrap"
+          : "bg-muted text-muted-foreground border border-border font-semibold tracking-wide uppercase text-[10px] whitespace-nowrap"
       }
     >
       <span className="flex items-center gap-1">
@@ -382,10 +382,10 @@ export function HistoricoAbonosView({
                             variant="outline"
                             className={
                               status === "vigente"
-                                ? "rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100 font-semibold tracking-wide uppercase text-[10px]"
+                                ? "bg-emerald-50 text-emerald-700 border border-emerald-100 font-semibold tracking-wide uppercase text-[10px]"
                                 : status === "agendado"
-                                  ? "rounded-full bg-muted text-muted-foreground border border-border font-semibold tracking-wide uppercase text-[10px]"
-                                  : "rounded-full bg-rose-50 text-rose-700 border border-rose-100 font-semibold tracking-wide uppercase text-[10px]"
+                                  ? "bg-muted text-muted-foreground border border-border font-semibold tracking-wide uppercase text-[10px]"
+                                  : "bg-rose-50 text-rose-700 border border-rose-100 font-semibold tracking-wide uppercase text-[10px]"
                             }
                           >
                             {status === "vigente" ? "Vigente" : status === "agendado" ? "Agendado" : "Encerrado"}
@@ -446,10 +446,10 @@ export function HistoricoAbonosView({
                     variant="outline"
                     className={
                       status === "vigente"
-                        ? "rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100 font-semibold tracking-wide uppercase text-[10px]"
+                        ? "bg-emerald-50 text-emerald-700 border border-emerald-100 font-semibold tracking-wide uppercase text-[10px]"
                         : status === "agendado"
-                          ? "rounded-full bg-muted text-muted-foreground border border-border font-semibold tracking-wide uppercase text-[10px]"
-                          : "rounded-full bg-rose-50 text-rose-700 border border-rose-100 font-semibold tracking-wide uppercase text-[10px]"
+                          ? "bg-muted text-muted-foreground border border-border font-semibold tracking-wide uppercase text-[10px]"
+                          : "bg-rose-50 text-rose-700 border border-rose-100 font-semibold tracking-wide uppercase text-[10px]"
                     }
                   >
                     {status === "vigente" ? "Vigente" : status === "agendado" ? "Agendado" : "Encerrado"}

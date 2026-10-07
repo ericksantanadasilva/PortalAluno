@@ -167,7 +167,7 @@ export function PlanoRevisaoSection({ data, primaryHSL }: PlanoRevisaoSectionPro
                 {disciplina}
                 <Badge
                   variant="secondary"
-                  className="bg-primary/10 text-primary hover:bg-primary/20 text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm"
+                  className="bg-primary/10 text-primary hover:bg-primary/20 text-[10px] font-bold px-2 py-0.5 shadow-sm"
                 >
                   {temas.length} {temas.length === 1 ? "erro" : "erros"}
                 </Badge>

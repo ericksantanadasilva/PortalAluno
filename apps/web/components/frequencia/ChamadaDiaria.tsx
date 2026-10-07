@@ -97,7 +97,7 @@ function OnlineStatusIndicator({ status }: { status: StatusChamada }) {
     return (
       <Badge
         variant="outline"
-        className="rounded-full bg-primary/10 text-primary border border-primary/20 font-semibold tracking-wide uppercase text-[10px]"
+        className="bg-primary/10 text-primary border border-primary/20 font-semibold tracking-wide uppercase text-[10px]"
       >
         <UserCheck className="w-3.5 h-3.5 mr-1" />
         Validado via Portal
@@ -270,8 +270,8 @@ export function ChamadaDiaria({
                       variant="outline"
                       className={
                         isOnline
-                          ? "rounded-full bg-blue-50 text-blue-700 border border-blue-100 font-semibold tracking-wide uppercase text-[10px]"
-                          : "rounded-full bg-muted text-foreground border border-border/60 font-semibold tracking-wide uppercase text-[10px]"
+                          ? "bg-blue-50 text-blue-700 border border-blue-100 font-semibold tracking-wide uppercase text-[10px]"
+                          : "bg-muted text-foreground border border-border/60 font-semibold tracking-wide uppercase text-[10px]"
                       }
                     >
                       {isOnline ? (
@@ -327,8 +327,8 @@ export function ChamadaDiaria({
                   variant="outline"
                   className={
                     isOnline
-                      ? "rounded-full bg-blue-50 text-blue-700 border border-blue-100 font-semibold tracking-wide uppercase text-[10px]"
-                      : "rounded-full bg-muted text-foreground border border-border/60 font-semibold tracking-wide uppercase text-[10px]"
+                      ? "bg-blue-50 text-blue-700 border border-blue-100 font-semibold tracking-wide uppercase text-[10px]"
+                      : "bg-muted text-foreground border border-border/60 font-semibold tracking-wide uppercase text-[10px]"
                   }
                 >
                   {isOnline ? "Online" : "Presencial"}
@@ -337,10 +337,10 @@ export function ChamadaDiaria({
                   variant="outline"
                   className={
                     aluno.status_atual === "Presente"
-                      ? "rounded-full bg-primary/10 text-primary border border-primary/20 font-semibold tracking-wide uppercase text-[10px]"
+                      ? "bg-primary/10 text-primary border border-primary/20 font-semibold tracking-wide uppercase text-[10px]"
                       : aluno.status_atual === "Falta"
-                        ? "rounded-full bg-rose-50 text-rose-700 border border-rose-100 font-semibold tracking-wide uppercase text-[10px]"
-                        : "rounded-full bg-blue-50 text-blue-700 border border-blue-100 font-semibold tracking-wide uppercase text-[10px]"
+                        ? "bg-rose-50 text-rose-700 border border-rose-100 font-semibold tracking-wide uppercase text-[10px]"
+                        : "bg-blue-50 text-blue-700 border border-blue-100 font-semibold tracking-wide uppercase text-[10px]"
                   }
                 >
                   {aluno.status_atual}
