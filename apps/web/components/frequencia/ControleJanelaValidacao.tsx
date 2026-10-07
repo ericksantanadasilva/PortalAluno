@@ -389,7 +389,7 @@ export function ControleJanelaValidacao({
                           showAlert("Aviso", "Gere as aulas da semana primeiro para poder exibir/ocultar o card.", "warning");
                         }
                       }}
-                      className={`flex-1 gap-1.5 text-xs font-semibold rounded-md ${showCardAtual ? "bg-blue-600 hover:bg-blue-700 text-white" : ""}`}
+                      className='flex-1 gap-1.5 text-xs font-semibold rounded-md'
                       title={showCardAtual ? "Ocultar Card no Portal do Aluno" : "Mostrar Card no Portal do Aluno"}
                     >
                       {showCardAtual ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
