@@ -431,17 +431,17 @@ export function StudentsTab() {
                           <TableCell>{aluno.email}</TableCell>
                           <TableCell>{aluno.class?.name || 'Não alocado'}</TableCell>
                           <TableCell>
-                            <Badge variant={aluno.class?.modality?.name === 'presencial' ? 'default' : 'secondary'} className="rounded-full capitalize">
+                            <Badge variant={aluno.class?.modality?.name === 'presencial' ? 'default' : 'secondary'} className="capitalize">
                               {aluno.class?.modality?.name || 'Sem modalidade'}
                             </Badge>
                           </TableCell>
                           <TableCell>
                             {aluno.mustChangePassword ? (
-                              <Badge variant="secondary" className="bg-amber-100 text-amber-800 hover:bg-amber-100 rounded-full">
+                              <Badge variant="secondary" className="bg-amber-100 text-amber-800 hover:bg-amber-100 ">
                                 Pendente
                               </Badge>
                             ) : (
-                              <Badge variant="secondary" className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100 rounded-full">
+                              <Badge variant="secondary" className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100 ">
                                 Sim
                               </Badge>
                             )}
@@ -696,7 +696,7 @@ export function StudentsTab() {
                 <SmallLabel className="border-b pb-2">1. Modalidades de Ensino (Combos Pedagógicos)</SmallLabel>
                 <div className="flex flex-wrap gap-2">
                   {modalidades.map(m => (
-                    <Badge key={m.id} variant="outline" className="rounded-full px-3 py-1 flex items-center gap-2 text-sm capitalize bg-muted/40 font-normal">
+                    <Badge key={m.id} variant="outline" className="px-3 py-1 flex items-center gap-2 text-sm capitalize bg-muted/40 font-normal">
                       {m.name}
                       <button
                         onClick={() => removerModalidade(m.id)}
@@ -725,7 +725,7 @@ export function StudentsTab() {
                 <SmallLabel className="border-b pb-2">2. Turmas Ativas e Alocações</SmallLabel>
                 <div className="flex flex-wrap gap-2">
                   {turmas.map(t => (
-                    <Badge key={t.id} variant="outline" className="rounded-full px-3 py-1 flex items-center gap-2 text-sm bg-muted/40 font-normal">
+                    <Badge key={t.id} variant="outline" className="px-3 py-1 flex items-center gap-2 text-sm bg-muted/40 font-normal">
                       <span>{t.name}</span>
                       <span className="text-[10px] uppercase font-bold text-primary px-1 rounded-full">
                         {t.modality?.name || 'Sem combo'}

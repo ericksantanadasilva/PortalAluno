@@ -371,7 +371,7 @@ export default function DistributionPage() {
                       ? (currentExam.stats?.pending || 0)
                       : (availableSubjects.find((s) => s.name === selectedSubject)?.count || 0)}
                   </span>
-                  <Badge variant="secondary" className="bg-primary/20 text-primary font-bold rounded px-2.5 py-1 text-xs shrink-0">
+                  <Badge variant="secondary" className="bg-primary/20 text-primary font-bold px-2.5 py-1 text-xs shrink-0">
                     Aguardando Distribuição
                   </Badge>
                 </div>
@@ -538,11 +538,11 @@ export default function DistributionPage() {
                           </TableCell>
                           <TableCell>
                             {batch.status === 'COMPLETED' ? (
-                              <Badge className="bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border-emerald-500/30 rounded px-3 py-1 text-xs font-semibold">
+                              <Badge className="bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border-emerald-500/30 px-3 py-1 text-xs font-semibold">
                                 <CheckCircle2 className="size-3 mr-1" /> Concluído
                               </Badge>
                             ) : (
-                              <Badge className="bg-muted text-muted-foreground border-border rounded px-3 py-1 text-xs font-semibold">
+                              <Badge className="bg-muted text-muted-foreground border-border px-3 py-1 text-xs font-semibold">
                                 <Clock className="size-3 mr-1" /> Em Andamento
                               </Badge>
                             )}
@@ -584,7 +584,7 @@ export default function DistributionPage() {
                 </DialogTitle>
               </div>
               {selectedSubIds.length > 0 && (
-                <Badge variant="secondary" className="bg-primary/15 text-primary font-bold rounded px-3 py-1">
+                <Badge variant="secondary" className="bg-primary/15 text-primary font-bold px-3 py-1">
                   {selectedSubIds.length} prova(s) selecionada(s)
                 </Badge>
               )}
@@ -697,22 +697,22 @@ export default function DistributionPage() {
                               <div className="text-[10px] text-muted-foreground">Matrícula: {sub.student?.registrationNumber || '-'}</div>
                             </TableCell>
                             <TableCell>
-                              <Badge variant="outline" className="text-[11px] rounded px-2.5 py-0.5">
+                              <Badge variant="outline" className="text-[11px] px-2.5 py-0.5">
                                 {sub.subjectName || 'Geral'}
                               </Badge>
                             </TableCell>
                             <TableCell>
                               <div className="flex items-center gap-2">
                                 {sub.status === 'CORRECTED' ? (
-                                  <Badge className="bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 text-[11px] font-semibold rounded px-2.5 py-0.5">
+                                  <Badge className="bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 text-[11px] font-semibold px-2.5 py-0.5">
                                     Corrigida
                                   </Badge>
                                 ) : sub.status === 'UNDER_CORRECTION' ? (
-                                  <Badge className="bg-muted text-muted-foreground border border-border text-[11px] font-semibold rounded px-2.5 py-0.5">
+                                  <Badge className="bg-muted text-muted-foreground border border-border text-[11px] font-semibold px-2.5 py-0.5">
                                     {currentCorrName}
                                   </Badge>
                                 ) : (
-                                  <Badge className="bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30 text-[11px] font-semibold rounded px-2.5 py-0.5">
+                                  <Badge className="bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30 text-[11px] font-semibold px-2.5 py-0.5">
                                     Pendente
                                   </Badge>
                                 )}
@@ -801,7 +801,7 @@ export default function DistributionPage() {
                       {selectedTargetCorrectors.length > 1 && (
                         <div className="flex flex-wrap gap-2">
                           {getDistributionPreview().map((item, idx) => (
-                            <Badge key={idx} variant="outline" className="bg-background/90 text-xs font-bold px-3 py-1 rounded shadow-xs border-primary/30">
+                            <Badge key={idx} variant="outline" className="bg-background/90 text-xs font-bold px-3 py-1 shadow-xs border-primary/30">
                               {item.name}: {item.count} prova(s)
                             </Badge>
                           ))}

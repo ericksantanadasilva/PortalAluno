@@ -161,12 +161,12 @@ export function DiscursiveExamCard({ exam, onSubmissionSuccess }: DiscursiveExam
       <div className={`absolute top-0 left-0 w-full h-1 ${allSubmitted ? 'bg-emerald-600' : isExpired ? 'bg-destructive' : isCardActive ? 'bg-primary' : 'bg-slate-300'}`} />
       <CardHeader className="pb-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
-          <Badge className="self-start bg-primary/10 text-primary hover:bg-primary/10 border-primary/20 text-xs font-semibold tracking-wide uppercase rounded-full whitespace-nowrap h-auto py-0.5 px-2.5">
+          <Badge className="self-start bg-primary/10 text-primary hover:bg-primary/10 border-primary/20 text-xs font-semibold tracking-wide uppercase whitespace-nowrap h-auto py-0.5 px-2.5">
             Simulado Discursivo
           </Badge>
           <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
             {exam.windowEnd && (
-              <Badge variant="outline" className={`text-xs font-medium whitespace-nowrap ${isExpired ? 'bg-rose-50 text-rose-700 border-rose-200 rounded-full' : 'bg-primary/10 text-primary border-primary/20 rounded-full'}`}>
+              <Badge variant="outline" className={`text-xs font-medium whitespace-nowrap ${isExpired ? 'bg-rose-50 text-rose-700 border-rose-200 ' : 'bg-primary/10 text-primary border-primary/20 '}`}>
                 <Clock className="w-3.5 h-3.5 mr-1 flex-shrink-0" />
                 Prazo: {new Date(exam.windowEnd).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
               </Badge>
@@ -202,7 +202,7 @@ export function DiscursiveExamCard({ exam, onSubmissionSuccess }: DiscursiveExam
                     </span>
                     {submission ? (
                       <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto mt-1 sm:mt-0">
-                        <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 gap-1.5 text-xs font-semibold rounded whitespace-nowrap">
+                        <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 gap-1.5 text-xs font-semibold whitespace-nowrap">
                           <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0" />
                           {formatDate(submission.submittedAt)}
                         </Badge>
@@ -226,15 +226,15 @@ export function DiscursiveExamCard({ exam, onSubmissionSuccess }: DiscursiveExam
                         </button>
                       </div>
                     ) : isExpired ? (
-                      <Badge variant="destructive" className="bg-rose-50 text-rose-700 border-rose-200 text-xs font-medium rounded whitespace-nowrap">
+                      <Badge variant="destructive" className="bg-rose-50 text-rose-700 border-rose-200 text-xs font-medium whitespace-nowrap">
                         Prazo Encerrado
                       </Badge>
                     ) : !isStarted ? (
-                      <Badge variant="outline" className="bg-muted text-muted-foreground border-border text-xs font-medium rounded whitespace-nowrap">
+                      <Badge variant="outline" className="bg-muted text-muted-foreground border-border text-xs font-medium whitespace-nowrap">
                         Aguardando Prazo
                       </Badge>
                     ) : (
-                      <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 text-xs font-medium rounded whitespace-nowrap">
+                      <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 text-xs font-medium whitespace-nowrap">
                         Pendente de Envio
                       </Badge>
                     )}
@@ -249,7 +249,7 @@ export function DiscursiveExamCard({ exam, onSubmissionSuccess }: DiscursiveExam
                         <AlertCircle className="w-4 h-4 text-rose-600 flex-shrink-0" />
                         O prazo para envio da resolução deste simulado foi encerrado.
                       </span>
-                      <Badge variant="destructive" className="self-start sm:self-auto text-[11px] bg-rose-600 text-white font-semibold rounded whitespace-nowrap">
+                      <Badge variant="destructive" className="self-start sm:self-auto text-[11px] bg-rose-600 text-white font-semibold whitespace-nowrap">
                         Não Realizado
                       </Badge>
                     </div>

@@ -262,7 +262,7 @@ export default function CorrectorAreaPage() {
               <SectionTitle className="flex items-center gap-2">
                 <User className="size-4 text-primary" />
                 <span>{activeSubmission.student.name}</span>
-                <Badge variant="secondary" className="font-mono text-xs rounded">
+                <Badge variant="secondary" className="font-mono text-xs ">
                   MAT {activeSubmission.student.registrationNumber}
                 </Badge>
               </SectionTitle>
@@ -320,7 +320,7 @@ export default function CorrectorAreaPage() {
                 Prova Digitalizada (Google Drive)
               </span>
               <div className="flex items-center gap-2">
-                <Badge variant="outline" className="text-xs font-mono rounded">PDF Viewer</Badge>
+                <Badge variant="outline" className="text-xs font-mono ">PDF Viewer</Badge>
                 <a
                   href={`${pdfUrl}&download=true`}
                   target="_blank"
@@ -425,7 +425,7 @@ export default function CorrectorAreaPage() {
                     className="text-xs"
                   />
                   {correctedFile && (
-                    <Badge variant="secondary" className="shrink-0 bg-primary/10 text-primary rounded">
+                    <Badge variant="secondary" className="shrink-0 bg-primary/10 text-primary ">
                       Novo arquivo selecionado
                     </Badge>
                   )}
@@ -561,11 +561,11 @@ export default function CorrectorAreaPage() {
                         <TableCell className="font-medium text-sm">{sub.exam.title}</TableCell>
                         <TableCell>
                           {sub.status === 'CORRECTED' ? (
-                            <Badge className="bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30 rounded">
+                            <Badge className="bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30 ">
                               Corrigida
                             </Badge>
                           ) : (
-                            <Badge className="bg-blue-500/15 text-blue-700 dark:text-blue-300 border-blue-500/30 rounded">
+                            <Badge className="bg-blue-500/15 text-blue-700 dark:text-blue-300 border-blue-500/30 ">
                               Em Andamento
                             </Badge>
                           )}

@@ -181,22 +181,22 @@ export function HistoricoAbonosView({
             {formatDate(dataReferencia)}
           </p>
           <div className="flex flex-wrap gap-2 pt-3">
-            <Badge variant="secondary" className="px-3 py-1 text-xs font-semibold tracking-wide uppercase rounded-full bg-muted text-foreground hover:bg-slate-100 border border-border/60">
+            <Badge variant="secondary" className="px-3 py-1 text-xs font-semibold tracking-wide uppercase bg-muted text-foreground hover:bg-slate-100 border border-border/60">
               <span className="font-bold mr-1 text-foreground">{totais.total}</span> REGISTROS
             </Badge>
-            <Badge variant="secondary" className="px-3 py-1 text-xs font-semibold tracking-wide uppercase rounded-full bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-100">
+            <Badge variant="secondary" className="px-3 py-1 text-xs font-semibold tracking-wide uppercase bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-100">
               <span className="font-bold mr-1">{totais.vigentes}</span> VIGENTES
             </Badge>
-            <Badge variant="secondary" className="px-3 py-1 text-xs font-semibold tracking-wide uppercase rounded-full bg-muted text-muted-foreground border border-border">
+            <Badge variant="secondary" className="px-3 py-1 text-xs font-semibold tracking-wide uppercase bg-muted text-muted-foreground border border-border">
               <span className="font-bold mr-1">{totais.agendados}</span> AGENDADOS
             </Badge>
-            <Badge variant="secondary" className="px-3 py-1 text-xs font-semibold tracking-wide uppercase rounded-full bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-100">
+            <Badge variant="secondary" className="px-3 py-1 text-xs font-semibold tracking-wide uppercase bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-100">
               <span className="font-bold mr-1 text-rose-900">{totais.encerrados}</span> ENCERRADOS
             </Badge>
-            <Badge variant="secondary" className="px-3 py-1 text-xs font-semibold tracking-wide uppercase rounded-full bg-muted text-muted-foreground border border-border">
+            <Badge variant="secondary" className="px-3 py-1 text-xs font-semibold tracking-wide uppercase bg-muted text-muted-foreground border border-border">
               <span className="font-bold mr-1">{totais.eventualidade}</span> EVENTUALIDADE
             </Badge>
-            <Badge variant="secondary" className="px-3 py-1 text-xs font-semibold tracking-wide uppercase rounded-full bg-primary/10 text-primary border border-primary/20">
+            <Badge variant="secondary" className="px-3 py-1 text-xs font-semibold tracking-wide uppercase bg-primary/10 text-primary border border-primary/20">
               <span className="font-bold mr-1">{totais.merito}</span> MÉRITO
             </Badge>
           </div>
@@ -358,11 +358,11 @@ export function HistoricoAbonosView({
                               const disciplinas = abono.disciplina.split(",").map((d) => d.trim()).filter(Boolean);
                               return (
                                 <div className="flex flex-wrap items-center gap-1.5" title={abono.disciplina}>
-                                  <Badge variant="outline" className="rounded-full bg-muted text-muted-foreground border border-border/60 font-semibold normal-case text-xs">
+                                  <Badge variant="outline" className="bg-muted text-muted-foreground border border-border/60 font-semibold normal-case text-xs">
                                     {disciplinas[0]}
                                   </Badge>
                                   {disciplinas.length > 1 && (
-                                    <Badge variant="secondary" className="rounded-full bg-muted text-muted-foreground border-none font-semibold normal-case text-[10px] cursor-help">
+                                    <Badge variant="secondary" className="bg-muted text-muted-foreground border-none font-semibold normal-case text-[10px] cursor-help">
                                       +{disciplinas.length - 1} matérias
                                     </Badge>
                                   )}
@@ -370,7 +370,7 @@ export function HistoricoAbonosView({
                               );
                             })()
                           ) : (
-                            <Badge variant="secondary" className="rounded-full bg-muted text-muted-foreground border-none font-semibold normal-case text-[10px]">
+                            <Badge variant="secondary" className="bg-muted text-muted-foreground border-none font-semibold normal-case text-[10px]">
                               Todas
                             </Badge>
                           )}
@@ -474,7 +474,7 @@ export function HistoricoAbonosView({
                         return (
                           <>
                             {disciplinas.map((d, idx) => (
-                              <Badge key={idx} variant="outline" className="rounded-full bg-muted text-muted-foreground border border-border/60 font-semibold normal-case text-xs">
+                              <Badge key={idx} variant="outline" className="bg-muted text-muted-foreground border border-border/60 font-semibold normal-case text-xs">
                                 {d}
                               </Badge>
                             ))}

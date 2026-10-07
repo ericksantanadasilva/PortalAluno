@@ -213,17 +213,17 @@ export function EmployeesTab() {
                         <TableCell className="font-medium">{emp.name}</TableCell>
                         <TableCell>{emp.email}</TableCell>
                         <TableCell>
-                          <Badge variant="outline" className="capitalize rounded-full">
+                          <Badge variant="outline" className="capitalize ">
                             {emp.department || 'Administração'}
                           </Badge>
                         </TableCell>
                         <TableCell>
                           {emp.mustChangePassword ? (
-                            <Badge variant="secondary" className="bg-amber-100 text-amber-800 hover:bg-amber-100 rounded-full">
+                            <Badge variant="secondary" className="bg-amber-100 text-amber-800 hover:bg-amber-100 ">
                               Pendente
                             </Badge>
                           ) : (
-                            <Badge variant="secondary" className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100 rounded-full">
+                            <Badge variant="secondary" className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100 ">
                               Sim
                             </Badge>
                           )}

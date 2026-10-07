@@ -244,7 +244,7 @@ export function ValidacaoOnline({
               {aulaAtual ? (aulaAtual.subject?.name || disciplinaAtivaNome) : disciplinaAtivaNome}
             </span>
             {aulaAtual && (
-              <Badge variant="outline" className="rounded-full text-[10px] gap-1 font-medium capitalize">
+              <Badge variant="outline" className="text-[10px] gap-1 font-medium capitalize">
                 {getDateLocal(aulaAtual.date).toLocaleDateString('pt-BR', { weekday: 'long' })}
               </Badge>
             )}
@@ -261,7 +261,7 @@ export function ValidacaoOnline({
                   {aulaAtual.startTime} — {aulaAtual.endTime}
                 </p>
               </div>
-              <Badge variant="outline" className={`shrink-0 rounded-full text-xs font-semibold ${statusBadgeClass}`}>
+              <Badge variant="outline" className={`shrink-0 text-xs font-semibold ${statusBadgeClass}`}>
                 {statusBadgeLabel}
               </Badge>
             </div>

@@ -1011,16 +1011,16 @@ export function ExamsManager({ onUpdate }: { onUpdate?: () => void, updateTrigge
                       <TableCell className="font-medium">{simulado.title}</TableCell>
                       <TableCell>{new Date(simulado.date).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</TableCell>
                       <TableCell className="uppercase">
-                        <Badge variant="outline" className={simulado.type === 'discursivo' ? 'bg-primary/10 text-primary border-primary/20 rounded-full' : 'rounded-full'}>
+                        <Badge variant="outline" className={simulado.type === 'discursivo' ? 'bg-primary/10 text-primary border-primary/20 ' : ''}>
                           {simulado.type.replace('_', ' ')}
                         </Badge>
                       </TableCell>
                       <TableCell>{simulado.totalQuestions}</TableCell>
                       <TableCell>
                         {simulado.isPublished ? (
-                          <Badge className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground">Publicado</Badge>
+                          <Badge className="bg-primary hover:bg-primary/90 text-primary-foreground">Publicado</Badge>
                         ) : (
-                          <Badge variant="secondary" className="rounded-full">Oculto</Badge>
+                          <Badge variant="secondary" className="">Oculto</Badge>
                         )}
                       </TableCell>
                       <TableCell>

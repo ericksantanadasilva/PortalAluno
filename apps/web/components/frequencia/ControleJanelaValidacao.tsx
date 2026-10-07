@@ -178,7 +178,7 @@ export function ControleJanelaValidacao({
           <div>
             <BlockTitle className="flex items-center gap-2 flex-wrap">
               Grade Padrão (Templates)
-              <Badge variant="outline" className="text-[10px] font-semibold gap-1 rounded-full">
+              <Badge variant="outline" className="text-[10px] font-semibold gap-1 ">
                 <Repeat className="w-3 h-3" />
                 Repete toda semana
               </Badge>
@@ -368,7 +368,7 @@ export function ControleJanelaValidacao({
                         Toda {getLabelDiaSemana(janela.diaSemana as any)}
                       </p>
                     </div>
-                    <Badge variant="outline" className={`text-xs shrink-0 rounded-full ${cfg?.className || ''}`}>
+                    <Badge variant="outline" className={`text-xs shrink-0 ${cfg?.className || ''}`}>
                       {cfg?.label || status}
                     </Badge>
                   </div>
