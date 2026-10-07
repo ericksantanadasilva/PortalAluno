@@ -7,6 +7,7 @@ const nextConfig = {
     '*.app.github.dev',
     '*.githubpreview.dev',
     'super-duper-space-couscous-4jjjvvxvp7v925gr-3000.app.github.dev',
+    '3000.dev.ericksantana.dev.br'
   ],
   experimental: {
     serverActions: {
