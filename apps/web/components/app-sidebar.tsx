@@ -33,6 +33,20 @@ export function AppSidebar({ userRole, userProfile, tenantConfig, onLogout }: Ap
   const searchParams = useSearchParams();
   const tab = searchParams.get('tab');
 
+  // Abre o grupo do menu que contém a página atual
+  const abrirPrincipal =
+    pathname.startsWith("/dashboard/boletim") ||
+    pathname.startsWith("/dashboard/presenca-online") ||
+    pathname.startsWith("/dashboard/simulados");
+  const abrirAcademico =
+    pathname.startsWith("/dashboard/frequencia") ||
+    pathname.startsWith("/materias") ||
+    pathname.startsWith("/simulados") ||
+    pathname.startsWith("/admin/tri") ||
+    (pathname === "/admin/settings" && tab === "omr");
+  const abrirCorrecao = pathname.startsWith("/corrections");
+  const abrirAdministracao = pathname === "/admin/settings" && tab !== "omr";
+
   const initials = userProfile?.name
     ? userProfile.name.split(" ").map((n: string) => n[0]).slice(0, 2).join("")
     : "US";
@@ -89,7 +103,7 @@ export function AppSidebar({ userRole, userProfile, tenantConfig, onLogout }: Ap
             <SidebarGroupLabel>Painel de Controle</SidebarGroupLabel>
             <SidebarMenu>
               {/* Principal Collapsible para não alunos */}
-              <Collapsible className="group/collapsible">
+              <Collapsible defaultOpen={abrirPrincipal} className="group/collapsible">
                 <SidebarMenuItem>
                   <SidebarMenuButton render={<CollapsibleTrigger />} tooltip="Principal">
                     <LayoutDashboard />
@@ -122,7 +136,7 @@ export function AppSidebar({ userRole, userProfile, tenantConfig, onLogout }: Ap
               </Collapsible>
 
               {/* Acadêmico Collapsible */}
-              <Collapsible className="group/collapsible">
+              <Collapsible defaultOpen={abrirAcademico} className="group/collapsible">
                 <SidebarMenuItem>
                   <SidebarMenuButton render={<CollapsibleTrigger />} tooltip="Acadêmico">
                     <GraduationCap />
@@ -164,7 +178,7 @@ export function AppSidebar({ userRole, userProfile, tenantConfig, onLogout }: Ap
               </Collapsible>
 
               {/* Correção de Simulados Collapsible */}
-              <Collapsible className="group/collapsible">
+              <Collapsible defaultOpen={abrirCorrecao} className="group/collapsible">
                 <SidebarMenuItem>
                   <SidebarMenuButton render={<CollapsibleTrigger />} tooltip="Correção de Simulados">
                     <CheckSquare />
@@ -210,7 +224,7 @@ export function AppSidebar({ userRole, userProfile, tenantConfig, onLogout }: Ap
               </Collapsible>
 
               {/* Administração Collapsible */}
-              <Collapsible className="group/collapsible">
+              <Collapsible defaultOpen={abrirAdministracao} className="group/collapsible">
                 <SidebarMenuItem>
                   <SidebarMenuButton render={<CollapsibleTrigger />} tooltip="Administração">
                     <Briefcase />
@@ -250,15 +264,15 @@ export function AppSidebar({ userRole, userProfile, tenantConfig, onLogout }: Ap
           <SidebarMenuItem>
             <DropdownMenu>
               <DropdownMenuTrigger className="flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left text-sm hover:bg-sidebar-accent hover:text-sidebar-accent-foreground data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground outline-none transition-all group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:!p-0 h-12">
-                  <Avatar className="h-8 w-8 rounded-lg shrink-0">
-                    <AvatarImage src="" alt={userProfile?.name} />
-                    <AvatarFallback className="rounded-lg bg-primary/10 text-primary">{initials}</AvatarFallback>
-                  </Avatar>
-                  <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
-                    <span className="truncate font-semibold">{userProfile?.name || "Carregando..."}</span>
-                    <span className="truncate text-xs opacity-80">{userProfile?.email || "portal@exemplo.com"}</span>
-                  </div>
-                  <ChevronsUpDown className="ml-auto size-4 shrink-0 group-data-[collapsible=icon]:hidden" />
+                <Avatar className="h-8 w-8 rounded-lg shrink-0">
+                  <AvatarImage src="" alt={userProfile?.name} />
+                  <AvatarFallback className="rounded-lg bg-primary/10 text-primary">{initials}</AvatarFallback>
+                </Avatar>
+                <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
+                  <span className="truncate font-semibold">{userProfile?.name || "Carregando..."}</span>
+                  <span className="truncate text-xs opacity-80">{userProfile?.email || "portal@exemplo.com"}</span>
+                </div>
+                <ChevronsUpDown className="ml-auto size-4 shrink-0 group-data-[collapsible=icon]:hidden" />
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-xl shadow-lg border-border z-50"
