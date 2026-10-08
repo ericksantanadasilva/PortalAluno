@@ -308,7 +308,7 @@ export default function SubmissionsOverviewPage() {
             size="sm"
             onClick={fetchSubmissions}
             disabled={loading}
-            className="gap-2 shrink-0 rounded-md"
+            className="gap-2 shrink-0 "
           >
             {loading ? <Loader2 className="size-4 animate-spin" /> : <RefreshCw className="size-4" />}
             <span>Atualizar Lista</span>

@@ -418,7 +418,7 @@ export default function DistributionPage() {
             </div>
 
             <Button
-              className="w-full h-12 text-base font-semibold shadow-lg shadow-primary/25 rounded-2xl"
+              className="w-full h-12 text-base font-semibold shadow-lg shadow-primary/25 "
               onClick={handleDistribute}
               disabled={
                 distributing ||
@@ -469,7 +469,7 @@ export default function DistributionPage() {
                 size="sm"
                 onClick={fetchData}
                 disabled={loading}
-                className="gap-2 shrink-0 rounded-xl border-border/80 shadow-sm font-semibold px-4 h-10"
+                className="gap-2 shrink-0 border-border/80 shadow-sm font-semibold px-4 h-10"
               >
                 <RefreshCw className="size-4" />
                 <span>Atualizar</span>
@@ -738,7 +738,7 @@ export default function DistributionPage() {
                     type="button"
                     variant={targetMode === 'corrector' ? 'default' : 'outline'}
                     size="sm"
-                    className={`h-9 px-4 text-xs font-semibold rounded-xl transition-all ${targetMode === 'corrector'
+                    className={`h-9 px-4 text-xs font-semibold transition-all ${targetMode === 'corrector'
                       ? 'bg-primary text-primary-foreground shadow-md'
                       : 'hover:bg-muted border-border/80'
                       }`}
@@ -751,7 +751,7 @@ export default function DistributionPage() {
                     type="button"
                     variant={targetMode === 'queue' ? 'default' : 'outline'}
                     size="sm"
-                    className={`h-9 px-4 text-xs font-semibold rounded-xl transition-all ${targetMode === 'queue'
+                    className={`h-9 px-4 text-xs font-semibold transition-all ${targetMode === 'queue'
                       ? 'bg-amber-600 hover:bg-amber-700 text-white shadow-md'
                       : 'hover:bg-muted border-border/80'
                       }`}
@@ -845,7 +845,7 @@ export default function DistributionPage() {
                 size="sm"
                 onClick={handleExecuteReassign}
                 disabled={submittingReassign || selectedSubIds.length === 0}
-                className="gap-2 rounded-xl h-10 px-5 font-semibold shadow-md"
+                className="gap-2 h-10 px-5 font-semibold shadow-md"
               >
                 {submittingReassign ? (
                   <>

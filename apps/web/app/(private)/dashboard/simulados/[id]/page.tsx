@@ -274,7 +274,7 @@ export default function SimuladoAnswerPage() {
           </div>
         </CardContent>
         <CardFooter className="flex justify-end border-t border-border p-6 bg-muted/50 rounded-b-xl">
-          <Button disabled={saving || (hasForeignLanguage && !selectedLanguage)} onClick={handleSave} className="gap-2 rounded-full px-8 shadow-md" size="lg">
+          <Button disabled={saving || (hasForeignLanguage && !selectedLanguage)} onClick={handleSave} className="gap-2 px-8 shadow-md" size="lg">
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
             Entregar Cartão-Resposta
           </Button>

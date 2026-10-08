@@ -151,7 +151,7 @@ export default function ResultsAndBulletinPage() {
               size="sm"
               onClick={handleExportCSV}
               disabled={results.length === 0}
-              className="gap-2 rounded-xl"
+              className="gap-2 "
             >
               <Download className="size-4" />
               <span>Exportar CSV</span>
@@ -161,7 +161,7 @@ export default function ResultsAndBulletinPage() {
               size="sm"
               onClick={fetchResults}
               disabled={loading}
-              className="gap-2 rounded-xl"
+              className="gap-2 "
             >
               <RefreshCw className="size-4" />
               <span>Atualizar</span>
@@ -213,7 +213,7 @@ export default function ResultsAndBulletinPage() {
             </div>
 
             <div className="flex items-end">
-              <Button onClick={fetchResults} className="w-full h-10 font-semibold shadow-sm rounded-xl">
+              <Button onClick={fetchResults} className="w-full h-10 font-semibold shadow-sm ">
                 <span>Filtrar Resultados</span>
               </Button>
             </div>

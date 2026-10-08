@@ -462,7 +462,7 @@ export default function CorrectorAreaPage() {
               size="sm"
               onClick={handleDownloadMyBatch}
               disabled={loading || downloadingBatch || filteredSubmissions.length === 0}
-              className="gap-2 font-semibold shadow-sm rounded"
+              className="gap-2 font-semibold shadow-sm "
               title="Baixar todas as suas provas para correção em arquivo ZIP"
             >
               {downloadingBatch ? <Loader2 className="size-4 animate-spin" /> : <Download className="size-4" />}
@@ -472,7 +472,7 @@ export default function CorrectorAreaPage() {
                   : `Baixar Provas do Lote (${filteredSubmissions.length}) (.ZIP)`}
               </span>
             </Button>
-            <Button variant="outline" size="sm" onClick={fetchMySubmissions} disabled={loading} className="gap-2 rounded">
+            <Button variant="outline" size="sm" onClick={fetchMySubmissions} disabled={loading} className="gap-2 ">
               <RefreshCw className="size-4" />
               <span>Atualizar</span>
             </Button>
