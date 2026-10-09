@@ -176,7 +176,7 @@ export default function SimuladosStudentPage() {
                     
                     return (
                         <Link href={href} className="w-full">
-                            <Button className="w-full justify-start font-semibold bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm hover:shadow transition-all" variant={variant}>
+                            <Button className="w-full justify-start font-semibold bg-primary hover:bg-primary/90 text-primary-foreground hover:shadow transition-all" variant={variant}>
                                 <FileSignature className="w-4 h-4 mr-2 flex-shrink-0" />
                                 <span className="truncate">{text}</span>
                             </Button>

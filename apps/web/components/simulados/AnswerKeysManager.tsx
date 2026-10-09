@@ -282,7 +282,7 @@ export function AnswerKeysManager({ updateTrigger }: { onUpdate?: () => void, up
           )}
         </CardContent>
         <CardFooter className="flex justify-end border-t border-border p-6">
-          <Button disabled={!selectedExamId || saving || questions.length === 0} onClick={handleSaveAnswerKey} className="gap-2 px-8 shadow-md">
+          <Button disabled={!selectedExamId || saving || questions.length === 0} onClick={handleSaveAnswerKey} className="gap-2 px-8 ">
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
             Salvar Gabarito Oficial
           </Button>

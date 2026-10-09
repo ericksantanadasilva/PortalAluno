@@ -261,7 +261,7 @@ export function OmrImportTab() {
         <Button
           disabled={!selectedExamId || !file || !colRegistration || !colQuestionsStart || uploading}
           onClick={handleUpload}
-          className="gap-2 shadow-sm px-8"
+          className="gap-2 px-8"
           size="lg"
         >
           {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileSignature className="w-4 h-4" />}

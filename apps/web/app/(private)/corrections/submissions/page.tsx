@@ -386,7 +386,7 @@ export default function SubmissionsOverviewPage() {
             </div>
 
             <div className="flex items-end">
-              <Button onClick={fetchSubmissions} className="w-full h-10 font-semibold shadow-sm">
+              <Button onClick={fetchSubmissions} className="w-full h-10 font-semibold ">
                 <Filter className="size-4 mr-2" />
                 <span>Aplicar Filtros</span>
               </Button>

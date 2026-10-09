@@ -212,7 +212,7 @@ export default function PresentialUploadPage() {
             </div>
 
             <Button
-              className="w-full h-11 text-base font-semibold shadow-lg shadow-primary/20"
+              className="w-full h-11 text-base font-semibold "
               disabled={uploading || files.length === 0 || !selectedExamId}
               onClick={handleUpload}
             >

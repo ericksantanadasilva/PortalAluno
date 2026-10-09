@@ -52,7 +52,7 @@ function StatusActionButtons({
         variant={aluno.status_atual === "Presente" ? "default" : "outline"}
         className={
           aluno.status_atual === "Presente"
-            ? "bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-sm"
+            ? "bg-primary hover:bg-primary/90 text-primary-foreground font-semibold "
             : "text-primary hover:bg-primary/10 border-primary/20 font-semibold"
         }
         onClick={() => onUpdateStatus(aluno.id, "Presente")}
@@ -66,7 +66,7 @@ function StatusActionButtons({
         variant={aluno.status_atual === "Falta" ? "default" : "outline"}
         className={
           aluno.status_atual === "Falta"
-            ? "bg-rose-600 hover:bg-rose-700 text-white font-semibold shadow-sm"
+            ? "bg-rose-600 hover:bg-rose-700 text-white font-semibold "
             : "text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 border-rose-200 font-semibold"
         }
         onClick={() => onUpdateStatus(aluno.id, "Falta")}
@@ -80,7 +80,7 @@ function StatusActionButtons({
         variant={aluno.status_atual === "Abonado" ? "default" : "outline"}
         className={
           aluno.status_atual === "Abonado"
-            ? "font-semibold shadow-sm"
+            ? "font-semibold "
             : "font-semibold"
         }
         onClick={() => onUpdateStatus(aluno.id, "Abonado")}

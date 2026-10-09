@@ -213,7 +213,7 @@ export default function ResultsAndBulletinPage() {
             </div>
 
             <div className="flex items-end">
-              <Button onClick={fetchResults} className="w-full h-10 font-semibold shadow-sm ">
+              <Button onClick={fetchResults} className="w-full h-10 font-semibold ">
                 <span>Filtrar Resultados</span>
               </Button>
             </div>

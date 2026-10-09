@@ -285,7 +285,7 @@ export default function CorrectorAreaPage() {
               <span>Salvar Rascunho</span>
             </Button>
             <Button
-              className="gap-2 font-semibold bg-emerald-600 hover:bg-emerald-700 text-white shadow-md"
+              className="gap-2 font-semibold bg-emerald-600 hover:bg-emerald-700 text-white "
               disabled={saving}
               onClick={() => handleSubmitGrade(true)}
             >
@@ -462,7 +462,7 @@ export default function CorrectorAreaPage() {
               size="sm"
               onClick={handleDownloadMyBatch}
               disabled={loading || downloadingBatch || filteredSubmissions.length === 0}
-              className="gap-2 font-semibold shadow-sm "
+              className="gap-2 font-semibold "
               title="Baixar todas as suas provas para correção em arquivo ZIP"
             >
               {downloadingBatch ? <Loader2 className="size-4 animate-spin" /> : <Download className="size-4" />}
@@ -584,7 +584,7 @@ export default function CorrectorAreaPage() {
                           <Button
                             size="sm"
                             onClick={() => handleSelectSubmission(sub)}
-                            className="gap-1.5 font-semibold shadow-sm rounded"
+                            className="gap-1.5 font-semibold rounded"
                           >
                             <span>Corrigir Prova</span>
                             <ChevronRight className="size-4" />

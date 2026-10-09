@@ -418,7 +418,7 @@ export default function DistributionPage() {
             </div>
 
             <Button
-              className="w-full h-12 text-base font-semibold shadow-lg shadow-primary/25 "
+              className="w-full h-12 text-base font-semibold "
               onClick={handleDistribute}
               disabled={
                 distributing ||
@@ -459,7 +459,7 @@ export default function DistributionPage() {
                 variant="default"
                 size="sm"
                 onClick={() => openGranularModal()}
-                className="gap-2 shrink-0 rounded-xl shadow-md font-semibold px-4 h-10"
+                className="gap-2 shrink-0 rounded-xl font-semibold px-4 h-10"
               >
                 <Users className="size-4" />
                 <span>Reatribuição Granular</span>
@@ -469,7 +469,7 @@ export default function DistributionPage() {
                 size="sm"
                 onClick={fetchData}
                 disabled={loading}
-                className="gap-2 shrink-0 border-border/80 shadow-sm font-semibold px-4 h-10"
+                className="gap-2 shrink-0 border-border/80 font-semibold px-4 h-10"
               >
                 <RefreshCw className="size-4" />
                 <span>Atualizar</span>
@@ -739,7 +739,7 @@ export default function DistributionPage() {
                     variant={targetMode === 'corrector' ? 'default' : 'outline'}
                     size="sm"
                     className={`h-9 px-4 text-xs font-semibold transition-all ${targetMode === 'corrector'
-                      ? 'bg-primary text-primary-foreground shadow-md'
+                      ? 'bg-primary text-primary-foreground '
                       : 'hover:bg-muted border-border/80'
                       }`}
                     onClick={() => setTargetMode('corrector')}
@@ -752,7 +752,7 @@ export default function DistributionPage() {
                     variant={targetMode === 'queue' ? 'default' : 'outline'}
                     size="sm"
                     className={`h-9 px-4 text-xs font-semibold transition-all ${targetMode === 'queue'
-                      ? 'bg-amber-600 hover:bg-amber-700 text-white shadow-md'
+                      ? 'bg-amber-600 hover:bg-amber-700 text-white '
                       : 'hover:bg-muted border-border/80'
                       }`}
                     onClick={() => setTargetMode('queue')}
@@ -845,7 +845,7 @@ export default function DistributionPage() {
                 size="sm"
                 onClick={handleExecuteReassign}
                 disabled={submittingReassign || selectedSubIds.length === 0}
-                className="gap-2 h-10 px-5 font-semibold shadow-md"
+                className="gap-2 h-10 px-5 font-semibold "
               >
                 {submittingReassign ? (
                   <>

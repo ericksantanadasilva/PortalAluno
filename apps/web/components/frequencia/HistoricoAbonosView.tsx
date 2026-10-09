@@ -202,7 +202,7 @@ export function HistoricoAbonosView({
           </div>
         </div>
         <Button
-          className="hidden md:flex font-semibold px-4 py-2 items-center gap-1.5 shadow-sm shrink-0 bg-primary hover:bg-primary/90 text-primary-foreground"
+          className="hidden md:flex font-semibold px-4 py-2 items-center gap-1.5 shrink-0 bg-primary hover:bg-primary/90 text-primary-foreground"
           onClick={handleOpenNew}
         >
           <Plus className="w-4 h-4" />

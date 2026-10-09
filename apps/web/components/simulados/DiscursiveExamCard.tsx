@@ -283,7 +283,7 @@ export function DiscursiveExamCard({ exam, onSubmissionSuccess }: DiscursiveExam
                           size="sm"
                           disabled={!selectedFile || isUploading}
                           onClick={() => handleUpload(subject.id)}
-                          className="bg-primary hover:bg-primary/90 text-primary-foreground min-w-[130px] font-semibold shadow-sm"
+                          className="bg-primary hover:bg-primary/90 text-primary-foreground min-w-[130px] font-semibold "
                         >
                           {isUploading ? (
                             <>

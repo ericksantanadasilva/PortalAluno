@@ -379,7 +379,7 @@ export function DiscursiveSubmissionsManager() {
               <Button
                 disabled={selectedSubmissionIds.length === 0 || downloadingZip}
                 onClick={handleDownloadBatch}
-                className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold h-10 px-4 shadow-sm"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold h-10 px-4 "
               >
                 {downloadingZip ? (
                   <>
