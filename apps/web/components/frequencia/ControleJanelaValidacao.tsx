@@ -173,7 +173,7 @@ export function ControleJanelaValidacao({
     <div className="w-full space-y-8">
 
       {/* SEÇÃO 1: Grade Padrão (Templates) */}
-      <div className="rounded-2xl border border-border shadow-sm bg-card p-4 md:px-8 md:py-6">
+      <div className="rounded-xl border border-border shadow-sm bg-card p-4 md:px-8 md:py-6">
         <div className="mb-5 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
           <div>
             <BlockTitle className="flex items-center gap-2 flex-wrap">

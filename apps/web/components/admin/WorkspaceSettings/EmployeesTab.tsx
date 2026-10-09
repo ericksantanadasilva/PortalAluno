@@ -167,7 +167,7 @@ export function EmployeesTab() {
         )}
 
         <TabsContent value="lista">
-          <Card className="animate-in fade-in slide-in-from-bottom-2 duration-300 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border-none rounded-2xl bg-white">
+          <Card className="animate-in fade-in slide-in-from-bottom-2 duration-300 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border-none rounded-xl bg-white">
             <CardHeader className="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
               <div>
                 <CardTitle>Equipe</CardTitle>
@@ -252,7 +252,7 @@ export function EmployeesTab() {
         </TabsContent>
 
         <TabsContent value="convidar" className="animate-in fade-in slide-in-from-bottom-2 duration-300">
-          <Card className="shadow-[0_8px_30px_rgb(0,0,0,0.02)] border-none rounded-2xl bg-white max-w-2xl mx-auto">
+          <Card className="shadow-[0_8px_30px_rgb(0,0,0,0.02)] border-none rounded-xl bg-white max-w-2xl mx-auto">
             <CardHeader>
               <CardTitle>Convidar para a Equipe</CardTitle>
               <CardDescription>

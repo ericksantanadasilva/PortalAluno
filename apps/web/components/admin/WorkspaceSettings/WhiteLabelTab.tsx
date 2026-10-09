@@ -155,7 +155,7 @@ export function WhiteLabelTab() {
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       {/* Config Form */}
       <div className="lg:col-span-2 flex flex-col gap-6">
-        <Card className="shadow-[0_8px_30px_rgb(0,0,0,0.02)] border-none rounded-2xl bg-white">
+        <Card className="shadow-[0_8px_30px_rgb(0,0,0,0.02)] border-none rounded-xl bg-white">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <PaintBucket className="w-5 h-5 text-muted-foreground" />
@@ -214,7 +214,7 @@ export function WhiteLabelTab() {
           </CardContent>
         </Card>
 
-        <Card className="shadow-[0_8px_30px_rgb(0,0,0,0.02)] border-none rounded-2xl bg-white">
+        <Card className="shadow-[0_8px_30px_rgb(0,0,0,0.02)] border-none rounded-xl bg-white">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <ImageIcon className="w-5 h-5 text-muted-foreground" />
@@ -279,7 +279,7 @@ export function WhiteLabelTab() {
 
       {/* Real-time Preview */}
       <div>
-        <Card className="sticky top-6 overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.06)] border-none rounded-3xl bg-white">
+        <Card className="sticky top-6 overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.06)] border-none rounded-xl bg-white">
           <CardHeader className="bg-muted/30 border-b">
             <CardTitle className="text-base">Preview em Tempo Real</CardTitle>
             <CardDescription className="text-xs">
@@ -313,7 +313,7 @@ export function WhiteLabelTab() {
 
               {/* Fake Content Area */}
               <div className="space-y-4 relative z-10">
-                <div className="bg-white rounded-2xl p-5 shadow-[0_4px_15px_rgb(0,0,0,0.02)] border-none transition-transform hover:-translate-y-1">
+                <div className="bg-white rounded-xl p-5 shadow-[0_4px_15px_rgb(0,0,0,0.02)] border-none transition-transform hover:-translate-y-1">
                   <div className="flex items-center justify-between mb-4">
                     <div className="text-sm font-bold text-foreground">Desempenho Geral</div>
                     <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ backgroundColor: config.primaryColor + '20', color: config.primaryColor }}>
@@ -342,7 +342,7 @@ export function WhiteLabelTab() {
                 </div>
 
                 <div
-                  className="rounded-2xl p-4 text-white text-sm shadow-md transition-all hover:-translate-y-1"
+                  className="rounded-xl p-4 text-white text-sm shadow-md transition-all hover:-translate-y-1"
                   style={{ backgroundColor: config.secondaryColor }}
                 >
                   <div className="font-bold mb-1 flex items-center gap-2">
@@ -360,7 +360,7 @@ export function WhiteLabelTab() {
       </div>
       {/* Modal de Sucesso / Erro */}
       <Dialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
-        <DialogContent className="sm:max-w-md rounded-2xl border-0 shadow-2xl p-0 overflow-hidden" showCloseButton={false}>
+        <DialogContent className="sm:max-w-md rounded-xl border-0 shadow-2xl p-0 overflow-hidden" showCloseButton={false}>
           <div className="bg-white px-6 py-8">
             <div className="flex flex-col items-center justify-center text-center">
               <div className={`w-16 h-16 rounded-full flex items-center justify-center mb-5 ring-8 ${dialogMessage.isError ? 'bg-red-50 ring-red-50/50' : 'bg-emerald-50 ring-emerald-50/50'}`}>

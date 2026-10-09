@@ -50,7 +50,7 @@ export default function BoletimEnemParcialView({ data }: BoletimEnemParcialViewP
           />
 
           {temRaioX && (
-            <Card className="lg:col-span-2 shadow-[0_8px_30px_rgb(0,0,0,0.02)] rounded-2xl bg-card border-border flex flex-col">
+            <Card className="lg:col-span-2 shadow-[0_8px_30px_rgb(0,0,0,0.02)] rounded-xl bg-card border-border flex flex-col">
               <CardHeader className="p-8 pb-4">
                 <CardTitle className="flex items-center gap-2">
                   <Target className="w-5 h-5 text-primary" />

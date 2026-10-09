@@ -304,7 +304,7 @@ export default function DistributionPage() {
     <div className="space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Painel de Criação do Lote */}
-        <Card className="lg:col-span-1 border border-border/80 shadow-xl rounded-3xl bg-card overflow-hidden">
+        <Card className="lg:col-span-1 border border-border/80 shadow-xl rounded-xl bg-card overflow-hidden">
           <CardHeader>
             <CardTitle className="text-xl flex items-center gap-2">
               <Share2 className="size-5 text-primary" />
@@ -361,7 +361,7 @@ export default function DistributionPage() {
 
             {/* Destaque de Provas Pendentes */}
             {currentExam && (
-              <div className="p-4 rounded-2xl bg-primary/10 border border-primary/20 space-y-2">
+              <div className="p-4 rounded-xl bg-primary/10 border border-primary/20 space-y-2">
                 <span className="text-xs font-semibold uppercase tracking-wider text-primary block leading-snug">
                   Disponíveis ({selectedSubject})
                 </span>
@@ -446,7 +446,7 @@ export default function DistributionPage() {
         </Card>
 
         {/* Auditoria dos Lotes Criados */}
-        <Card className="lg:col-span-2 border border-border/80 shadow-xl rounded-3xl bg-card flex flex-col overflow-hidden">
+        <Card className="lg:col-span-2 border border-border/80 shadow-xl rounded-xl bg-card flex flex-col overflow-hidden">
           <CardHeader className="flex flex-row items-center justify-between pb-4">
             <div>
               <CardTitle className="text-xl">Lotes de Correção Criados</CardTitle>
@@ -483,7 +483,7 @@ export default function DistributionPage() {
                 <span className="text-sm text-muted-foreground">Carregando lotes...</span>
               </div>
             ) : batches.length === 0 ? (
-              <div className="h-64 flex flex-col items-center justify-center text-center text-muted-foreground border border-dashed rounded-2xl p-8">
+              <div className="h-64 flex flex-col items-center justify-center text-center text-muted-foreground border border-dashed rounded-xl p-8">
                 <Layers className="size-12 opacity-30 mb-2" />
                 <p className="font-medium">Nenhum lote criado no momento</p>
                 <p className="text-xs max-w-sm mt-1">
@@ -491,7 +491,7 @@ export default function DistributionPage() {
                 </p>
               </div>
             ) : (
-              <div className="border border-border/80 rounded-2xl overflow-hidden shadow-sm">
+              <div className="border border-border/80 rounded-xl overflow-hidden shadow-sm">
                 <Table className="w-full">
                   <TableHeader>
                     <TableRow className="bg-muted/60">
@@ -574,7 +574,7 @@ export default function DistributionPage() {
 
       {/* Modal de Reatribuição Granular (1 ou Múltiplos Corretores) */}
       <Dialog open={isReassignOpen} onOpenChange={setIsReassignOpen}>
-        <DialogContent className="sm:max-w-4xl md:max-w-5xl lg:max-w-6xl !max-w-[1050px] w-[96vw] max-h-[92vh] flex flex-col p-6 sm:p-8 !rounded-3xl border border-border/80 bg-card shadow-2xl overflow-hidden">
+        <DialogContent className="sm:max-w-4xl md:max-w-5xl lg:max-w-6xl !max-w-[1050px] w-[96vw] max-h-[92vh] flex flex-col p-6 sm:p-8 !rounded-xl border border-border/80 bg-card shadow-2xl overflow-hidden">
           <DialogHeader className="pb-3 border-b border-border/80 shrink-0">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 text-primary">
@@ -637,7 +637,7 @@ export default function DistributionPage() {
               </div>
 
               {/* Tabela de Submissões */}
-              <div className="border border-border/80 rounded-2xl overflow-x-auto bg-muted/10 max-h-[280px] shadow-inner">
+              <div className="border border-border/80 rounded-xl overflow-x-auto bg-muted/10 max-h-[280px] shadow-inner">
                 {loadingSubmissions ? (
                   <div className="h-44 flex flex-col items-center justify-center text-center">
                     <Loader2 className="size-6 animate-spin text-primary mb-2" />
@@ -728,7 +728,7 @@ export default function DistributionPage() {
             </div>
 
             {/* 2. Destino da Reatribuição */}
-            <div className="border border-border/80 rounded-3xl p-5 bg-muted/10 space-y-4 shadow-sm">
+            <div className="border border-border/80 rounded-xl p-5 bg-muted/10 space-y-4 shadow-sm">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border/60 pb-3">
                 <Label className="text-sm font-bold text-foreground">
                   Selecione o Destino (1 ou vários Corretores):
@@ -772,7 +772,7 @@ export default function DistributionPage() {
                         <div
                           key={corr.id}
                           onClick={() => toggleCorrectorSelection(corr.id)}
-                          className={`flex items-center gap-3 p-3 rounded-2xl border cursor-pointer transition-all ${isSelected
+                          className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${isSelected
                             ? 'border-primary bg-primary/10 shadow-md ring-1 ring-primary/40'
                             : 'border-border/80 bg-card hover:bg-muted/40 shadow-sm'
                             }`}
@@ -789,7 +789,7 @@ export default function DistributionPage() {
 
                   {/* Real-time WOW Preview */}
                   {selectedSubIds.length > 0 && selectedTargetCorrectors.length > 0 && (
-                    <div className="p-4 rounded-2xl bg-primary/10 border border-primary/20 flex flex-col gap-2.5 shadow-sm">
+                    <div className="p-4 rounded-xl bg-primary/10 border border-primary/20 flex flex-col gap-2.5 shadow-sm">
                       <div className="text-xs font-semibold text-primary flex items-center gap-1.5">
                         <Sparkles className="size-4" />
                         <span>
@@ -811,7 +811,7 @@ export default function DistributionPage() {
                   )}
                 </div>
               ) : (
-                <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs font-medium text-amber-700 dark:text-amber-300 flex items-center gap-2.5 shadow-sm">
+                <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs font-medium text-amber-700 dark:text-amber-300 flex items-center gap-2.5 shadow-sm">
                   <AlertCircle className="size-4 shrink-0" />
                   <span>
                     As {selectedSubIds.length} prova(s) selecionada(s) retornarão para o status PENDENTE e ficarão livres para uma nova rodada de distribuição.

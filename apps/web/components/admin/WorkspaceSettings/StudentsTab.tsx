@@ -357,7 +357,7 @@ export function StudentsTab() {
         )}
 
         <TabsContent value="lista">
-          <Card className="animate-in fade-in slide-in-from-bottom-2 duration-300 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border-none rounded-2xl bg-white">
+          <Card className="animate-in fade-in slide-in-from-bottom-2 duration-300 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border-none rounded-xl bg-white">
             <CardHeader className="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
               <div>
                 <CardTitle>Alunos Matriculados</CardTitle>
@@ -496,7 +496,7 @@ export function StudentsTab() {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Cadastro Individual */}
-            <Card className="shadow-[0_8px_30px_rgb(0,0,0,0.02)] border-none rounded-2xl bg-white">
+            <Card className="shadow-[0_8px_30px_rgb(0,0,0,0.02)] border-none rounded-xl bg-white">
               <CardHeader>
                 <CardTitle>Cadastro Individual</CardTitle>
                 <CardDescription>Insira os dados do aluno manualmente no sistema.</CardDescription>
@@ -616,7 +616,7 @@ export function StudentsTab() {
             </Card>
 
             {/* Importação em Massa */}
-            <Card className="shadow-[0_8px_30px_rgb(0,0,0,0.02)] border-none rounded-2xl bg-white">
+            <Card className="shadow-[0_8px_30px_rgb(0,0,0,0.02)] border-none rounded-xl bg-white">
               <CardHeader>
                 <CardTitle>Importação em Massa (CSV)</CardTitle>
                 <CardDescription>Cadastre múltiplos alunos de uma vez através de uma planilha.</CardDescription>
@@ -628,7 +628,7 @@ export function StudentsTab() {
                 </Button>
 
                 <div
-                  className={`border-2 border-dashed rounded-2xl p-8 flex flex-col items-center justify-center gap-4 transition-all duration-300 cursor-pointer ${dragActive ? 'border-primary bg-primary/5 scale-[1.02]' : 'border-border bg-muted/50 hover:bg-slate-50'
+                  className={`border-2 border-dashed rounded-xl p-8 flex flex-col items-center justify-center gap-4 transition-all duration-300 cursor-pointer ${dragActive ? 'border-primary bg-primary/5 scale-[1.02]' : 'border-border bg-muted/50 hover:bg-slate-50'
                     }`}
                   onDragEnter={handleDrag}
                   onDragLeave={handleDrag}
@@ -684,7 +684,7 @@ export function StudentsTab() {
         </TabsContent>
 
         <TabsContent value="config" className="animate-in fade-in slide-in-from-bottom-2 duration-300">
-          <Card className="shadow-[0_8px_30px_rgb(0,0,0,0.02)] border-none rounded-2xl bg-white">
+          <Card className="shadow-[0_8px_30px_rgb(0,0,0,0.02)] border-none rounded-xl bg-white">
             <CardHeader>
               <CardTitle>Turmas e Modalidades</CardTitle>
               <CardDescription>Crie as categorias que serão disponibilizadas no momento do cadastro do aluno.</CardDescription>

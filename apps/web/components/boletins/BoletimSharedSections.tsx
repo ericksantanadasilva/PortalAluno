@@ -52,7 +52,7 @@ export function DesempenhoPorDisciplinaSection({
 
   return (
     <Card
-      className={`shadow-[0_8px_30px_rgb(0,0,0,0.02)] rounded-2xl bg-card border-border flex flex-col ${className || ""}`}
+      className={`shadow-[0_8px_30px_rgb(0,0,0,0.02)] rounded-xl bg-card border-border flex flex-col ${className || ""}`}
     >
       <CardHeader className="p-8 pb-4">
         <CardTitle className="flex items-center gap-2">
@@ -141,7 +141,7 @@ export function PlanoRevisaoSection({ data, primaryHSL }: PlanoRevisaoSectionPro
   if (data.temasParaRevisar.length === 0) return null;
 
   return (
-    <Card className="border-border shadow-[0_8px_30px_rgb(0,0,0,0.02)] rounded-2xl bg-card overflow-hidden">
+    <Card className="border-border shadow-[0_8px_30px_rgb(0,0,0,0.02)] rounded-xl bg-card overflow-hidden">
       <div className="bg-primary/5 border-b border-primary/10 p-8 flex items-start gap-4">
         <div className="p-3 bg-background text-primary rounded-xl shadow-sm shrink-0">
           <BookOpen className="w-6 h-6" />
@@ -160,7 +160,7 @@ export function PlanoRevisaoSection({ data, primaryHSL }: PlanoRevisaoSectionPro
           {Object.entries(revisaoPorDisciplina).map(([disciplina, temas]) => (
             <div
               key={disciplina}
-              className="space-y-4 bg-card p-6 rounded-2xl border-l-4 border-border shadow-[0_4px_15px_rgb(0,0,0,0.02)] transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)]"
+              className="space-y-4 bg-card p-6 rounded-xl border-l-4 border-border shadow-[0_4px_15px_rgb(0,0,0,0.02)] transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)]"
               style={{ borderLeftColor: `hsl(${primaryHSL})` }}
             >
               <h4 className="font-bold flex items-center justify-between pb-2 text-sm text-foreground">
