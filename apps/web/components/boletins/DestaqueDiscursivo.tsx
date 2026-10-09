@@ -16,7 +16,7 @@ export function DestaqueDiscursivo({ data }: DestaqueDiscursivoProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       <Card
-        className="md:col-span-1 shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-2xl border-none overflow-hidden relative bg-white"
+        className="md:col-span-1 shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-xl border-none overflow-hidden relative bg-white"
       >
         <div
           className="absolute inset-0 opacity-[0.04]"
@@ -46,7 +46,7 @@ export function DestaqueDiscursivo({ data }: DestaqueDiscursivoProps) {
         </CardContent>
       </Card>
 
-      <Card className="md:col-span-2 shadow-[0_8px_30px_rgb(0,0,0,0.02)] rounded-2xl bg-white border-none flex flex-col justify-center">
+      <Card className="md:col-span-2 shadow-[0_8px_30px_rgb(0,0,0,0.02)] rounded-xl bg-white border-none flex flex-col justify-center">
         <CardContent className="grid grid-cols-2 sm:grid-cols-3 gap-6 py-8">
           <StatBlock
             icon={<TrendingUp className="w-5 h-5" />}

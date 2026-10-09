@@ -180,7 +180,7 @@ export default function BoletimDetalhado() {
             </div>
 
             {/* Informações do Aluno */}
-            <div className="flex flex-col sm:flex-row gap-8 bg-card shadow-sm border border-border rounded-2xl p-6 shrink-0 w-full lg:w-auto">
+            <div className="flex flex-col sm:flex-row gap-8 bg-card shadow-sm border border-border rounded-xl p-6 shrink-0 w-full lg:w-auto">
               <div className="space-y-1.5 border-b sm:border-b-0 sm:border-r border-border pb-4 sm:pb-0 sm:pr-8">
                 <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider block">
                   Aluno
